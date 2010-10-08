@@ -8,7 +8,7 @@ module ChildProcess
   class TimeoutError < StandardError; end
   class SubclassResponsibility < StandardError; end
 
-  def self.create(*args)
+  def self.build(*args)
     case platform
     when :jruby
       JRuby::Process.new(args)

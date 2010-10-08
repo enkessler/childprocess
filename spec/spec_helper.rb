@@ -6,7 +6,7 @@ require 'spec/autorun'
 
 module ChildProcessSpecHelper
   def sleeping_ruby
-    @process = ChildProcess.create("ruby" , "-e", "sleep")
+    @process = ChildProcess.build("ruby" , "-e", "sleep")
   end
 end
 
