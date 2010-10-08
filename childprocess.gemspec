@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.0.2"
+  s.version = "0.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "childprocess.gemspec",
      "lib/childprocess.rb",
      "lib/childprocess/abstract_process.rb",
      "lib/childprocess/errors.rb",
@@ -46,7 +47,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/jarib/childprocess}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{Cross-platform ruby library for managing child processes.}
   s.test_files = [
     "spec/childprocess_spec.rb",
