@@ -4,6 +4,16 @@ require 'childprocess'
 require 'spec'
 require 'spec/autorun'
 
+module ChildProcessSpecHelper
+  def sleeping_ruby
+    @process = ChildProcess.create("ruby" , "-e", "sleep")
+  end
+end
+
+
 Spec::Runner.configure do |config|
-  
+  config.include(ChildProcessSpecHelper)
+  config.after(:each) {
+    @process && @process.alive? && @process.stop
+  }
 end

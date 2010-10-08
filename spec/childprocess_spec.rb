@@ -1,7 +1,10 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require File.expand_path('../spec_helper', __FILE__)
 
-describe "Childprocess" do
-  it "fails" do
-    fail "hey buddy, you should probably rename this file and start specing for real"
+describe ChildProcess do
+
+  it "returns self when started" do
+    process = sleeping_ruby
+    process.start.should == process
   end
+
 end
