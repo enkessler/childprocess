@@ -10,7 +10,7 @@ describe ChildProcess do
     process.should be_started
   end
 
-  it "should know if the process crashed" do
+  it "knows if the process crashed" do
     process = exit_with(1).start
     process.poll_for_exit(EXIT_TIMEOUT)
 
@@ -18,7 +18,7 @@ describe ChildProcess do
     process.should be_crashed
   end
 
-  it "should know if the process didn't crash" do
+  it "knows if the process didn't crash" do
     process = exit_with(0).start
     process.poll_for_exit(EXIT_TIMEOUT)
 
@@ -26,10 +26,35 @@ describe ChildProcess do
     process.should_not be_crashed
   end
 
-  it "should escalate if TERM is ignored" do
+  it "escalates if TERM is ignored" do
     process = ignored('TERM').start
     process.stop
     process.should be_exited
+  end
+
+  it "lets child process inherit the environment of the current process" do
+    Tempfile.open("env-spec") do |file|
+      with_env('env-spec' => 'yes') do
+        process = write_env(file.path).start
+        process.poll_for_exit(EXIT_TIMEOUT)
+      end
+
+      file.rewind
+      child_env = eval(file.read)
+      child_env['env-spec'].should == 'yes'
+    end
+  end
+
+  it "passes arguments to the child" do
+    args = ["foo", "bar"]
+
+    Tempfile.open("argv-spec") do |file|
+      process = write_argv(file.path, *args).start
+      process.poll_for_exit(EXIT_TIMEOUT)
+
+      file.rewind
+      file.read.should == args.inspect
+    end
   end
 
 end

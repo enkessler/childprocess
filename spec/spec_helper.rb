@@ -24,8 +24,33 @@ module ChildProcessSpecHelper
     ruby_process tmp_script(code)
   end
 
+  def write_env(path)
+    code = <<-RUBY
+      File.open(#{path.inspect}, "w") { |f| f << ENV.inspect }
+    RUBY
+
+    ruby_process tmp_script(code)
+  end
+
+  def write_argv(path, *args)
+    code = <<-RUBY
+      File.open(#{path.inspect}, "w") { |f| f << ARGV.inspect }
+    RUBY
+
+    ruby_process(tmp_script(code), *args)
+  end
+
   def exit_with(exit_code)
     ruby_process(tmp_script("exit(#{exit_code})"))
+  end
+
+  def with_env(hash)
+    hash.each { |k,v| ENV[k] = v }
+    begin
+      yield
+    ensure
+      hash.each_key { |k| ENV[k] = nil }
+    end
   end
 
   def tmp_script(code)
