@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+require 'tmpdir'
 
 begin
   require 'jeweler'
@@ -45,4 +46,21 @@ rescue LoadError
   task :yardoc do
     abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
   end
+end
+
+task :clean do
+  rm_rf "pkg"
+  rm_rf "childprocess.jar"
+end
+
+desc 'Create jar to bundle in selenium-webdriver'
+task :jar => [:clean, :build] do
+  tmpdir = Dir.mktmpdir("childprocess-jar")
+  gem_to_package = Dir['pkg/*.gem'].first
+  gem_name = File.basename(gem_to_package, ".gem")
+  p :gem_to_package => gem_to_package, :gem_name => gem_name
+  
+  sh "gem install -i #{tmpdir} #{gem_to_package} --ignore-dependencies --no-rdoc --no-ri"
+  sh "jar cf childprocess.jar -C #{tmpdir}/gems/#{gem_name}/lib ."
+  sh "jar tf childprocess.jar"
 end
