@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
@@ -42,7 +42,8 @@ Gem::Specification.new do |s|
      "lib/childprocess/windows/structs.rb",
      "spec/childprocess_spec.rb",
      "spec/spec.opts",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "spec/unix_process_spec.rb"
   ]
   s.homepage = %q{http://github.com/jarib/childprocess}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -51,7 +52,8 @@ Gem::Specification.new do |s|
   s.summary = %q{Cross-platform ruby library for managing child processes.}
   s.test_files = [
     "spec/childprocess_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "spec/unix_process_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
