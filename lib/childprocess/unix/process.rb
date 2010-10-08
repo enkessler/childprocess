@@ -26,20 +26,19 @@ module ChildProcess
       #
 
       def exited?
-        if @exit_code
-          true
-        else
-          assert_started
-          pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
+        return true if @exit_code
 
-          log(pid, status)
 
-          if pid
-            @exit_code = status.exitstatus || status.termsig
-          end
+        assert_started
+        pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
 
-          !!pid
+        log(pid, status)
+
+        if pid
+          @exit_code = status.exitstatus || status.termsig
         end
+
+        !!pid
       end
 
       private

@@ -22,7 +22,7 @@ module ChildProcess
 
   def self.platform
     if RUBY_PLATFORM == "java"
-      :java
+      :jruby
     elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ironruby"
       :ironruby
     elsif RUBY_PLATFORM =~ /mswin|msys|mingw32/

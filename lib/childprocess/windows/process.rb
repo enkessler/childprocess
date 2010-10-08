@@ -8,26 +8,24 @@ module ChildProcess
         # just kill right away on windows.
         log "sending KILL"
         @handle.send(WIN_SIGKILL)
-        
+
         poll_for_exit(timeout)
       ensure
         @handle.close
       end
 
       def exited?
-        if @exit_code
-          return true
-        else
-          assert_started
-          code   = @handle.exit_code
-          exited = code != PROCESS_STILL_ACTIVE
-          
-          if exited
-            @exit_code = code
-          end
-            
-          exited
+        return true if @exit_code
+
+        assert_started
+        code   = @handle.exit_code
+        exited = code != PROCESS_STILL_ACTIVE
+
+        if exited
+          @exit_code = code
         end
+
+        exited
       end
 
       private
