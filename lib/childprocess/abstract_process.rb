@@ -50,7 +50,7 @@ module ChildProcess
     end
     
     def crashed?
-      @exit_code && @exit_code != 0
+      exited? && @exit_code != 0
     end
 
     def poll_for_exit(timeout)

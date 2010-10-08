@@ -6,23 +6,23 @@ describe ChildProcess do
 
   it "returns self when started" do
     process = sleeping_ruby
+
     process.start.should == process
     process.should be_started
   end
 
   it "knows if the process crashed" do
     process = exit_with(1).start
-    process.poll_for_exit(EXIT_TIMEOUT)
 
-    process.should be_exited
-    process.should be_crashed
+    within(EXIT_TIMEOUT) {
+      process.should be_crashed
+    }
   end
 
   it "knows if the process didn't crash" do
     process = exit_with(0).start
     process.poll_for_exit(EXIT_TIMEOUT)
 
-    process.should be_exited
     process.should_not be_crashed
   end
 

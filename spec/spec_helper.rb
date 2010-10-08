@@ -63,7 +63,23 @@ module ChildProcessSpecHelper
 
     tf.path
   end
-end
+
+  def within(seconds, &blk)
+    end_time   = Time.now + seconds
+    ok         = false
+    last_error = nil
+
+    until ok || Time.now >= end_time
+      begin
+        ok = yield
+      rescue Spec::Expectations::ExpectationNotMetError => last_error
+      end
+    end
+
+    raise last_error unless ok
+  end
+
+end # ChildProcessSpecHelper
 
 
 Spec::Runner.configure do |config|

@@ -28,7 +28,6 @@ module ChildProcess
       def exited?
         return true if @exit_code
 
-
         assert_started
         pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
 
