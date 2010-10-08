@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "childprocess"
     gem.summary = %Q{Cross-platform ruby library for managing child processes.}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = %Q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
     gem.email = "jari.bakken@gmail.com"
     gem.homepage = "http://github.com/jarib/childprocess"
     gem.authors = ["Jari Bakken"]
