@@ -5,8 +5,7 @@ module ChildProcess
       def stop(timeout = 3)
         assert_started
 
-        # just send kill right away..
-        
+        # just kill right away on windows.
         log "sending KILL"
         @handle.send(WIN_SIGKILL)
         
@@ -20,8 +19,14 @@ module ChildProcess
           return true
         else
           assert_started
-          code = @handle.exit_code
-          code != PROCESS_STILL_ACTIVE && @exit_code = code
+          code   = @handle.exit_code
+          exited = code != PROCESS_STILL_ACTIVE
+          
+          if exited
+            @exit_code = code
+          end
+            
+          exited
         end
       end
 

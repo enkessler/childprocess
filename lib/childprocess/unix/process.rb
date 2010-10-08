@@ -13,7 +13,7 @@ module ChildProcess
         end
 
         send_kill
-        poll_for_exit(timeout)
+        wait
       rescue Errno::ECHILD
         # that'll do
         true
@@ -32,11 +32,21 @@ module ChildProcess
           assert_started
           pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
 
-          !!(pid && @exit_code = status.exitstatus)
+          log(pid, status)
+
+          if pid
+            @exit_code = status.exitstatus || status.termsig
+          end
+
+          !!pid
         end
       end
 
       private
+
+      def wait
+        @exit_code = ::Process.waitpid @pid
+      end
 
       def send_term
         send_signal 'TERM'
@@ -48,8 +58,9 @@ module ChildProcess
 
       def send_signal(sig)
         assert_started
+
         log "sending #{sig}"
-        ::Process.kill(sig, @pid)
+        ::Process.kill sig, @pid
       end
 
       def launch_process

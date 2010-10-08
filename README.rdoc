@@ -9,7 +9,14 @@ a standalone library.
 == Usage
 
    process = ChildProcess.build("ruby", "-e", "sleep").start
+
+   process.started?  #=> true
+   process.alive?    #=> true
+   process.exited?   #=> false
+
    process.stop
+
+The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
 
 == Implementation
 
