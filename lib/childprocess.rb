@@ -27,6 +27,8 @@ module ChildProcess
       :ironruby
     elsif RUBY_PLATFORM =~ /mswin|msys|mingw32/
       :windows
+    else
+      :unix
     end
   end
 

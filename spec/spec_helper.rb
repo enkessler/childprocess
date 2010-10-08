@@ -88,3 +88,5 @@ Spec::Runner.configure do |config|
     @process && @process.alive? && @process.stop
   }
 end
+
+require "unix_process_spec"

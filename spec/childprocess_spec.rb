@@ -57,4 +57,5 @@ describe ChildProcess do
     end
   end
 
+  it_should_behave_like "unix process" if ChildProcess.platform == :unix
 end
