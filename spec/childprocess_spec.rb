@@ -2,7 +2,7 @@ require File.expand_path('../spec_helper', __FILE__)
 
 describe ChildProcess do
 
-  EXIT_TIMEOUT = ChildProcess.platform == :jruby ? 2 : 1
+  EXIT_TIMEOUT = 10
 
   it "returns self when started" do
     process = sleeping_ruby

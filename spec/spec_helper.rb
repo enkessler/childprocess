@@ -6,9 +6,10 @@ require 'spec/autorun'
 require 'tempfile'
 
 module ChildProcessSpecHelper
+  RUBY = defined?(Gem) ? Gem.ruby : 'ruby'
 
   def ruby_process(*args)
-    @process = ChildProcess.build("ruby" , *args)
+    @process = ChildProcess.build(RUBY , *args)
   end
 
   def sleeping_ruby
