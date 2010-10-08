@@ -13,11 +13,11 @@ module ChildProcess
         false
       end
 
-      def stop
+      def stop(timeout = nil)
         assert_started
 
         @process.destroy
-        @process.waitFor
+        @process.waitFor # no way to actually use the timeout here..
 
         @exit_code = @process.exitValue
       end

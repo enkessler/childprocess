@@ -32,6 +32,11 @@ describe ChildProcess do
     process.should be_exited
   end
 
+  it "accepts a timeout argument to #stop" do
+    process = sleeping_ruby.start
+    process.stop(EXIT_TIMEOUT)
+  end
+
   it "lets child process inherit the environment of the current process" do
     Tempfile.open("env-spec") do |file|
       with_env('env-spec' => 'yes') do
