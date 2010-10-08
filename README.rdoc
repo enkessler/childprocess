@@ -5,10 +5,10 @@ external programs running in the background on any Ruby / OS combination.
 
 How the process is launched and killed depends on the platform:
 
-Unix     : fork + exec
-Windows  : CreateProcess and friends
-JRuby    : java.lang.{Process,ProcessBuilder}
-IronRuby : System.Diagnostics.Process
+* Unix     : fork + exec
+* Windows  : CreateProcess and friends
+* JRuby    : java.lang.{Process,ProcessBuilder}
+* IronRuby : System.Diagnostics.Process
 
 The code originated in the selenium-webdriver gem, but should prove useful as a 
 standalone library.
