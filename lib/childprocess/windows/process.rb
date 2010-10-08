@@ -6,11 +6,11 @@ module ChildProcess
         assert_started
 
         # just send kill right away..
-
+        
         log "sending KILL"
         @handle.send(WIN_SIGKILL)
-
-        poll_wait(timeout)
+        
+        poll_for_exit(timeout)
       ensure
         @handle.close
       end

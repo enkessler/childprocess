@@ -7,13 +7,13 @@ module ChildProcess
         send_term
 
         begin
-          return poll_wait(timeout)
+          return poll_for_exit(timeout)
         rescue TimeoutError
           # try next
         end
 
         send_kill
-        poll_wait(timeout)
+        poll_for_exit(timeout)
       rescue Errno::ECHILD
         # that'll do
         true

@@ -89,7 +89,7 @@ module ChildProcess
 
     POLL_INTERVAL = 0.1
 
-    def poll_wait(timeout)
+    def poll_for_exit(timeout)
       log "polling #{timeout} seconds for exit"
 
       end_time = Time.now + timeout
