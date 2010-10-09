@@ -11,6 +11,8 @@ module ChildProcess
         @exit_code = @process.exitValue
       rescue java.lang.IllegalThreadStateException
         false
+      ensure
+        log(@exit_code)
       end
 
       def stop(timeout = nil)
