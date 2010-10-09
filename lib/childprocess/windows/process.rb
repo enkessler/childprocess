@@ -16,10 +16,12 @@ module ChildProcess
 
       def exited?
         return true if @exit_code
-
         assert_started
+
         code   = @handle.exit_code
         exited = code != PROCESS_STILL_ACTIVE
+
+        log(exited, code)
 
         if exited
           @exit_code = code
