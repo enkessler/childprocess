@@ -21,7 +21,7 @@ module ChildProcess
         code   = @handle.exit_code
         exited = code != PROCESS_STILL_ACTIVE
 
-        log(exited, code)
+        log(:exited? => exited, :code => code)
 
         if exited
           @exit_code = code

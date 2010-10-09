@@ -12,7 +12,7 @@ module ChildProcess
       rescue java.lang.IllegalThreadStateException
         false
       ensure
-        log(@exit_code)
+        log(:exit_code => @exit_code)
       end
 
       def stop(timeout = nil)

@@ -32,7 +32,7 @@ module ChildProcess
         assert_started
         pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
 
-        log(pid, status)
+        log(:pid => pid, :status => status)
 
         if pid
           @exit_code = status.exitstatus || status.termsig
