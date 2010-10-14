@@ -33,8 +33,11 @@ module ChildProcess
       private
 
       def launch_process
-        @pid    = Lib.create_proc(@args.join(' '), :inherit => false,
-                                                   :detach => @detach)
+        @pid = Lib.create_proc(
+          @args.join(' '),
+          :inherit => false,
+          :detach  => @detach
+        )
         @handle = Handle.open(@pid)
 
         self
