@@ -17,6 +17,7 @@ module ChildProcess::Windows
   CTRL_C_EVENT                  = 0
   CTRL_BREAK_EVENT              = 1
 
+  DETACHED_PROCESS              = 0x00000008
 
   module Lib
     enum :wait_status, [ :wait_object_0,  0,

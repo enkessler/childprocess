@@ -3,7 +3,6 @@ require "java"
 module ChildProcess
   module JRuby
     class Process < AbstractProcess
-
       def exited?
         return true if @exit_code
 
@@ -27,6 +26,8 @@ module ChildProcess
       private
 
       def launch_process
+        backround_args! if @detach
+
         pb = java.lang.ProcessBuilder.new(@args)
 
         # not sure why this is necessary
@@ -42,6 +43,16 @@ module ChildProcess
 
         @process.getErrorStream.close
         @process.getInputStream.close
+      end
+
+      def background_args!
+        case ChildProcess.os
+        when :windows
+          args = %w[start /wait /b]
+          @args.unshift(*args) unless @args[0] == start
+        else
+          @args.push "&" unless @args.last == "&"
+        end
       end
 
     end # Process

@@ -79,6 +79,10 @@ module ChildProcessSpecHelper
     raise last_error unless ok
   end
 
+  def ruby(code)
+    ruby_process(tmp_script(code))
+  end
+
 end # ChildProcessSpecHelper
 
 

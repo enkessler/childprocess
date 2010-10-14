@@ -2,6 +2,26 @@ module ChildProcess
   module Windows
     module Lib
 
+      def self.create_proc(cmd, opts = {})
+        cmd_ptr = FFI::MemoryPointer.from_string cmd
+
+        flags   = 0
+        inherit = !!opts[:inherit]
+
+        flags  |= DETACHED_PROCESS if opts[:detach]
+
+        si = StartupInfo.new
+        pi = ProcessInfo.new
+
+        ok = create_process(nil, cmd_ptr, nil, nil, inherit, flags, nil, nil, si, pi)
+        ok or raise Error, last_error_message
+
+        close_handle pi[:hProcess]
+        close_handle pi[:hThread]
+
+        pi[:dwProcessId]
+      end
+
       def self.last_error_message
         errnum = get_last_error
         buf = FFI::MemoryPointer.new :char, 512
@@ -12,21 +32,6 @@ module ChildProcess
         )
 
         buf.read_string(size).strip
-      end
-
-      def self.create_proc(cmd, opts = {})
-        cmd_ptr = FFI::MemoryPointer.from_string cmd
-
-        si = StartupInfo.new
-        pi = ProcessInfo.new
-
-        ok = create_process(nil, cmd_ptr, nil, nil, !!opts[:inherit], 0, nil, nil, si, pi)
-        ok or raise Error, last_error_message
-
-        close_handle pi[:hProcess]
-        close_handle pi[:hThread]
-
-        pi[:dwProcessId]
       end
 
       #

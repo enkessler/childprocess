@@ -62,5 +62,9 @@ describe ChildProcess do
     end
   end
 
+  it "lets a detached child live on" do
+    # hmm. how do we spec this?
+  end
+
   it_should_behave_like "unix process" if ChildProcess.platform == :unix
 end

@@ -2,6 +2,19 @@ module ChildProcess
   class AbstractProcess
     attr_reader :exit_code
 
+    #
+    # Set this to true if you do not care about when or if the process quits.
+    #
+    attr_accessor :detach
+
+
+    #
+    # Create a new process with the given args.
+    #
+    # @api private
+    # @see ChildProcess.build
+    #
+
     def initialize(args)
       @args      = args
       @started   = false
@@ -48,7 +61,7 @@ module ChildProcess
     def alive?
       started? && !exited?
     end
-    
+
     def crashed?
       exited? && @exit_code != 0
     end
