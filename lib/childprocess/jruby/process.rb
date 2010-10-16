@@ -26,7 +26,7 @@ module ChildProcess
       private
 
       def launch_process
-        backround_args! if @detach
+        # background_args! if @detach
 
         pb = java.lang.ProcessBuilder.new(@args)
 
