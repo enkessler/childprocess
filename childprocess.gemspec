@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
@@ -45,11 +45,13 @@ Gem::Specification.new do |s|
      "lib/childprocess/windows/io.rb",
      "lib/childprocess/windows/process.rb",
      "lib/childprocess/windows/structs.rb",
+     "spec/abstract_io_spec.rb",
      "spec/childprocess_spec.rb",
      "spec/jruby_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/unix_spec.rb"
+     "spec/unix_spec.rb",
+     "spec/windows_spec.rb"
   ]
   s.homepage = %q{http://github.com/jarib/childprocess}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -61,7 +63,8 @@ Gem::Specification.new do |s|
      "spec/childprocess_spec.rb",
      "spec/jruby_spec.rb",
      "spec/spec_helper.rb",
-     "spec/unix_spec.rb"
+     "spec/unix_spec.rb",
+     "spec/windows_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
