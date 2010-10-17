@@ -47,7 +47,8 @@ module ChildProcess
           opts[:stderr] = @io.stderr
         end
 
-        command = @args.map { |e| e.inspect }.join(' ')
+       # TODO: escape/quote arguments properly
+       command = @args.join ' '
 
         @pid = Lib.create_proc(command, opts)
         @handle = Handle.open(@pid)
