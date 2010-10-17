@@ -47,7 +47,7 @@ module ChildProcess
           opts[:stderr] = @io.stderr
         end
 
-        @pid = Lib.create_proc(@args.join(' '),)
+        @pid = Lib.create_proc(@args.join(' '), opts)
         @handle = Handle.open(@pid)
 
         self

@@ -8,10 +8,8 @@ module ChildProcess
           raise ArgumentError, "expected #{io.inspect} to respond to :to_io"
         end
 
-        debugger
-
         result = io.to_io
-        unless result && result.kind_of?(IO)
+        unless result && result.kind_of?(::IO)
           raise TypeError, "expected IO, got #{result.inspect}:#{result.class}"
         end
       end

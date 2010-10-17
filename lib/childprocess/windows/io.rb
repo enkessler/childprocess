@@ -4,17 +4,22 @@ module ChildProcess
       private
 
       def check_type(io)
-        unless io.respond_to?(:fileno)
-          raise ArgumentError, "expected #{io.inspect} to respond to :fileno"
-        end
+        return if has_fileno?(io)
+        return if has_to_io?(io)
 
-        unless io.fileno
-          raise ArgumentError, "#{io.inspect}.fileno cannot be nil"
-        end
+        raise ArgumentError, "#{io.inspect}:#{io.class} must have :fileno or :to_io"
+      end
+
+      def has_fileno?(io)
+        io.respond_to?(:fileno) && io.fileno
+      end
+
+      def has_to_io?
+        io.respond_to?(:to_io) && io.to_io.kind_of?(::IO)
       end
 
     end # IO
-  end # Unix
+  end # Windows
 end # ChildProcess
 
 
