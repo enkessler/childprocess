@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
@@ -25,25 +25,31 @@ Gem::Specification.new do |s|
      "VERSION",
      "childprocess.gemspec",
      "lib/childprocess.rb",
+     "lib/childprocess/abstract_io.rb",
      "lib/childprocess/abstract_process.rb",
      "lib/childprocess/errors.rb",
      "lib/childprocess/ironruby.rb",
      "lib/childprocess/ironruby/process.rb",
      "lib/childprocess/jruby.rb",
+     "lib/childprocess/jruby/io.rb",
      "lib/childprocess/jruby/process.rb",
+     "lib/childprocess/jruby/redirector.rb",
      "lib/childprocess/unix.rb",
+     "lib/childprocess/unix/io.rb",
      "lib/childprocess/unix/process.rb",
      "lib/childprocess/windows.rb",
      "lib/childprocess/windows/api.rb",
      "lib/childprocess/windows/constants.rb",
      "lib/childprocess/windows/functions.rb",
      "lib/childprocess/windows/handle.rb",
+     "lib/childprocess/windows/io.rb",
      "lib/childprocess/windows/process.rb",
      "lib/childprocess/windows/structs.rb",
      "spec/childprocess_spec.rb",
+     "spec/jruby_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/unix_process_spec.rb"
+     "spec/unix_spec.rb"
   ]
   s.homepage = %q{http://github.com/jarib/childprocess}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -52,8 +58,9 @@ Gem::Specification.new do |s|
   s.summary = %q{Cross-platform ruby library for managing child processes.}
   s.test_files = [
     "spec/childprocess_spec.rb",
+     "spec/jruby_spec.rb",
      "spec/spec_helper.rb",
-     "spec/unix_process_spec.rb"
+     "spec/unix_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
