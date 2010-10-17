@@ -2,6 +2,11 @@ module ChildProcess
   class AbstractIO
     attr_reader :stderr, :stdout
 
+    def inherit!
+      @stdout = STDOUT
+      @stderr = STDERR
+    end
+
     def stderr=(io)
       check_type io
       @stderr = io
