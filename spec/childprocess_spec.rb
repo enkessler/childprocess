@@ -63,8 +63,37 @@ describe ChildProcess do
   end
 
   it "lets a detached child live on" do
-    # hmm. how do we spec this?
+    pending "how do we spec this?"
   end
 
-  it_should_behave_like "unix process" if ChildProcess.platform == :unix
+  it "can redirect stdout and stderr" do
+    process = ruby(<<-CODE)
+      [STDOUT, STDERR].each_with_index do |io, idx|
+        io.sync = true
+        io.puts idx
+      end
+      sleep 0.2
+    CODE
+
+    out = Tempfile.new("stdout-spec")
+    err = Tempfile.new("stderr-spec")
+
+    begin
+      process.io.stdout = out
+      process.io.stderr = err
+
+      process.start
+      process.poll_for_exit(EXIT_TIMEOUT)
+
+      out.rewind
+      err.rewind
+
+      out.read.should == "0\n"
+      err.read.should == "1\n"
+    ensure
+      out.close
+      err.close
+    end
+  end
+
 end

@@ -2,6 +2,10 @@ module ChildProcess
   module Windows
     class Process < AbstractProcess
 
+      def io
+        @io ||= Windows::IO.new
+      end
+
       def stop(timeout = 3)
         assert_started
 
@@ -33,11 +37,17 @@ module ChildProcess
       private
 
       def launch_process
-        @pid = Lib.create_proc(
-          @args.join(' '),
+        opts = {
           :inherit => false,
-          :detach  => @detach
-        )
+          :detach  => @detach,
+        }
+
+        if @io
+          opts[:stdout] = @io.stdout
+          opts[:stderr] = @io.stderr
+        end
+
+        @pid = Lib.create_proc(@args.join(' '),)
         @handle = Handle.open(@pid)
 
         self

@@ -85,6 +85,7 @@ module ChildProcessSpecHelper
 
 end # ChildProcessSpecHelper
 
+Thread.abort_on_exception = true
 
 Spec::Runner.configure do |config|
   config.include(ChildProcessSpecHelper)
@@ -92,5 +93,3 @@ Spec::Runner.configure do |config|
     @process && @process.alive? && @process.stop
   }
 end
-
-require "unix_process_spec"

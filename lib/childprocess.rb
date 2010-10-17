@@ -1,5 +1,6 @@
-require 'childprocess/abstract_process'
 require 'childprocess/errors'
+require 'childprocess/abstract_process'
+require 'childprocess/abstract_io'
 
 module ChildProcess
   autoload :Unix,     'childprocess/unix'
@@ -33,6 +34,14 @@ module ChildProcess
       else
         os
       end
+    end
+
+    def unix?
+      !jruby? && [:macosx, :linux, :unix].include?(os)
+    end
+
+    def jruby?
+      platform == :jruby
     end
 
     def os

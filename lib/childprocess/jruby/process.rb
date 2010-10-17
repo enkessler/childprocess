@@ -3,6 +3,10 @@ require "java"
 module ChildProcess
   module JRuby
     class Process < AbstractProcess
+      def io
+        @io ||= JRuby::IO.new
+      end
+
       def exited?
         return true if @exit_code
 
@@ -35,14 +39,17 @@ module ChildProcess
         ENV.each { |k,v| env.put(k, v) }
 
         @process = pb.start
+        setup_io
+      end
 
-        # Firefox 3.6 on Snow Leopard has a lot output on stderr, which makes
-        # the launch act funny if we don't do something to the streams
-        # Closing the streams solves the problem for now, but on other platforms
-        # we might need to actually read them.
-
-        @process.getErrorStream.close
-        @process.getInputStream.close
+      def setup_io
+        if @io
+          redirect @process.getErrorStream, @io.stderr
+          redirect @process.getInputStream, @io.stdout
+        else
+          @process.getErrorStream.close
+          @process.getInputStream.close
+        end
       end
 
       def background_args!
@@ -53,6 +60,16 @@ module ChildProcess
         else
           @args.push "&" unless @args.last == "&"
         end
+      end
+
+      def redirect(input, output)
+        if output.nil?
+          input.close
+          return
+        end
+
+        output = output.to_outputstream
+        Thread.new { Redirector.new(input, output).run }
       end
 
     end # Process

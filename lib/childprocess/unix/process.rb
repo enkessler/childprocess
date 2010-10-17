@@ -2,6 +2,10 @@ module ChildProcess
   module Unix
     class Process < AbstractProcess
 
+      def io
+        @io ||= Unix::IO.new
+      end
+
       def stop(timeout = 3)
         assert_started
         send_term
@@ -63,10 +67,14 @@ module ChildProcess
       end
 
       def launch_process
+        if @io
+          stdout = @io.stdout
+          stderr = @io.stderr
+        end
+
         @pid = fork {
-          unless $DEBUG
-            [STDOUT, STDERR].each { |io| io.reopen("/dev/null") }
-          end
+          STDOUT.reopen(stdout || "/dev/null")
+          STDERR.reopen(stderr || "/dev/null")
 
           exec(*@args)
         }

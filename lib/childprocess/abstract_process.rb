@@ -22,6 +22,14 @@ module ChildProcess
     end
 
     #
+    # Returns a ChildProcess::AbstractIO subclass to configure the child's IO streams.
+    #
+
+    def io
+      raise SubclassResponsibility, "io"
+    end
+
+    #
     # Launch the child process
     #
     # @return [AbstractProcess] self
@@ -57,14 +65,27 @@ module ChildProcess
     #
     # Is this process running?
     #
+    # @return [Boolean]
+    #
 
     def alive?
       started? && !exited?
     end
 
+    #
+    # Returns true if the process has exited and the exit code was not 0.
+    #
+    # @return [Boolean]
+    #
+
     def crashed?
       exited? && @exit_code != 0
     end
+
+    #
+    # Wait for the process to exit, raising a ChildProcess::TimeoutError if
+    # the timeout expires.
+    #
 
     def poll_for_exit(timeout)
       log "polling #{timeout} seconds for exit"
