@@ -14,7 +14,7 @@ module ChildProcess
         io.respond_to?(:fileno) && io.fileno
       end
 
-      def has_to_io?
+      def has_to_io?(io)
         io.respond_to?(:to_io) && io.to_io.kind_of?(::IO)
       end
 

@@ -38,7 +38,7 @@ if ChildProcess.unix?
       lambda { io.stdout = nil }.should raise_error(ArgumentError, /to respond to :to_io/)
     end
 
-    it "raises an ArgumentError if the IO's fileno is nil" do
+    it "raises a TypeError if #to_io does not return an IO" do
       fake_io = Object.new
       def fake_io.to_io() StringIO.new end
 

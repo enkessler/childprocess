@@ -44,6 +44,10 @@ module ChildProcess
       platform == :jruby
     end
 
+    def windows?
+      !jruby? && os == :windows
+    end
+
     def os
       @os ||= (
         require "rbconfig"
