@@ -4,7 +4,7 @@ module ChildProcess
       private
 
       def check_type(io)
-        unless io.respond_to?(:to_io)
+        unless io.respond_to? :to_io
           raise ArgumentError, "expected #{io.inspect} to respond to :to_io"
         end
 

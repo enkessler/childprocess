@@ -35,7 +35,7 @@ if ChildProcess.unix?
     let(:io) { ChildProcess::Unix::IO.new }
 
     it "raises an ArgumentError if given IO does not respond to :to_io" do
-      lambda { io.stdout = '' }.should raise_error(ArgumentError, /to respond to :to_io/)
+      lambda { io.stdout = nil }.should raise_error(ArgumentError, /to respond to :to_io/)
     end
 
     it "raises an ArgumentError if the IO's fileno is nil" do

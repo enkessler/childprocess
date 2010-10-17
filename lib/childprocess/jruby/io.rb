@@ -3,9 +3,9 @@ module ChildProcess
     class IO < AbstractIO
       private
 
-      def check_type(io)
-        unless io.respond_to?(:to_outputstream)
-          raise ArgumentError, "expected #{io.inspect} to respond to :to_outputstream"
+      def check_type(output)
+        unless output.respond_to?(:to_outputstream) && output.respond_to?(:write)
+          raise ArgumentError, "expected #{output.inspect} to respond to :to_outputstream"
         end
       end
 

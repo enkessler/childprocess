@@ -13,6 +13,15 @@ module ChildProcess
         si = StartupInfo.new
         pi = ProcessInfo.new
 
+        if opts[:stdout] || opts[:stderr]
+          si[:dwFlags] ||= 0
+          si[:dwFlags] |= STARTF_USESTDHANDLES
+          inherit = true
+
+          si[:hStdOutput] = get_os_file_handle(opts[:stdout].fileno) if opts[:stdout]
+          si[:hStdError]  = get_os_file_handle(opts[:stderr].fileno) if opts[:stderr]
+        end
+
         ok = create_process(nil, cmd_ptr, nil, nil, inherit, flags, nil, nil, si, pi)
         ok or raise Error, last_error_message
 
@@ -32,6 +41,33 @@ module ChildProcess
         )
 
         buf.read_string(size).strip
+      end
+
+      def self.get_os_file_handle(fd_or_io)
+        case fd_or_io
+        when IO
+          handle = _get_osfhandle(fd.fileno)
+        when Fixnum
+          handle = _get_osfhandle(fd_or_io)
+        else
+          if fd_or_io.respond_to?(:to_io)
+            io = fd_or_io.to_io
+
+            unless io.kind_of?(IO)
+              raise TypeError, "expected #to_io to return an instance of IO"
+            end
+
+            handle = _get_osfhandle(io.fileno)
+          else
+            raise TypeError, "invalid type: #{fd_or_io.inspect}"
+          end
+        end
+
+        if handle == INVALID_HANDLE_VALUE
+          raise Error, Lib.last_error_message
+        end
+
+        handle
       end
 
       #
@@ -138,6 +174,14 @@ module ChildProcess
       #
 
       attach_function :terminate_process, :TerminateProcess, [:pointer, :uint], :bool
+
+      #
+      # long _get_osfhandle(
+      #    int fd
+      # );
+      #
+
+      attach_function :_get_osfhandle, :_get_osfhandle, [:int], :long
 
     end # Lib
   end # Windows

@@ -32,6 +32,7 @@ module ChildProcess::Windows
            :dwXCountChars,    :ulong,
            :dwYCountChars,    :ulong,
            :dwFillAttribute,  :ulong,
+           :dwFlags,          :ulong,
            :wShowWindow,      :ushort,
            :cbReserved2,      :ushort,
            :lpReserved2,      :pointer,

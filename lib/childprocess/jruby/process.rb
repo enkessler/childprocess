@@ -12,6 +12,7 @@ module ChildProcess
 
         assert_started
         @exit_code = @process.exitValue
+        true
       rescue java.lang.IllegalThreadStateException
         false
       ensure
@@ -30,11 +31,8 @@ module ChildProcess
       private
 
       def launch_process
-        # background_args! if @detach
-
         pb = java.lang.ProcessBuilder.new(@args)
 
-        # not sure why this is necessary
         env = pb.environment
         ENV.each { |k,v| env.put(k, v) }
 
@@ -49,16 +47,6 @@ module ChildProcess
         else
           @process.getErrorStream.close
           @process.getInputStream.close
-        end
-      end
-
-      def background_args!
-        case ChildProcess.os
-        when :windows
-          args = %w[start /wait /b]
-          @args.unshift(*args) unless @args[0] == start
-        else
-          @args.push "&" unless @args.last == "&"
         end
       end
 

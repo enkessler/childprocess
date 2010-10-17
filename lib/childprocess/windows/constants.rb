@@ -19,6 +19,10 @@ module ChildProcess::Windows
 
   DETACHED_PROCESS              = 0x00000008
 
+  STARTF_USESTDHANDLES          = 0x00000100
+  INVALID_HANDLE_VALUE          = 0xFFFFFFFF
+
+
   module Lib
     enum :wait_status, [ :wait_object_0,  0,
                          :wait_timeout,   0x102,
