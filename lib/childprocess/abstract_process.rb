@@ -19,6 +19,7 @@ module ChildProcess
       @args      = args
       @started   = false
       @exit_code = nil
+      @detach    = false
     end
 
     #
@@ -110,6 +111,10 @@ module ChildProcess
 
     def started?
       @started
+    end
+
+    def detach?
+      @detach
     end
 
     def log(*args)

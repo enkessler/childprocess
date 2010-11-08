@@ -39,7 +39,7 @@ module ChildProcess
       def launch_process
         opts = {
           :inherit => false,
-          :detach  => @detach,
+          :detach  => detach?,
         }
 
         if @io

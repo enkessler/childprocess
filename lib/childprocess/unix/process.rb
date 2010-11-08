@@ -79,7 +79,7 @@ module ChildProcess
           exec(*@args)
         }
 
-        ::Process.detach(@pid) if @detach
+        ::Process.detach(@pid) if detach?
       end
 
     end # Process
