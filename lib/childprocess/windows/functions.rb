@@ -8,7 +8,7 @@ module ChildProcess
         flags   = 0
         inherit = !!opts[:inherit]
 
-        flags  |= DETACHED_PROCESS if opts[:detach]
+        flags |= DETACHED_PROCESS if opts[:detach]
 
         si = StartupInfo.new
         pi = ProcessInfo.new
@@ -182,6 +182,14 @@ module ChildProcess
       #
 
       attach_function :_get_osfhandle, :_get_osfhandle, [:int], :long
+
+      # BOOL WINAPI SetHandleInformation(
+      #   __in  HANDLE hObject,
+      #   __in  DWORD dwMask,
+      #   __in  DWORD dwFlags
+      # );
+
+      attach_function :set_handle_information, :SetHandleInformation, [:long, :ulong, :ulong], :bool
 
     end # Lib
   end # Windows

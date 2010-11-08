@@ -28,6 +28,17 @@ module ChildProcess
         [pid, code] if code
       end
 
+      def dont_inherit(file)
+        unless file.respond_to?(:fileno)
+          raise ArgumentError, "expected #{file.inspect} to respond to :fileno"
+        end
+
+        handle = Lib.get_os_file_handle(file.fileno)
+
+        ok = Lib.set_handle_information(handle, HANDLE_FLAG_INHERIT, 0)
+        ok or raise Error, Lib.last_error_message
+      end
+
       private
 
       def no_hang?(flags)

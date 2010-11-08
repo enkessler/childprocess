@@ -21,7 +21,7 @@ module ChildProcess::Windows
 
   STARTF_USESTDHANDLES          = 0x00000100
   INVALID_HANDLE_VALUE          = 0xFFFFFFFF
-
+  HANDLE_FLAG_INHERIT           = 0x00000001
 
   module Lib
     enum :wait_status, [ :wait_object_0,  0,

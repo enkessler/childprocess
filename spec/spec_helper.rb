@@ -1,9 +1,11 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
 require 'childprocess'
 require 'spec'
 require 'spec/autorun'
 require 'tempfile'
+require "socket"
 
 module ChildProcessSpecHelper
   RUBY = defined?(Gem) ? Gem.ruby : 'ruby'

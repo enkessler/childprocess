@@ -96,4 +96,17 @@ describe ChildProcess do
     end
   end
 
+  it "can set close-on-exec when IO is inherited" do
+    server = TCPServer.new("localhost", 4433)
+    ChildProcess.close_on_exec server
+
+    process = sleeping_ruby
+    process.io.inherit!
+
+    process.start
+    server.close
+
+    lambda { TCPServer.new("localhost", 4433).close }.should_not raise_error
+  end
+
 end

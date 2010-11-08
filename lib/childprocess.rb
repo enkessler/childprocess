@@ -1,6 +1,7 @@
 require 'childprocess/errors'
 require 'childprocess/abstract_process'
 require 'childprocess/abstract_io'
+require "fcntl"
 
 module ChildProcess
   autoload :Unix,     'childprocess/unix'
@@ -67,6 +68,21 @@ module ChildProcess
         end
       )
     end
+    
+    #
+    # By default, a child process will inherit open files and sockets from the parent process.
+    # This helper provides a cross-platform way of making sure that doesn't happen for the given file.
+    # 
 
-  end
-end
+    def close_on_exec(file)
+      if windows?
+        Windows.dont_inherit file
+      elsif file.respond_to?(:fcntl) && defined?(Fcntl::FD_CLOEXEC)
+        file.fcntl Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
+      else
+        raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform}"
+      end
+    end
+
+  end # class << self
+end # ChildProcess
