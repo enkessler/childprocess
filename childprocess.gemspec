@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.1.3"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
-  s.date = %q{2010-10-17}
+  s.date = %q{2010-11-08}
   s.description = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
   s.email = %q{jari.bakken@gmail.com}
   s.extra_rdoc_files = [
