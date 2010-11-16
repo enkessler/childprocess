@@ -2,10 +2,10 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'childprocess'
-require 'spec'
-require 'spec/autorun'
+require 'rspec'
 require 'tempfile'
-require "socket"
+require 'socket'
+require 'stringio'
 
 module ChildProcessSpecHelper
   RUBY = defined?(Gem) ? Gem.ruby : 'ruby'
@@ -74,7 +74,7 @@ module ChildProcessSpecHelper
     until ok || Time.now >= end_time
       begin
         ok = yield
-      rescue Spec::Expectations::ExpectationNotMetError => last_error
+      rescue RSpec::Expectations::ExpectationNotMetError => last_error
       end
     end
 
@@ -89,7 +89,7 @@ end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include(ChildProcessSpecHelper)
   config.after(:each) {
     @process && @process.alive? && @process.stop
