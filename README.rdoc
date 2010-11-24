@@ -8,7 +8,15 @@ a standalone library.
 
 == Usage
 
-   process = ChildProcess.build("ruby", "-e", "sleep").start
+   process = ChildProcess.build("ruby", "-e", "sleep")
+
+   # inherit stdout/stderr from parent
+   process.io.inherit!
+
+   # or pass an IO
+   process.io.stdout = Tempfile.new("child-output")
+
+   process.start
 
    process.started?  #=> true
    process.alive?    #=> true
