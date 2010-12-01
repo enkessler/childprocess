@@ -104,8 +104,9 @@ describe ChildProcess do
     process.io.inherit!
 
     process.start
-    server.close
+    sleep 0.5 # give the forked process a chance to exec() (which closes the fd)
 
+    server.close
     lambda { TCPServer.new("localhost", 4433).close }.should_not raise_error
   end
 
