@@ -68,15 +68,17 @@ module ChildProcess
         end
       )
     end
-    
+
     #
-    # By default, a child process will inherit open files and sockets from the parent process.
-    # This helper provides a cross-platform way of making sure that doesn't happen for the given file.
-    # 
+    # By default, a child process will inherit open file descriptors from the parent process.
+    # This helper provides a cross-platform way of making sure that doesn't happen for the given file/io.
+    #
 
     def close_on_exec(file)
       if windows?
         Windows.dont_inherit file
+      elsif file.respond_to?(:close_on_exec=)
+        file.close_on_exec = true
       elsif file.respond_to?(:fcntl) && defined?(Fcntl::FD_CLOEXEC)
         file.fcntl Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
       else
