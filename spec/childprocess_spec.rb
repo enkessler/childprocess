@@ -66,12 +66,14 @@ describe ChildProcess do
     pending "how do we spec this?"
   end
 
-  it "can redirect stdout and stderr" do
+  it "can redirect stdout, stderr and stdin" do
     process = ruby(<<-CODE)
       [STDOUT, STDERR].each_with_index do |io, idx|
         io.sync = true
         io.puts idx
       end
+
+      STDOUT.puts(STDIN.gets.chomp)
       sleep 0.2
     CODE
 
@@ -83,12 +85,13 @@ describe ChildProcess do
       process.io.stderr = err
 
       process.start
+      process.io.stdin.puts "stdin"
       process.poll_for_exit(EXIT_TIMEOUT)
 
       out.rewind
       err.rewind
 
-      out.read.should == "0\n"
+      out.read.should == "0\nstdin\n"
       err.read.should == "1\n"
     ensure
       out.close
