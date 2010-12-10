@@ -19,8 +19,10 @@ module ChildProcess
         IronRuby::Process.new(args)
       when :windows
         Windows::Process.new(args)
-      else
+      when :macosx, :linux, :unix, :cygwin
         Unix::Process.new(args)
+      else
+        raise Error, "unsupported platform #{platform.inspect}"
       end
     end
     alias_method :build, :new
@@ -32,6 +34,8 @@ module ChildProcess
         :ironruby
       elsif RUBY_PLATFORM =~ /mswin|msys|mingw32/
         :windows
+      elsif RUBY_PLATFORM =~ /cygwin/
+        :cygwin
       else
         os
       end
@@ -55,7 +59,7 @@ module ChildProcess
         host_os = RbConfig::CONFIG['host_os']
 
         case host_os
-        when /mswin|msys|mingw32/
+        when /mswin|msys|mingw32|cygwin/
           :windows
         when /darwin|mac os/
           :macosx
@@ -75,14 +79,14 @@ module ChildProcess
     #
 
     def close_on_exec(file)
-      if windows?
-        Windows.dont_inherit file
-      elsif file.respond_to?(:close_on_exec=)
+      if file.respond_to?(:close_on_exec=)
         file.close_on_exec = true
       elsif file.respond_to?(:fcntl) && defined?(Fcntl::FD_CLOEXEC)
         file.fcntl Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
+      elsif windows?
+        Windows.dont_inherit file
       else
-        raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform}"
+        raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform.inspect}"
       end
     end
 
