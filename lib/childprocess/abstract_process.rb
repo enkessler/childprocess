@@ -36,8 +36,8 @@ module ChildProcess
     # @return [AbstractProcess] self
     #
 
-    def start
-      launch_process
+    def start(&block)
+      launch_process(&block)
       @started = true
 
       self

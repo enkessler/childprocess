@@ -84,8 +84,10 @@ describe ChildProcess do
       process.io.stdout = out
       process.io.stderr = err
 
-      process.start
-      process.io.stdin.puts "stdin"
+      process.start do |writer|
+        writer.puts "stdin"
+      end
+
       process.poll_for_exit(EXIT_TIMEOUT)
 
       out.rewind
