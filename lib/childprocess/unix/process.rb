@@ -66,18 +66,25 @@ module ChildProcess
         ::Process.kill sig, @pid
       end
 
-      def launch_process
+      def launch_process(&block)
         if @io
           stdout = @io.stdout
           stderr = @io.stderr
         end
 
+        reader, writer = ::IO.pipe
+
         @pid = fork {
           STDOUT.reopen(stdout || "/dev/null")
           STDERR.reopen(stderr || "/dev/null")
+          STDIN.reopen(reader)
+          writer.close
 
           exec(*@args)
         }
+
+        reader.close
+        block.call(writer) if block_given?
 
         ::Process.detach(@pid) if detach?
       end
