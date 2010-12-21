@@ -40,6 +40,7 @@ module ChildProcess
         opts = {
           :inherit => false,
           :detach  => detach?,
+          :duplex  => duplex?
         }
 
         if @io
@@ -47,11 +48,15 @@ module ChildProcess
           opts[:stderr] = @io.stderr
         end
 
-       # TODO: escape/quote arguments properly
-       command = @args.join ' '
+        # TODO: escape/quote arguments properly
+        command = @args.join ' '
 
         @pid = Lib.create_proc(command, opts)
         @handle = Handle.open(@pid)
+
+        if duplex?
+          io._stdin = opts[:stdin]
+        end
 
         self
       end

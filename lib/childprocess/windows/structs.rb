@@ -57,4 +57,25 @@ module ChildProcess::Windows
            :dwThreadId,  :ulong
   end
 
+  #
+  # typedef struct _SECURITY_ATTRIBUTES {
+  #   DWORD  nLength;
+  #   LPVOID lpSecurityDescriptor;
+  #   BOOL   bInheritHandle;
+  # } SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
+  #
+
+  class SecurityAttributes < FFI::Struct
+    layout :nLength,              :ulong,
+           :lpSecurityDescriptor, :pointer, # void ptr
+           :bInheritHandle,       :int
+
+    def initialize(opts = {})
+      super()
+
+      self[:nLength]              = self.class.size
+      self[:lpSecurityDescriptor] = nil
+      self[:bInheritHandle]       = opts[:inherit] ? 1 : 0
+    end
+  end
 end

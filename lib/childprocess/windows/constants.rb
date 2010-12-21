@@ -23,6 +23,8 @@ module ChildProcess::Windows
   INVALID_HANDLE_VALUE          = 0xFFFFFFFF
   HANDLE_FLAG_INHERIT           = 0x00000001
 
+  DUPLICATE_SAME_ACCESS         = 0x00000002
+
   module Lib
     enum :wait_status, [ :wait_object_0,  0,
                          :wait_timeout,   0x102,

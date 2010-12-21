@@ -33,7 +33,7 @@ module ChildProcess
           raise ArgumentError, "expected #{file.inspect} to respond to :fileno"
         end
 
-        handle = Lib.get_os_file_handle(file.fileno)
+        handle = Lib.handle_for(file.fileno)
 
         ok = Lib.set_handle_information(handle, HANDLE_FLAG_INHERIT, 0)
         ok or raise Error, Lib.last_error_message

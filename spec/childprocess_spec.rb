@@ -107,6 +107,7 @@ describe ChildProcess do
 
     begin
       process.io.stdout = out
+      process.io.stderr = out
       process.duplex = true
 
       process.start

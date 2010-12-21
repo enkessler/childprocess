@@ -18,8 +18,22 @@ module ChildProcess
           si[:dwFlags] |= STARTF_USESTDHANDLES
           inherit = true
 
-          si[:hStdOutput] = get_os_file_handle(opts[:stdout].fileno) if opts[:stdout]
-          si[:hStdError]  = get_os_file_handle(opts[:stderr].fileno) if opts[:stderr]
+          si[:hStdOutput] = handle_for(opts[:stdout].fileno) if opts[:stdout]
+          si[:hStdError]  = handle_for(opts[:stderr].fileno) if opts[:stderr]
+        end
+
+        if opts[:duplex]
+          read_pipe_ptr  = FFI::MemoryPointer.new(:pointer)
+          write_pipe_ptr = FFI::MemoryPointer.new(:pointer)
+          sa         = SecurityAttributes.new(:inherit => true)
+
+          ok = create_pipe(read_pipe_ptr, write_pipe_ptr, sa, 0)
+          ok or raise Error, last_error_message
+
+          read_pipe = read_pipe_ptr.read_pointer
+          write_pipe = write_pipe_ptr.read_pointer
+
+          si[:hStdInput] = read_pipe
         end
 
         ok = create_process(nil, cmd_ptr, nil, nil, inherit, flags, nil, nil, si, pi)
@@ -27,6 +41,12 @@ module ChildProcess
 
         close_handle pi[:hProcess]
         close_handle pi[:hThread]
+
+        if opts[:duplex]
+          opts[:stdin] = io_for(duplicate_handle(write_pipe), File::WRONLY)
+          close_handle read_pipe
+          close_handle write_pipe
+        end
 
         pi[:dwProcessId]
       end
@@ -43,12 +63,12 @@ module ChildProcess
         buf.read_string(size).strip
       end
 
-      def self.get_os_file_handle(fd_or_io)
+      def self.handle_for(fd_or_io)
         case fd_or_io
         when IO
-          handle = _get_osfhandle(fd.fileno)
+          handle = get_osfhandle(fd.fileno)
         when Fixnum
-          handle = _get_osfhandle(fd_or_io)
+          handle = get_osfhandle(fd_or_io)
         else
           if fd_or_io.respond_to?(:to_io)
             io = fd_or_io.to_io
@@ -57,17 +77,40 @@ module ChildProcess
               raise TypeError, "expected #to_io to return an instance of IO"
             end
 
-            handle = _get_osfhandle(io.fileno)
+            handle = get_osfhandle(io.fileno)
           else
             raise TypeError, "invalid type: #{fd_or_io.inspect}"
           end
         end
 
         if handle == INVALID_HANDLE_VALUE
-          raise Error, Lib.last_error_message
+          raise Error, last_error_message
         end
 
         handle
+      end
+
+      def self.io_for(handle, flags = File::RDONLY)
+        fd = open_osfhandle(handle, flags)
+        if fd == -1
+          raise Error, last_error_message
+        end
+
+        ::IO.for_fd fd, flags
+      end
+
+      def self.duplicate_handle(handle)
+        dup  = FFI::MemoryPointer.new(:pointer)
+        proc = current_process
+
+        ok = _duplicate_handle(
+          proc, handle, proc, dup, 0, false, DUPLICATE_SAME_ACCESS)
+
+        ok or raise Error, last_error_message
+
+        dup.read_pointer
+      ensure
+        close_handle proc
       end
 
       #
@@ -181,7 +224,16 @@ module ChildProcess
       # );
       #
 
-      attach_function :_get_osfhandle, :_get_osfhandle, [:int], :long
+      attach_function :get_osfhandle, :_get_osfhandle, [:int], :long
+
+      #
+      # int _open_osfhandle (
+      #    intptr_t osfhandle,
+      #    int flags
+      # );
+      #
+
+      attach_function :open_osfhandle, :_open_osfhandle, [:pointer, :int], :int
 
       # BOOL WINAPI SetHandleInformation(
       #   __in  HANDLE hObject,
@@ -191,6 +243,42 @@ module ChildProcess
 
       attach_function :set_handle_information, :SetHandleInformation, [:long, :ulong, :ulong], :bool
 
+      # BOOL WINAPI CreatePipe(
+      #   __out     PHANDLE hReadPipe,
+      #   __out     PHANDLE hWritePipe,
+      #   __in_opt  LPSECURITY_ATTRIBUTES lpPipeAttributes,
+      #   __in      DWORD nSize
+      # );
+
+      attach_function :create_pipe, :CreatePipe, [:pointer, :pointer, :pointer, :ulong], :bool
+
+      #
+      # HANDLE WINAPI GetCurrentProcess(void);
+      #
+
+      attach_function :current_process, :GetCurrentProcess, [], :pointer
+
+      #
+      # BOOL WINAPI DuplicateHandle(
+      #   __in   HANDLE hSourceProcessHandle,
+      #   __in   HANDLE hSourceHandle,
+      #   __in   HANDLE hTargetProcessHandle,
+      #   __out  LPHANDLE lpTargetHandle,
+      #   __in   DWORD dwDesiredAccess,
+      #   __in   BOOL bInheritHandle,
+      #   __in   DWORD dwOptions
+      # );
+      #
+
+      attach_function :_duplicate_handle, :DuplicateHandle, [
+                         :pointer,
+                         :pointer,
+                         :pointer,
+                         :pointer,
+                         :ulong,
+                         :bool,
+                         :ulong
+                      ], :bool
     end # Lib
   end # Windows
 end # ChildProcess
