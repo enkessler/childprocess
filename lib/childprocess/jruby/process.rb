@@ -30,13 +30,18 @@ module ChildProcess
 
       private
 
-      def launch_process
+      def launch_process(&blk)
         pb = java.lang.ProcessBuilder.new(@args)
 
         env = pb.environment
         ENV.each { |k,v| env.put(k, v) }
 
         @process = pb.start
+
+        if block_given?
+          blk.call(@process.getOutputStream.to_io)
+        end
+
         setup_io
       end
 
