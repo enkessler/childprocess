@@ -72,19 +72,26 @@ module ChildProcess
           stderr = @io.stderr
         end
 
-        reader, writer = ::IO.pipe
+        if duplex?
+          reader, writer = ::IO.pipe
+        end
 
         @pid = fork {
           STDOUT.reopen(stdout || "/dev/null")
           STDERR.reopen(stderr || "/dev/null")
-          STDIN.reopen(reader)
-          writer.close
+
+          if duplex?
+            STDIN.reopen(reader)
+            writer.close
+          end
 
           exec(*@args)
         }
 
-        @io._stdin = writer if @io
-        reader.close
+        if duplex?
+          io._stdin = writer
+          reader.close
+        end
 
         ::Process.detach(@pid) if detach?
       end

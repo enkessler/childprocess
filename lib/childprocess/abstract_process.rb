@@ -7,6 +7,10 @@ module ChildProcess
     #
     attr_accessor :detach
 
+    #
+    # Set this to true if you want to write to the process' stdin (process.io.stdin)
+    #
+    attr_accessor :duplex
 
     #
     # Create a new process with the given args.
@@ -20,6 +24,7 @@ module ChildProcess
       @started   = false
       @exit_code = nil
       @detach    = false
+      @duplex    = false
     end
 
     #
@@ -115,6 +120,10 @@ module ChildProcess
 
     def detach?
       @detach
+    end
+
+    def duplex?
+      @duplex
     end
 
     def log(*args)

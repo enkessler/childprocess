@@ -66,14 +66,13 @@ describe ChildProcess do
     pending "how do we spec this?"
   end
 
-  it "can redirect stdout, stderr and stdin" do
+  it "can redirect stdout, stderr" do
     process = ruby(<<-CODE)
       [STDOUT, STDERR].each_with_index do |io, idx|
         io.sync = true
         io.puts idx
       end
 
-      STDOUT.puts(STDIN.gets.chomp)
       sleep 0.2
     CODE
 
@@ -85,19 +84,41 @@ describe ChildProcess do
       process.io.stderr = err
 
       process.start
-      process.io.stdin.puts "stdin"
-      process.io.stdin.close # JRuby needs this for some reason.
-
+      process.io.stdin.should be_nil
       process.poll_for_exit(EXIT_TIMEOUT)
 
       out.rewind
       err.rewind
 
-      out.read.should == "0\nstdin\n"
+      out.read.should == "0\n"
       err.read.should == "1\n"
     ensure
       out.close
       err.close
+    end
+  end
+
+  it "can write to stdin if duplex = true" do
+    process = ruby(<<-CODE)
+      puts(STDIN.gets.chomp)
+    CODE
+
+    out = Tempfile.new("duplex")
+
+    begin
+      process.io.stdout = out
+      process.duplex = true
+
+      process.start
+      process.io.stdin.puts "hello world"
+      process.io.stdin.close # JRuby seems to need this
+
+      process.poll_for_exit(EXIT_TIMEOUT)
+
+      out.rewind
+      out.read.should == "hello world\n"
+    ensure
+      out.close
     end
   end
 

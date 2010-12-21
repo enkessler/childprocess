@@ -37,17 +37,22 @@ module ChildProcess
         ENV.each { |k,v| env.put(k, v) }
 
         @process = pb.start
+
         setup_io
       end
 
       def setup_io
         if @io
-          @io.stdin = @process.getOutputStream.to_io
           redirect @process.getErrorStream, @io.stderr
           redirect @process.getInputStream, @io.stdout
         else
           @process.getErrorStream.close
           @process.getInputStream.close
+        end
+
+        if duplex?
+          io._stdin = @process.getOutputStream.to_io
+        else
           @process.getOutputStream.close
         end
       end
