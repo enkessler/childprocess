@@ -37,21 +37,18 @@ module ChildProcess
         ENV.each { |k,v| env.put(k, v) }
 
         @process = pb.start
-
-        if block_given?
-          blk.call(@process.getOutputStream.to_io)
-        end
-
         setup_io
       end
 
       def setup_io
         if @io
+          @io.stdin = @process.getOutputStream.to_io
           redirect @process.getErrorStream, @io.stderr
           redirect @process.getInputStream, @io.stdout
         else
           @process.getErrorStream.close
           @process.getInputStream.close
+          @process.getOutputStream.close
         end
       end
 

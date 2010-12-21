@@ -66,7 +66,7 @@ module ChildProcess
         ::Process.kill sig, @pid
       end
 
-      def launch_process(&block)
+      def launch_process
         if @io
           stdout = @io.stdout
           stderr = @io.stderr
@@ -83,8 +83,8 @@ module ChildProcess
           exec(*@args)
         }
 
+        @io._stdin = writer if @io
         reader.close
-        block.call(writer) if block_given?
 
         ::Process.detach(@pid) if detach?
       end

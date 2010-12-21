@@ -84,9 +84,9 @@ describe ChildProcess do
       process.io.stdout = out
       process.io.stderr = err
 
-      process.start do |writer|
-        writer.puts "stdin"
-      end
+      process.start
+      process.io.stdin.puts "stdin"
+      process.io.stdin.close # JRuby needs this for some reason.
 
       process.poll_for_exit(EXIT_TIMEOUT)
 

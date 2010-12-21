@@ -1,6 +1,6 @@
 module ChildProcess
   class AbstractIO
-    attr_reader :stderr, :stdout
+    attr_reader :stderr, :stdout, :stdin
 
     def inherit!
       @stdout = STDOUT
@@ -15,6 +15,15 @@ module ChildProcess
     def stdout=(io)
       check_type io
       @stdout = io
+    end
+
+    #
+    # @api private
+    #
+
+    def _stdin=(io)
+      check_type io
+      @stdin = io
     end
 
     private
