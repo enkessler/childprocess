@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.1.5"
+  s.version = "0.1.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
-  s.date = %q{2010-12-10}
+  s.date = %q{2010-12-22}
   s.description = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
   s.email = %q{jari.bakken@gmail.com}
   s.extra_rdoc_files = [
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".rspec",
     "LICENSE",
     "README.rdoc",
     "Rakefile",
@@ -47,7 +48,6 @@ Gem::Specification.new do |s|
     "spec/abstract_io_spec.rb",
     "spec/childprocess_spec.rb",
     "spec/jruby_spec.rb",
-    "spec/spec.opts",
     "spec/spec_helper.rb",
     "spec/unix_spec.rb",
     "spec/windows_spec.rb"
