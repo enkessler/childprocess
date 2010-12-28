@@ -1,5 +1,7 @@
 module ChildProcess
   class AbstractProcess
+    POLL_INTERVAL = 0.1
+
     attr_reader :exit_code
 
     #
@@ -111,8 +113,6 @@ module ChildProcess
     def launch_process
       raise SubclassResponsibility, "launch_process"
     end
-
-    POLL_INTERVAL = 0.1
 
     def started?
       @started

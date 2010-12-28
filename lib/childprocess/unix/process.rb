@@ -19,7 +19,7 @@ module ChildProcess
         send_kill
         wait
       rescue Errno::ECHILD, Errno::ESRCH
-        # handle rase condition where process dies between timeout
+        # handle race condition where process dies between timeout
         # and send_kill
         true
       end
