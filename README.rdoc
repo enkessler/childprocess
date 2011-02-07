@@ -18,7 +18,6 @@ a standalone library.
 
    process.start
 
-   process.started?  #=> true
    process.alive?    #=> true
    process.exited?   #=> false
 
