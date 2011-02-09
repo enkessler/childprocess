@@ -9,4 +9,11 @@ if ChildProcess.jruby?
     end
   end
 
+  describe ChildProcess::JRuby::Process do
+    it "raises an error when trying to access the child's pid" do
+      process = exit_with(0)
+      process.start
+      lambda { process.pid }.should raise_error(NoMethodError)
+    end
+  end
 end

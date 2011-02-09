@@ -28,6 +28,14 @@ module ChildProcess
         @exit_code = @process.exitValue
       end
 
+      #
+      # Not supported on JRuby - no good way to get the child's pid from Java's classes
+      # @raise [NoMethodError]
+      #
+      def pid
+        raise NoMethodError("pid is not supported by JRuby child processes")
+      end
+
       private
 
       def launch_process(&blk)
