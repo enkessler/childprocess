@@ -1,6 +1,10 @@
 module ChildProcess
   module Windows
     class Process < AbstractProcess
+      #
+      # @return [Fixnum] the pid of the process after it has started
+      #
+      attr_reader :pid
 
       def io
         @io ||= Windows::IO.new

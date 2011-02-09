@@ -4,6 +4,8 @@ if ChildProcess.windows?
   describe ChildProcess::Windows::IO do
     let(:io) { ChildProcess::Windows::IO.new }
 
+    it_behaves_like "a platform that provides the child's pid"
+
     it "raises an ArgumentError if given IO does not respond to :fileno" do
       lambda { io.stdout = nil }.should raise_error(ArgumentError, /must have :fileno or :to_io/)
     end
