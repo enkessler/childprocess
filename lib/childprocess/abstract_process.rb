@@ -37,6 +37,10 @@ module ChildProcess
       raise SubclassResponsibility, "io"
     end
 
+    def pid
+      raise SubclassResponsibility, "pid"
+    end
+
     #
     # Launch the child process
     #
