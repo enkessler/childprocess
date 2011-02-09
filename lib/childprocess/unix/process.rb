@@ -1,6 +1,7 @@
 module ChildProcess
   module Unix
     class Process < AbstractProcess
+      attr_reader :pid
 
       def io
         @io ||= Unix::IO.new

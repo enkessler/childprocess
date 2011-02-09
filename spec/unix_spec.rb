@@ -2,6 +2,8 @@ require File.expand_path('../spec_helper', __FILE__)
 
 if ChildProcess.unix?
   describe ChildProcess::Unix::Process do
+    it_behaves_like "a platform that provides the child's pid"
+
     it "handles ECHILD race condition where process dies between timeout and KILL" do
       process = sleeping_ruby
 
