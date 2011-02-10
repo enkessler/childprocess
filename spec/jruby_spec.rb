@@ -9,11 +9,21 @@ if ChildProcess.jruby?
     end
   end
 
+  def jruby_on_unix?
+    # patterns grabbed from http://lopica.sourceforge.net/os.html
+    name = java.lang.System.getProperty("os.name").downcase
+    name =~ /mac os|linux|solaris|bsd/
+  end
+
   describe ChildProcess::JRuby::Process do
-    it "raises an error when trying to access the child's pid" do
-      process = exit_with(0)
-      process.start
-      lambda { process.pid }.should raise_error(NoMethodError)
+    if jruby_on_unix?
+      it_behaves_like "a platform that provides the child's pid"
+    else
+      it "raises an error when trying to access the child's pid" do
+        process = exit_with(0)
+        process.start
+        lambda { process.pid }.should raise_error(NoMethodError)
+      end
     end
   end
 end

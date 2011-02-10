@@ -29,11 +29,23 @@ module ChildProcess
       end
 
       #
-      # Not supported on JRuby - no good way to get the child's pid from Java's classes
-      # @raise [NoMethodError]
+      # Only supported in JRuby on a Unix operating system, thanks to limitations
+      # in Java's classes
+      #
+      # @return [Fixnum] the pid of the process after it has started
+      # @raise [NoMethodError] when trying to access pid on non-Unix platform
       #
       def pid
-        raise NoMethodError("pid is not supported by JRuby child processes")
+        if @process.getClass.getName != "java.lang.UNIXProcess"
+          raise NoMethodError.new("pid is not supported by JRuby child processes")
+        end
+
+        # About the best way we can do this is with a nasty reflection-based impl
+        # Thanks to Martijn Courteaux
+        # http://stackoverflow.com/questions/2950338/how-can-i-kill-a-linux-process-in-java-with-sigkill-process-destroy-does-sigter/2951193#2951193
+        field = @process.getClass.getDeclaredField("pid")
+        field.accessible = true
+        field.get(@process)
       end
 
       private
