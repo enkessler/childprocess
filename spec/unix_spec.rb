@@ -1,4 +1,5 @@
 require File.expand_path('../spec_helper', __FILE__)
+require "pid_behavior"
 
 if ChildProcess.unix?
   describe ChildProcess::Unix::Process do

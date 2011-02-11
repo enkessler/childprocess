@@ -1,4 +1,5 @@
 require File.expand_path('../spec_helper', __FILE__)
+require "pid_behavior"
 
 if ChildProcess.jruby?
   describe ChildProcess::JRuby::IO do
