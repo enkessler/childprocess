@@ -65,13 +65,14 @@ module ChildProcessSpecHelper
   end
 
   def tmp_script(code)
-    tf = Tempfile.new("childprocess-temp")
-    tf << code
-    tf.close
+    # use an ivar to avoid GC
+    @tf = Tempfile.new("childprocess-temp")
+    @tf << code
+    @tf.close
 
     puts code if $DEBUG
 
-    tf.path
+    @tf.path
   end
 
   def within(seconds, &blk)
