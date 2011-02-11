@@ -17,7 +17,7 @@ if ChildProcess.jruby?
       it "raises an error when trying to access the child's pid" do
         process = exit_with(0)
         process.start
-        lambda { process.pid }.should raise_error(NoMethodError)
+        lambda { process.pid }.should raise_error(NotImplementedError)
       end
     end
   end

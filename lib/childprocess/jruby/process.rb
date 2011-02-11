@@ -33,11 +33,11 @@ module ChildProcess
       # in Java's classes
       #
       # @return [Fixnum] the pid of the process after it has started
-      # @raise [NoMethodError] when trying to access pid on non-Unix platform
+      # @raise [NotImplementedError] when trying to access pid on non-Unix platform
       #
       def pid
         if @process.getClass.getName != "java.lang.UNIXProcess"
-          raise NoMethodError.new("pid is not supported by JRuby child processes")
+          raise NotImplementedError.new("pid is not supported by JRuby child processes on Windows")
         end
 
         # About the best way we can do this is with a nasty reflection-based impl
