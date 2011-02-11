@@ -49,6 +49,14 @@ module ChildProcess
       platform == :jruby
     end
 
+    def jruby_on_unix?
+      return false unless jruby?
+      # patterns grabbed from http://lopica.sourceforge.net/os.html
+      require "java"
+      name = java.lang.System.getProperty("os.name").downcase
+      name =~ /mac os|linux|solaris|bsd/
+    end
+
     def windows?
       !jruby? && os == :windows
     end
