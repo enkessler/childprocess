@@ -39,14 +39,14 @@ describe ChildProcess do
 
   it "lets child process inherit the environment of the current process" do
     Tempfile.open("env-spec") do |file|
-      with_env('env-spec' => 'yes') do
+      with_env('INHERITED' => 'yes') do
         process = write_env(file.path).start
         process.poll_for_exit(EXIT_TIMEOUT)
       end
 
       file.rewind
       child_env = eval(file.read)
-      child_env['env-spec'].should == 'yes'
+      child_env['INHERITED'].should == 'yes'
     end
   end
 
