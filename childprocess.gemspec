@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{childprocess}
-  s.version = "0.1.6"
+  s.version = "0.1.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jari Bakken"]
-  s.date = %q{2010-12-22}
+  s.date = %q{2011-02-12}
   s.description = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
   s.email = %q{jari.bakken@gmail.com}
   s.extra_rdoc_files = [
@@ -48,25 +48,26 @@ Gem::Specification.new do |s|
     "spec/abstract_io_spec.rb",
     "spec/childprocess_spec.rb",
     "spec/jruby_spec.rb",
+    "spec/pid_behavior.rb",
     "spec/spec_helper.rb",
     "spec/unix_spec.rb",
     "spec/windows_spec.rb"
   ]
   s.homepage = %q{http://github.com/jarib/childprocess}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.5.0}
   s.summary = %q{Cross-platform ruby library for managing child processes.}
   s.test_files = [
     "spec/abstract_io_spec.rb",
     "spec/childprocess_spec.rb",
     "spec/jruby_spec.rb",
+    "spec/pid_behavior.rb",
     "spec/spec_helper.rb",
     "spec/unix_spec.rb",
     "spec/windows_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
