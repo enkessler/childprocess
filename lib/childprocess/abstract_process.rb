@@ -25,6 +25,7 @@ module ChildProcess
       @args      = args
       @started   = false
       @exit_code = nil
+      @io        = nil
       @detach    = false
       @duplex    = false
     end
