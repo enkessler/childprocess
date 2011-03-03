@@ -13,10 +13,9 @@ describe ChildProcess do
 
   it "knows if the process crashed" do
     process = exit_with(1).start
+    process.poll_for_exit(EXIT_TIMEOUT)
 
-    within(EXIT_TIMEOUT) {
-      process.should be_crashed
-    }
+    process.should be_crashed
   end
 
   it "knows if the process didn't crash" do
