@@ -2,25 +2,8 @@ require 'rubygems'
 require 'rake'
 require 'tmpdir'
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "childprocess"
-    gem.summary = %Q{Cross-platform ruby library for managing child processes.}
-    gem.description = %Q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
-    gem.email = "jari.bakken@gmail.com"
-    gem.homepage = "http://github.com/jarib/childprocess"
-    gem.authors = ["Jari Bakken"]
-    gem.add_development_dependency "rspec", ">= 2.0.0"
-    gem.add_development_dependency "yard", ">= 0"
-
-    gem.add_dependency "ffi", "~> 0.6.3"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
+require 'bundler'
+Bundler::GemHelper.install_tasks
 
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
@@ -37,7 +20,6 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.rcov_opts = %w[--exclude spec,ruby-debug,/Library/Ruby,.gem --include lib/childprocess]
 end
 
-task :spec => :check_dependencies
 task :default => :spec
 
 begin
@@ -60,7 +42,7 @@ task :jar => [:clean, :build] do
   gem_to_package = Dir['pkg/*.gem'].first
   gem_name = File.basename(gem_to_package, ".gem")
   p :gem_to_package => gem_to_package, :gem_name => gem_name
-  
+
   sh "gem install -i #{tmpdir} #{gem_to_package} --ignore-dependencies --no-rdoc --no-ri"
   sh "jar cf childprocess.jar -C #{tmpdir}/gems/#{gem_name}/lib ."
   sh "jar tf childprocess.jar"
