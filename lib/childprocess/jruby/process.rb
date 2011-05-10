@@ -52,7 +52,7 @@ module ChildProcess
 
       def launch_process(&blk)
         pb = java.lang.ProcessBuilder.new(@args)
-
+        pb.directory(java.io.File.new(Dir.pwd))
         env = pb.environment
         ENV.each { |k,v| env.put(k, v) }
 
