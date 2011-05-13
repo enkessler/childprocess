@@ -162,7 +162,7 @@ describe ChildProcess do
         end
       end
     ensure
-      Dir.rmdir(path)
+      Dir.rmdir(path) if File.exist?(path)
     end
   end
 end
