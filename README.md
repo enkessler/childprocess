@@ -28,7 +28,8 @@ process.stop
 
 The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
 
-== Implementation
+Implementation
+--------------
 
 How the process is launched and killed depends on the platform:
 
@@ -37,7 +38,8 @@ How the process is launched and killed depends on the platform:
 * JRuby    : java.lang.{Process,ProcessBuilder}
 * IronRuby : System.Diagnostics.Process
 
-== Note on Patches/Pull Requests
+Note on Patches/Pull Requests
+-----------------------------
 
 * Fork the project.
 * Make your feature addition or bug fix.
@@ -47,6 +49,7 @@ How the process is launched and killed depends on the platform:
   (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
-== Copyright
+Copyright
+---------
 
 Copyright (c) 2010-2011 Jari Bakken. See LICENSE for details.
