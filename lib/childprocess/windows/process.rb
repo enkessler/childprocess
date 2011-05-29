@@ -52,9 +52,7 @@ module ChildProcess
           opts[:stderr] = @io.stderr
         end
 
-        command = get_cmdline_str(@args)
-
-        @pid = Lib.create_proc(command, opts)
+        @pid = Lib.create_proc(command_string, opts)
         @handle = Handle.open(@pid)
 
         if duplex?
@@ -64,29 +62,14 @@ module ChildProcess
         self
       end
 
-      # Get a commandline string from an array
-      def get_cmdline_str(args)
-          # Build commandline string, with quotes around arguments with special
-          # characters in them (i.e., characters interpreted by shell)
-          args_str = ""
-          quote = '"'
-          args.each do |arg|
-              if not arg.kind_of?(String)
-                  raise RuntimeError, "Argument not string: '#{arg}' (#{arg.class})"
-              end
+      def command_string
+        @command_string ||= (
+          @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
+        )
+      end
 
-              if arg.nil?
-                  next
-              end
-              # Quote whitespace and '\'
-              if not /[\s\\]/.match(arg).nil?
-                  arg = "#{quote}#{arg}#{quote}"
-              end
-              args_str += "#{arg} "
-          end
-          args_str.strip!()
-
-          return args_str
+      def quote_if_necessary(str)
+        str =~ /[\s\\]/ ? %{"#{str}"} : str
       end
 
     end # Process
