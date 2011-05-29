@@ -165,4 +165,17 @@ describe ChildProcess do
       Dir.rmdir(path) if File.exist?(path)
     end
   end
+
+  it "can handle whitespace and special characters in arguments" do
+    args = ["foo bar", 'foo\bar']
+
+    Tempfile.open("argv-spec") do |file|
+      process = write_argv(file.path, *args).start
+      process.poll_for_exit(EXIT_TIMEOUT)
+
+      file.rewind
+      file.read.should == args.inspect
+    end
+  end
+
 end

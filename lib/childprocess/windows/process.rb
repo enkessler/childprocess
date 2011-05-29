@@ -52,8 +52,7 @@ module ChildProcess
           opts[:stderr] = @io.stderr
         end
 
-        # TODO: escape/quote arguments properly
-        command = @args.join ' '
+        command = get_cmdline_str(@args)
 
         @pid = Lib.create_proc(command, opts)
         @handle = Handle.open(@pid)
@@ -63,6 +62,31 @@ module ChildProcess
         end
 
         self
+      end
+
+      # Get a commandline string from an array
+      def get_cmdline_str(args)
+          # Build commandline string, with quotes around arguments with special
+          # characters in them (i.e., characters interpreted by shell)
+          args_str = ""
+          quote = '"'
+          args.each do |arg|
+              if not arg.kind_of?(String)
+                  raise RuntimeError, "Argument not string: '#{arg}' (#{arg.class})"
+              end
+
+              if arg.nil?
+                  next
+              end
+              # Quote whitespace and '\'
+              if not /[\s\\]/.match(arg).nil?
+                  arg = "#{quote}#{arg}#{quote}"
+              end
+              args_str += "#{arg} "
+          end
+          args_str.strip!()
+
+          return args_str
       end
 
     end # Process
