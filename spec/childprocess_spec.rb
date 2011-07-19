@@ -166,8 +166,8 @@ describe ChildProcess do
     end
   end
 
-  it "can handle whitespace and special characters in arguments" do
-    args = ["foo bar", 'foo\bar']
+  it "can handle whitespace, special characters and quotes in arguments" do
+    args = ["foo bar", 'foo\bar', "'i-am-quoted'"]
 
     Tempfile.open("argv-spec") do |file|
       process = write_argv(file.path, *args).start
