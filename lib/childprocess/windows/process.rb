@@ -69,7 +69,14 @@ module ChildProcess
       end
 
       def quote_if_necessary(str)
-        str =~ /[\s\\]/ ? %{"#{str}"} : str
+        quote = str.start_with?('"') ? "'" : '"'
+
+        case str
+        when /[\s\\'"]/
+          %{#{quote}#{str}#{quote}}
+        else
+          str
+        end
       end
 
     end # Process
