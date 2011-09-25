@@ -7,6 +7,8 @@ external programs running in the background on any Ruby / OS combination.
 The code originated in the selenium-webdriver gem, but should prove useful as
 a standalone library.
 
+[![Build Status](https://secure.travis-ci.org/jarib/childprocess.png)](http://travis-ci.org/jarib/childprocess)
+
 Usage
 -----
 ```ruby
