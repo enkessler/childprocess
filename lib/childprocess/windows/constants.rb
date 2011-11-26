@@ -25,6 +25,8 @@ module ChildProcess::Windows
 
   DUPLICATE_SAME_ACCESS         = 0x00000002
 
+  CREATE_UNICODE_ENVIRONMENT    = 0x00000400
+
   module Lib
     enum :wait_status, [ :wait_object_0,  0,
                          :wait_timeout,   0x102,

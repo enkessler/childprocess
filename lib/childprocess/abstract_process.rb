@@ -15,6 +15,11 @@ module ChildProcess
     attr_accessor :duplex
 
     #
+    # Modify the child's environment variables
+    #
+    attr_reader :environment
+
+    #
     # Create a new process with the given args.
     #
     # @api private
@@ -22,12 +27,13 @@ module ChildProcess
     #
 
     def initialize(args)
-      @args      = args
-      @started   = false
-      @exit_code = nil
-      @io        = nil
-      @detach    = false
-      @duplex    = false
+      @args        = args
+      @started     = false
+      @exit_code   = nil
+      @io          = nil
+      @detach      = false
+      @duplex      = false
+      @environment = {}
     end
 
     #

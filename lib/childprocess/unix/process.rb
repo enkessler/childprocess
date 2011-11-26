@@ -81,6 +81,8 @@ module ChildProcess
         end
 
         @pid = fork {
+          set_env
+
           STDOUT.reopen(stdout || "/dev/null")
           STDERR.reopen(stderr || "/dev/null")
 
@@ -98,6 +100,10 @@ module ChildProcess
         end
 
         ::Process.detach(@pid) if detach?
+      end
+
+      def set_env
+        @environment.each { |k, v| ENV[k.to_s] = v.to_s }
       end
 
     end # Process

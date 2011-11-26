@@ -4,6 +4,7 @@ module ChildProcess
 
       def self.create_proc(cmd, opts = {})
         cmd_ptr = FFI::MemoryPointer.from_string cmd
+        env_ptr = environment_pointer_for(opts[:environment])
 
         flags   = 0
         inherit = !!opts[:inherit]
@@ -25,7 +26,7 @@ module ChildProcess
         if opts[:duplex]
           read_pipe_ptr  = FFI::MemoryPointer.new(:pointer)
           write_pipe_ptr = FFI::MemoryPointer.new(:pointer)
-          sa         = SecurityAttributes.new(:inherit => true)
+          sa             = SecurityAttributes.new(:inherit => true)
 
           ok = create_pipe(read_pipe_ptr, write_pipe_ptr, sa, 0)
           ok or raise Error, last_error_message
@@ -36,7 +37,19 @@ module ChildProcess
           si[:hStdInput] = read_pipe
         end
 
-        ok = create_process(nil, cmd_ptr, nil, nil, inherit, flags, nil, nil, si, pi)
+        ok = create_process(
+          nil,      # application name
+          cmd_ptr,  # command line
+          nil,      # process attributes
+          nil,      # thread attributes
+          inherit,  # inherit handles
+          flags,    # creation flags
+          env_ptr,  # environment
+          nil,      # current directory
+          si,       # startup info
+          pi        # process info
+        )
+
         ok or raise Error, last_error_message
 
         close_handle pi[:hProcess]
@@ -60,7 +73,8 @@ module ChildProcess
           nil, errnum, 0, buf, buf.size, nil
         )
 
-        buf.read_string(size).strip
+        str = buf.read_string(size).strip
+        "#{str} (#{errnum})"
       end
 
       def self.handle_for(fd_or_io)
@@ -111,6 +125,27 @@ module ChildProcess
         dup.read_pointer
       ensure
         close_handle proc
+      end
+
+      def self.environment_pointer_for(env)
+        return unless env.kind_of?(Hash) && env.any?
+
+        strings = ENV.map { |k,v| "#{k}=#{v}\0" }
+        env.each do |key, value|
+          if key.include?("=")
+            raise InvalidEnvironmentVariableName, key
+          end
+
+          strings << "#{key}=#{value}\0"
+        end
+
+        strings << "\0" # terminate the env block
+        env_str = strings.join
+
+        ptr = FFI::MemoryPointer.new(:long, env_str.bytesize)
+        ptr.write_bytes env_str, 0, env_str.bytesize
+
+        ptr
       end
 
       #

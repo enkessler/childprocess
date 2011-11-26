@@ -42,9 +42,10 @@ module ChildProcess
 
       def launch_process
         opts = {
-          :inherit => false,
-          :detach  => detach?,
-          :duplex  => duplex?
+          :inherit     => false,
+          :detach      => detach?,
+          :duplex      => duplex?,
+          :environment => (@environment unless @environment.empty?)
         }
 
         if @io

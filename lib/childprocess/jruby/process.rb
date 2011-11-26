@@ -52,12 +52,11 @@ module ChildProcess
 
       def launch_process(&blk)
         pb = java.lang.ProcessBuilder.new(@args)
-        pb.directory(java.io.File.new(Dir.pwd))
-        env = pb.environment
-        ENV.each { |k,v| env.put(k, v) }
+
+        pb.directory java.io.File.new(Dir.pwd)
+        set_env pb.environment
 
         @process = pb.start
-
         setup_io
       end
 
@@ -85,6 +84,11 @@ module ChildProcess
 
         output = output.to_outputstream
         Thread.new { Redirector.new(input, output).run }
+      end
+
+      def set_env(env)
+        ENV.each { |k,v| env.put(k, v) } # not sure why this is needed
+        @environment.each { |k,v| env.put(k.to_s, v.to_s) }
       end
 
     end # Process

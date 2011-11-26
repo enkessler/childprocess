@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require File.expand_path('../spec_helper', __FILE__)
 
 describe ChildProcess do
@@ -46,6 +48,39 @@ describe ChildProcess do
       file.rewind
       child_env = eval(file.read)
       child_env['INHERITED'].should == 'yes'
+    end
+  end
+
+  it "can override env vars only for the current process" do
+    Tempfile.open("env-spec") do |file|
+      process = write_env(file.path)
+      process.environment['CHILD_ONLY'] = '1'
+      process.start
+
+      ENV['CHILD_ONLY'].should be_nil
+
+      process.poll_for_exit(EXIT_TIMEOUT)
+      file.rewind
+
+      child_env = eval(file.read)
+      child_env['CHILD_ONLY'].should == '1'
+    end
+  end
+
+  it "inherits the parent's env vars also when some are overridden" do
+    Tempfile.open("env-spec") do |file|
+      with_env('INHERITED' => 'yes', 'CHILD_ONLY' => 'no') do
+        process = write_env(file.path)
+        process.environment['CHILD_ONLY'] = 'yes'
+
+        process.start
+        process.poll_for_exit(EXIT_TIMEOUT)
+        file.rewind
+        child_env = eval(file.read)
+
+        child_env['INHERITED'].should == 'yes'
+        child_env['CHILD_ONLY'].should == 'yes'
+      end
     end
   end
 
