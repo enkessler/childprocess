@@ -7,16 +7,12 @@ module ChildProcess
   autoload :Unix,     'childprocess/unix'
   autoload :Windows,  'childprocess/windows'
   autoload :JRuby,    'childprocess/jruby'
-  autoload :IronRuby, 'childprocess/ironruby'
 
   class << self
-
     def new(*args)
       case platform
       when :jruby
         JRuby::Process.new(args)
-      when :ironruby
-        IronRuby::Process.new(args)
       when :windows
         Windows::Process.new(args)
       when :macosx, :linux, :unix, :cygwin
