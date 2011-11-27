@@ -38,7 +38,6 @@ How the process is launched and killed depends on the platform:
 * Unix     : fork + exec
 * Windows  : CreateProcess and friends
 * JRuby    : java.lang.{Process,ProcessBuilder}
-* IronRuby : System.Diagnostics.Process
 
 Note on Patches/Pull Requests
 -----------------------------
