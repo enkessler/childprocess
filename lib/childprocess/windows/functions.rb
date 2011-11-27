@@ -80,7 +80,7 @@ module ChildProcess
       def self.handle_for(fd_or_io)
         case fd_or_io
         when IO
-          handle = get_osfhandle(fd.fileno)
+          handle = get_osfhandle(fd_or_io.fileno)
         when Fixnum
           handle = get_osfhandle(fd_or_io)
         else
