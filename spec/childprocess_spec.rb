@@ -172,32 +172,15 @@ describe ChildProcess do
   end
 
   it "preserves Dir.pwd in the child" do
-    require 'pathname'
-    begin
-      path = nil
-      Tempfile.open("dir-spec") {|tf| path = tf.path }
-      path = Pathname.new(path).realpath.to_s
-      File.unlink(path)
-      Dir.mkdir(path)
-      Dir.chdir(path) do
-        process = ruby("puts Dir.pwd")
-        begin
-          out = Tempfile.new("dir-spec-out")
+    Tempfile.open("dir-spec-out") do |file|
+      process = ruby("print Dir.pwd")
+      process.io.stdout = process.io.stderr = file
 
-          process.io.stdout = out
-          process.io.stderr = out
+      process.start
+      process.poll_for_exit(EXIT_TIMEOUT)
 
-          process.start
-          process.poll_for_exit(EXIT_TIMEOUT)
-
-          out.rewind
-          out.read.should == "#{path}\n"
-        ensure
-          out.close
-        end
-      end
-    ensure
-      Dir.rmdir(path) if File.exist?(path)
+      file.rewind
+      file.read.should == Dir.pwd
     end
   end
 
