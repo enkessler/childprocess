@@ -4,21 +4,30 @@ module ChildProcess
       BUFFER_SIZE = 2048
 
       def initialize(input, output)
-        @input = input
+        @input  = input
         @output = output
-        @buffer = Java.byte[BUFFER_SIZE].new
+        @stop   = false
+      end
+
+      def stop
+        @stop = true
       end
 
       def run
-        read, avail = 0, 0
+        Thread.new { pump }
+        self
+      end
 
-        while(read != -1)
-          avail = [@input.available, 1].max
-          read  = @input.read(@buffer, 0, avail)
+      private
 
-          if read > 0
-            @output.write(@buffer, 0, read)
+      def pump
+        until @stop
+          while @input.available > 0 && !@stop
+            @output.write @input.read
           end
+
+          @output.flush
+          sleep 0.1
         end
       rescue java.io.IOException => ex
         $stderr.puts ex.message, ex.backtrace if $DEBUG

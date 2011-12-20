@@ -3,6 +3,12 @@ require "java"
 module ChildProcess
   module JRuby
     class Process < AbstractProcess
+      def initialize(args)
+        super(args)
+
+        @pumps = []
+      end
+
       def io
         @io ||= JRuby::IO.new
       end
@@ -24,6 +30,8 @@ module ChildProcess
 
         @process.destroy
         @process.waitFor # no way to actually use the timeout here..
+
+        @pumps.each { |pump| pump.stop }
 
         @exit_code = @process.exitValue
       end
@@ -56,14 +64,19 @@ module ChildProcess
         pb.directory java.io.File.new(Dir.pwd)
         set_env pb.environment
 
-        @process = pb.start
+        begin
+          @process = pb.start
+        rescue java.io.IOException => ex
+          raise LaunchError, ex.message
+        end
+
         setup_io
       end
 
       def setup_io
         if @io
-          redirect @process.getErrorStream, @io.stderr
-          redirect @process.getInputStream, @io.stdout
+          @pumps << redirect(@process.getErrorStream, @io.stderr)
+          @pumps << redirect(@process.getInputStream, @io.stdout)
         else
           @process.getErrorStream.close
           @process.getInputStream.close
@@ -82,8 +95,7 @@ module ChildProcess
           return
         end
 
-        output = output.to_outputstream
-        Thread.new { Redirector.new(input, output).run }
+        Redirector.new(input, output.to_outputstream).run
       end
 
       def set_env(env)

@@ -134,7 +134,8 @@ describe ChildProcess do
 
   it "can write to stdin if duplex = true" do
     process = ruby(<<-CODE)
-      puts(STDIN.gets.chomp)
+      STDOUT.sync = true
+      print STDIN.read
     CODE
 
     out = Tempfile.new("duplex")
@@ -146,7 +147,7 @@ describe ChildProcess do
 
       process.start
       process.io.stdin.puts "hello world"
-      process.io.stdin.close # JRuby seems to need this
+      process.io.stdin.close
 
       process.poll_for_exit(EXIT_TIMEOUT)
 
