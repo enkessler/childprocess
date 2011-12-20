@@ -110,8 +110,8 @@ module ChildProcess
           reader.close
         end
 
-        # if this returns, the exec() failed
-        unless exec_r.eof? # blocks
+        # if we don't eventually get EOF, exec() failed
+        unless exec_r.eof?
           raise LaunchError, exec_r.read || "executing command with #{@args.inspect} failed"
         end
 
