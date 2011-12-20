@@ -1,7 +1,6 @@
 module ChildProcess
   module JRuby
-    class Redirector
-      BUFFER_SIZE = 2048
+    class Pump
 
       def initialize(input, output)
         @input  = input
@@ -15,6 +14,7 @@ module ChildProcess
 
       def run
         Thread.new { pump }
+
         self
       end
 
@@ -29,10 +29,12 @@ module ChildProcess
           @output.flush
           sleep 0.1
         end
+
+        @output.flush
       rescue java.io.IOException => ex
         $stderr.puts ex.message, ex.backtrace if $DEBUG
       end
 
-    end # Redirector
+    end # Pump
   end # JRuby
 end # ChildProcess

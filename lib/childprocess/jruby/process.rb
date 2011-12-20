@@ -18,6 +18,8 @@ module ChildProcess
 
         assert_started
         @exit_code = @process.exitValue
+        stop_pumps
+
         true
       rescue java.lang.IllegalThreadStateException
         false
@@ -31,8 +33,7 @@ module ChildProcess
         @process.destroy
         @process.waitFor # no way to actually use the timeout here..
 
-        @pumps.each { |pump| pump.stop }
-
+        stop_pumps
         @exit_code = @process.exitValue
       end
 
@@ -45,7 +46,7 @@ module ChildProcess
       #
       def pid
         if @process.getClass.getName != "java.lang.UNIXProcess"
-          raise NotImplementedError.new("pid is not supported by JRuby child processes on Windows")
+          raise NotImplementedError, "pid is only supported by JRuby child processes on Linux"
         end
 
         # About the best way we can do this is with a nasty reflection-based impl
@@ -83,7 +84,10 @@ module ChildProcess
         end
 
         if duplex?
-          io._stdin = @process.getOutputStream.to_io
+          stdin = @process.getOutputStream.to_io
+          stdin.sync = true
+
+          io._stdin = stdin
         else
           @process.getOutputStream.close
         end
@@ -95,7 +99,11 @@ module ChildProcess
           return
         end
 
-        Redirector.new(input, output.to_outputstream).run
+        Pump.new(input, output.to_outputstream).run
+      end
+
+      def stop_pumps
+        @pumps.each { |pump| pump.stop }
       end
 
       def set_env(env)

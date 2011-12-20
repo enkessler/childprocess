@@ -134,11 +134,14 @@ describe ChildProcess do
 
   it "can write to stdin if duplex = true" do
     process = ruby(<<-CODE)
+      STDIN.sync  = true
       STDOUT.sync = true
+
       print STDIN.read
     CODE
 
     out = Tempfile.new("duplex")
+    out.sync = true
 
     begin
       process.io.stdout = out
@@ -146,13 +149,13 @@ describe ChildProcess do
       process.duplex = true
 
       process.start
-      process.io.stdin.puts "hello world"
+      process.io.stdin.print "hello world"
       process.io.stdin.close
 
       process.poll_for_exit(EXIT_TIMEOUT)
 
       out.rewind
-      out.read.should == "hello world\n"
+      out.read.should == "hello world"
     ensure
       out.close
     end
