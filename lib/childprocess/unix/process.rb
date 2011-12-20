@@ -76,11 +76,16 @@ module ChildProcess
           stderr = @io.stderr
         end
 
+        # pipe used to detect exec() failure
+        exec_r, exec_w = ::IO.pipe
+        ChildProcess.close_on_exec exec_w
+
         if duplex?
           reader, writer = ::IO.pipe
         end
 
         @pid = fork {
+          exec_r.close
           set_env
 
           STDOUT.reopen(stdout || "/dev/null")
@@ -91,12 +96,23 @@ module ChildProcess
             writer.close
           end
 
-          exec(*@args)
+          begin
+            exec(*@args)
+          rescue SystemCallError => ex
+            exec_w << ex.message
+          end
         }
+
+        exec_w.close
 
         if duplex?
           io._stdin = writer
           reader.close
+        end
+
+        # if this returns, the exec() failed
+        unless exec_r.eof? # blocks
+          raise LaunchError, exec_r.read || "executing command with #{@args.inspect} failed"
         end
 
         ::Process.detach(@pid) if detach?

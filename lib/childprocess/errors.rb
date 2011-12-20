@@ -3,4 +3,5 @@ module ChildProcess
   class TimeoutError < StandardError; end
   class SubclassResponsibility < StandardError; end
   class InvalidEnvironmentVariableName < StandardError; end
+  class LaunchError < StandardError; end
 end

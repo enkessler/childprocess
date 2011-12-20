@@ -13,6 +13,10 @@ describe ChildProcess do
     process.should be_started
   end
 
+  it "raises ChildProcess::LaunchError if the process can't be started" do
+    lambda { invalid_process.start }.should raise_error(ChildProcess::LaunchError)
+  end
+
   it "knows if the process crashed" do
     process = exit_with(1).start
     process.poll_for_exit(EXIT_TIMEOUT)

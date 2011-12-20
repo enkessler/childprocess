@@ -50,7 +50,7 @@ module ChildProcess
           pi        # process info
         )
 
-        ok or raise Error, last_error_message
+        ok or raise LaunchError, last_error_message
 
         close_handle pi[:hProcess]
         close_handle pi[:hThread]

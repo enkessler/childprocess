@@ -18,6 +18,10 @@ module ChildProcessSpecHelper
     ruby_process("-e", "sleep")
   end
 
+  def invalid_process
+    @process = ChildProcess.build("unlikely-to-exist")
+  end
+
   def ignored(signal)
     code = <<-RUBY
       trap(#{signal.inspect}, "IGNORE")
