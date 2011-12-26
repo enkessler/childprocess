@@ -38,6 +38,19 @@ module ChildProcess
       end
 
       #
+      # Block until the process has been terminated.
+      #
+      # @return [FixNum] The exit status of the process
+      #
+
+      def wait
+        @process.waitFor
+
+        stop_pumps
+        @exit_code = @process.exitValue
+      end
+
+      #
       # Only supported in JRuby on a Unix operating system, thanks to limitations
       # in Java's classes
       #

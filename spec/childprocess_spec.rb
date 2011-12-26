@@ -31,6 +31,14 @@ describe ChildProcess do
     process.should_not be_crashed
   end
 
+  it "can wait for a process to finish" do
+    process = exit_with(0).start
+    return_value = process.wait
+
+    process.should_not be_alive
+    return_value.should == 0
+  end
+
   it "escalates if TERM is ignored" do
     process = ignored('TERM').start
     process.stop

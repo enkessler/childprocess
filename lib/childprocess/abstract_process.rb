@@ -72,6 +72,16 @@ module ChildProcess
     end
 
     #
+    # Block until the process has been terminated.
+    #
+    # @return [FixNum] The exit status of the process
+    #
+
+    def wait
+      raise SubclassResponsibility, "wait"
+    end
+
+    #
     # Did the process exit?
     #
     # @return [Boolean]
