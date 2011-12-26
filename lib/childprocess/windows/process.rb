@@ -1,9 +1,7 @@
 module ChildProcess
   module Windows
     class Process < AbstractProcess
-      #
-      # @return [Fixnum] the pid of the process after it has started
-      #
+
       attr_reader :pid
 
       def io
@@ -21,12 +19,6 @@ module ChildProcess
       ensure
         @handle.close
       end
-
-      #
-      # Block until the process has been terminated.
-      #
-      # @return [FixNum] The exit status of the process
-      #
 
       def wait
         @handle.wait

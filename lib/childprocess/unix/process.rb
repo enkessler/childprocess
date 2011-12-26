@@ -1,9 +1,6 @@
 module ChildProcess
   module Unix
     class Process < AbstractProcess
-      #
-      # @return [Fixnum] the pid of the process after it has started
-      #
       attr_reader :pid
 
       def io
@@ -28,12 +25,6 @@ module ChildProcess
         true
       end
 
-      #
-      # Did the process exit?
-      #
-      # @return [Boolean]
-      #
-
       def exited?
         return true if @exit_code
 
@@ -48,12 +39,6 @@ module ChildProcess
 
         !!pid
       end
-
-      #
-      # Block until the process has been terminated.
-      #
-      # @return [FixNum] The exit status of the process
-      #
 
       def wait
         pid, status = ::Process.waitpid2 @pid

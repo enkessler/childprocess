@@ -44,6 +44,10 @@ module ChildProcess
       raise SubclassResponsibility, "io"
     end
 
+    #
+    # @return [Fixnum] the pid of the process after it has started
+    #
+
     def pid
       raise SubclassResponsibility, "pid"
     end
@@ -74,7 +78,7 @@ module ChildProcess
     #
     # Block until the process has been terminated.
     #
-    # @return [FixNum] The exit status of the process
+    # @return [Fixnum] The exit status of the process
     #
 
     def wait
