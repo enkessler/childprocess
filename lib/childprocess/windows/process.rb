@@ -22,6 +22,16 @@ module ChildProcess
         @handle.close
       end
 
+      #
+      # Block until the process has been terminated.
+      #
+      # @return [FixNum] The exit status of the process
+      #
+
+      def wait
+        @handle.wait
+      end
+
       def exited?
         return true if @exit_code
         assert_started
