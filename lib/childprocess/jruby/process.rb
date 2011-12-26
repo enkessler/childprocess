@@ -31,10 +31,7 @@ module ChildProcess
         assert_started
 
         @process.destroy
-        @process.waitFor # no way to actually use the timeout here..
-
-        stop_pumps
-        @exit_code = @process.exitValue
+        wait # no way to actually use the timeout here..
       end
 
       def wait
