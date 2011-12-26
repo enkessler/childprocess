@@ -141,7 +141,7 @@ describe ChildProcess do
       STDIN.sync  = true
       STDOUT.sync = true
 
-      print STDIN.read
+      puts STDIN.read
     CODE
 
     out = Tempfile.new("duplex")
@@ -153,13 +153,13 @@ describe ChildProcess do
       process.duplex = true
 
       process.start
-      process.io.stdin.print "hello world"
+      process.io.stdin.puts "hello world"
       process.io.stdin.close
 
       process.poll_for_exit(EXIT_TIMEOUT)
 
       out.rewind
-      out.read.should == "hello world"
+      out.read.should == "hello world\n"
     ensure
       out.close
     end
