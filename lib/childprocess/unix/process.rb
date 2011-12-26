@@ -49,11 +49,19 @@ module ChildProcess
         !!pid
       end
 
-      private
+      #
+      # Block until the process has been terminated.
+      #
+      # @return [FixNum] The exit status of the process
+      #
 
       def wait
-        @exit_code = ::Process.waitpid @pid
+        pid, status = ::Process.waitpid2 @pid
+
+        @exit_code = status.exitstatus || status.termsig
       end
+
+      private
 
       def send_term
         send_signal 'TERM'
