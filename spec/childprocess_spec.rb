@@ -165,7 +165,7 @@ describe ChildProcess do
       process.io.stdin.puts "hello world"
       process.io.stdin.close
 
-      process.wait
+      process.poll_for_exit(POLL_FOR_EXIT)
 
       out.rewind
       out.read.should == "hello world\n"
