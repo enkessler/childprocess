@@ -19,14 +19,14 @@ describe ChildProcess do
 
   it "knows if the process crashed" do
     process = exit_with(1).start
-    process.poll_for_exit(EXIT_TIMEOUT)
+    process.wait
 
     process.should be_crashed
   end
 
   it "knows if the process didn't crash" do
     process = exit_with(0).start
-    process.poll_for_exit(EXIT_TIMEOUT)
+    process.wait
 
     process.should_not be_crashed
   end
@@ -54,7 +54,7 @@ describe ChildProcess do
     Tempfile.open("env-spec") do |file|
       with_env('INHERITED' => 'yes') do
         process = write_env(file.path).start
-        process.poll_for_exit(EXIT_TIMEOUT)
+        process.wait
       end
 
       file.rewind
@@ -71,7 +71,7 @@ describe ChildProcess do
 
       ENV['CHILD_ONLY'].should be_nil
 
-      process.poll_for_exit(EXIT_TIMEOUT)
+      process.wait
       file.rewind
 
       child_env = eval(file.read)
@@ -86,7 +86,8 @@ describe ChildProcess do
         process.environment['CHILD_ONLY'] = 'yes'
 
         process.start
-        process.poll_for_exit(EXIT_TIMEOUT)
+        process.wait
+
         file.rewind
         child_env = eval(file.read)
 
@@ -101,7 +102,7 @@ describe ChildProcess do
 
     Tempfile.open("argv-spec") do |file|
       process = write_argv(file.path, *args).start
-      process.poll_for_exit(EXIT_TIMEOUT)
+      process.wait
 
       file.rewind
       file.read.should == args.inspect
@@ -131,7 +132,7 @@ describe ChildProcess do
 
       process.start
       process.io.stdin.should be_nil
-      process.poll_for_exit(EXIT_TIMEOUT)
+      process.wait
 
       out.rewind
       err.rewind
@@ -164,7 +165,7 @@ describe ChildProcess do
       process.io.stdin.puts "hello world"
       process.io.stdin.close
 
-      process.poll_for_exit(EXIT_TIMEOUT)
+      process.wait
 
       out.rewind
       out.read.should == "hello world\n"
@@ -193,7 +194,7 @@ describe ChildProcess do
       process.io.stdout = process.io.stderr = file
 
       process.start
-      process.poll_for_exit(EXIT_TIMEOUT)
+      process.wait
 
       file.rewind
       file.read.should == Dir.pwd
@@ -205,11 +206,16 @@ describe ChildProcess do
 
     Tempfile.open("argv-spec") do |file|
       process = write_argv(file.path, *args).start
-      process.poll_for_exit(EXIT_TIMEOUT)
+      process.wait
 
       file.rewind
       file.read.should == args.inspect
     end
+  end
+
+  it "times out when polling for exit" do
+    process = sleeping_ruby.start
+    lambda { process.poll_for_exit(0.1) }.should raise_error(ChildProcess::TimeoutError)
   end
 
 end
