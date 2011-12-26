@@ -22,6 +22,7 @@ module ChildProcess
 
       def wait
         @handle.wait
+        @exit_code = @handle.exit_code
       end
 
       def exited?
