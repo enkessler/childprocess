@@ -14,18 +14,30 @@ Usage
 ```ruby
 process = ChildProcess.build("ruby", "-e", "sleep")
 
-# inherit stdout/stderr from parent
+# inherit stdout/stderr from parent...
 process.io.inherit!
 
-# or pass an IO
+# ...or pass an IO
 process.io.stdout = Tempfile.new("child-output")
+
+# start the process
 
 process.start
 
+# check process status
 process.alive?    #=> true
 process.exited?   #=> false
 
-process.stop
+# wait indefinitely for process to exit...
+process.wait
+process.exited?   #=> true
+
+# ...or poll for exit + force quit
+begin
+  process.poll_for_exit(10)
+rescue ChildProcess::TimeoutError
+  process.stop # tries increasingly harsher methods to kill the process.
+end
 ```
 
 The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
