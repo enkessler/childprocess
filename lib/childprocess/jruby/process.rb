@@ -50,7 +50,7 @@ module ChildProcess
       #
       def pid
         if @process.getClass.getName != "java.lang.UNIXProcess"
-          raise NotImplementedError, "pid is only supported by JRuby child processes on Linux"
+          raise NotImplementedError, "pid is only supported by JRuby child processes on Unix"
         end
 
         # About the best way we can do this is with a nasty reflection-based impl
