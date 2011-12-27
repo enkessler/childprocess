@@ -94,6 +94,19 @@ module ChildProcessSpecHelper
     raise last_error unless ok
   end
 
+  def cat
+    if ChildProcess.os == :windows
+      ruby(<<-CODE)
+            STDIN.sync  = true
+            STDOUT.sync = true
+
+            puts STDIN.read
+          CODE
+    else
+      ChildProcess.build("cat")
+    end
+  end
+
   def ruby(code)
     ruby_process(tmp_script(code))
   end

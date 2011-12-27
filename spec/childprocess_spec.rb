@@ -146,7 +146,7 @@ describe ChildProcess do
   end
 
   it "can write to stdin if duplex = true" do
-    process = ChildProcess.build("cat")
+    process = cat
 
     out = Tempfile.new("duplex")
     out.sync = true
