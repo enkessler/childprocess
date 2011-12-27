@@ -34,6 +34,9 @@ module ChildProcess
           read_pipe = read_pipe_ptr.read_pointer
           write_pipe = write_pipe_ptr.read_pointer
 
+          ok = set_handle_information(write_pipe.address, HANDLE_FLAG_INHERIT, 0)
+          ok or raise Error, last_error_message
+
           si[:hStdInput] = read_pipe
         end
 
