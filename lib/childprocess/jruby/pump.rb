@@ -11,10 +11,11 @@ module ChildProcess
 
       def stop
         @stop = true
+        @thread && @thread.join
       end
 
       def run
-        Thread.new { pump }
+        @thread = Thread.new { pump }
 
         self
       end
