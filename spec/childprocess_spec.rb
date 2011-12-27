@@ -146,12 +146,7 @@ describe ChildProcess do
   end
 
   it "can write to stdin if duplex = true" do
-    process = ruby(<<-CODE)
-      STDIN.sync  = true
-      STDOUT.sync = true
-
-      puts STDIN.read
-    CODE
+    process = ChildProcess.build("cat")
 
     out = Tempfile.new("duplex")
     out.sync = true
