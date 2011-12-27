@@ -1,6 +1,7 @@
 module ChildProcess
   module JRuby
     class Pump
+      BUFFER_SIZE = 2048
 
       def initialize(input, output)
         @input  = input
@@ -21,12 +22,21 @@ module ChildProcess
       private
 
       def pump
+        buffer = Java.byte[BUFFER_SIZE].new
+
         until @stop
-          while @input.available > 0 && !@stop
-            @output.write @input.read
+          read, avail = 0, 0
+
+          while read != -1
+            avail = [@input.available, 1].max
+            read = @input.read(buffer, 0, avail)
+
+            if read > 0
+              @output.write(buffer, 0, read)
+              @output.flush
+            end
           end
 
-          @output.flush
           sleep 0.1
         end
 
