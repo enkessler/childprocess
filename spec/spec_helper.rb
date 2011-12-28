@@ -19,7 +19,7 @@ module ChildProcessSpecHelper
   end
 
   def invalid_process
-    @process = ChildProcess.build("unlikely-to-exist")
+    @process = ChildProcess.build("unlikelytoexist")
   end
 
   def ignored(signal)
