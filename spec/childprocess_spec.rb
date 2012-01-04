@@ -144,6 +144,32 @@ describe ChildProcess do
     end
   end
 
+  it "can redirect stdout only" do
+    process = ruby(<<-CODE)
+      [STDOUT, STDERR].each_with_index do |io, idx|
+        io.sync = true
+        io.puts idx
+      end
+
+      sleep 0.2
+    CODE
+
+    out = Tempfile.new("stdout-spec")
+
+    begin
+      process.io.stdout = out
+
+      process.start
+      process.wait
+
+      out.rewind
+
+      out.read.should == "0\n"
+    ensure
+      out.close
+    end
+  end
+
   it "can write to stdin if duplex = true" do
     process = cat
 
