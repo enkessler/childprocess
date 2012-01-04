@@ -80,8 +80,8 @@ module ChildProcess
 
       def setup_io
         if @io
-          @pumps << redirect(@process.getErrorStream, @io.stderr)
-          @pumps << redirect(@process.getInputStream, @io.stdout)
+          redirect(@process.getErrorStream, @io.stderr)
+          redirect(@process.getInputStream, @io.stdout)
         else
           @process.getErrorStream.close
           @process.getInputStream.close
@@ -103,7 +103,7 @@ module ChildProcess
           return
         end
 
-        Pump.new(input, output.to_outputstream).run
+        @pumps << Pump.new(input, output.to_outputstream).run
       end
 
       def stop_pumps
