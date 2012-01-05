@@ -194,6 +194,31 @@ describe ChildProcess do
     end
   end
 
+  it "works with pipes" do
+    process = ruby(<<-CODE)
+      STDOUT.puts "stdout"
+      STDERR.puts "stderr"
+    CODE
+
+    stdout, stdout_w = IO.pipe
+    stderr, stderr_w = IO.pipe
+
+    process.io.stdout = stdout_w
+    process.io.stderr = stderr_w
+
+    process.duplex = true
+
+    process.start
+
+    stdout_w.close
+    stderr_w.close
+
+    process.wait
+
+    stdout.read.should == "stdout\n"
+    stderr.read.should == "stderr\n"
+  end
+
   it "can set close-on-exec when IO is inherited" do
     server = TCPServer.new("localhost", 4433)
     ChildProcess.close_on_exec server
