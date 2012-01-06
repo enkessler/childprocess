@@ -20,17 +20,11 @@ module ChildProcess
           inherit = true
 
           if opts[:stdout]
-            handle = handle_for(opts[:stdout].fileno)
-            set_handle_inheritance handle, true
-
-            si[:hStdOutput] = handle
+            si[:hStdOutput] = standard_stream_handle_from(opts[:stdout])
           end
 
           if opts[:stderr]
-            handle = handle_for(opts[:stderr].fileno)
-            set_handle_inheritance handle, true
-
-            si[:hStdError] = handle
+            si[:hStdError] = standard_stream_handle_from(opts[:stderr])
           end
         end
 
@@ -75,6 +69,19 @@ module ChildProcess
         end
 
         pi[:dwProcessId]
+      end
+
+      def self.standard_stream_handle_from(io)
+        handle = handle_for(io.fileno)
+
+        begin
+          set_handle_inheritance handle, true
+        rescue ChildProcess::Error
+          # If the IO was set to close on exec previously, this call will fail.
+          # That's probably OK, since the user explicitly asked for it to be closed (at least I have yet to find other cases where this will happen...)
+        end
+
+        handle
       end
 
       def self.last_error_message
