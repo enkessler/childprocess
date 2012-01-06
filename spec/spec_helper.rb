@@ -8,7 +8,6 @@ require 'socket'
 require 'stringio'
 
 module ChildProcessSpecHelper
-  EXIT_TIMEOUT = 10
   RUBY = defined?(Gem) ? Gem.ruby : 'ruby'
 
   def ruby_process(*args)
@@ -110,6 +109,10 @@ module ChildProcessSpecHelper
 
   def ruby(code)
     ruby_process(tmp_script(code))
+  end
+
+  def exit_timeout
+    10
   end
 
 end # ChildProcessSpecHelper

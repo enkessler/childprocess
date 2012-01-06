@@ -44,7 +44,7 @@ describe ChildProcess do
 
   it "accepts a timeout argument to #stop" do
     process = sleeping_ruby.start
-    process.stop(EXIT_TIMEOUT)
+    process.stop(exit_timeout)
   end
 
   it "lets child process inherit the environment of the current process" do
