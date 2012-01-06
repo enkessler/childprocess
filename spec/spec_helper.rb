@@ -115,9 +115,13 @@ end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
 
-RSpec.configure do |config|
-  config.include(ChildProcessSpecHelper)
-  config.after(:each) {
+RSpec.configure do |c|
+  c.include(ChildProcessSpecHelper)
+  c.after(:each) {
     @process && @process.alive? && @process.stop
   }
+
+  if defined?(JRUBY_VERSION)
+    c.filter_run_excluding :jruby => false
+  end
 end
