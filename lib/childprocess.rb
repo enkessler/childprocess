@@ -88,7 +88,7 @@ module ChildProcess
       elsif file.respond_to?(:fcntl) && defined?(Fcntl::FD_CLOEXEC)
         file.fcntl Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
       elsif windows?
-        Windows.dont_inherit file
+        Windows::Lib.dont_inherit file
       else
         raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform.inspect}"
       end

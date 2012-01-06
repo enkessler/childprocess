@@ -23,6 +23,9 @@ module ChildProcess
       def wait
         @handle.wait
         @exit_code = @handle.exit_code
+        @handle.close
+
+        @exit_code
       end
 
       def exited?
@@ -36,6 +39,7 @@ module ChildProcess
 
         if exited
           @exit_code = code
+          @handle.close
         end
 
         exited
@@ -44,43 +48,26 @@ module ChildProcess
       private
 
       def launch_process
-        opts = {
-          :inherit     => false,
-          :detach      => detach?,
-          :duplex      => duplex?,
-          :environment => (@environment unless @environment.empty?)
-        }
+        builder = ProcessBuilder.new(@args)
+        builder.inherit     = false
+        builder.detach      = detach?
+        builder.duplex      = duplex?
+        builder.environment = @environment unless @environment.empty?
 
         if @io
-          opts[:stdout] = @io.stdout
-          opts[:stderr] = @io.stderr
+          builder.stdout      = @io.stdout
+          builder.stderr      = @io.stderr
         end
 
-        @pid = Lib.create_proc(command_string, opts)
-        @handle = Handle.open(@pid)
+        @pid = builder.start
+        @handle = Handle.open @pid
 
         if duplex?
-          io._stdin = opts[:stdin]
+          raise Error, "no stdin stream" unless builder.stdin
+          io._stdin = builder.stdin
         end
 
         self
-      end
-
-      def command_string
-        @command_string ||= (
-          @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
-        )
-      end
-
-      def quote_if_necessary(str)
-        quote = str.start_with?('"') ? "'" : '"'
-
-        case str
-        when /[\s\\'"]/
-          %{#{quote}#{str}#{quote}}
-        else
-          str
-        end
       end
 
     end # Process
