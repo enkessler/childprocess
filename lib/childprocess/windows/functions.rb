@@ -19,8 +19,21 @@ module ChildProcess
           si[:dwFlags] |= STARTF_USESTDHANDLES
           inherit = true
 
-          si[:hStdOutput] = handle_for(opts[:stdout].fileno) if opts[:stdout]
-          si[:hStdError]  = handle_for(opts[:stderr].fileno) if opts[:stderr]
+          if opts[:stdout]
+            si[:hStdOutput] = handle_for(opts[:stdout].fileno)
+            ok = set_handle_information(si[:hStdOutput].address,
+                                        HANDLE_FLAG_INHERIT,
+                                        HANDLE_FLAG_INHERIT)
+            ok or raise Error, last_error_message
+          end
+
+          if opts[:stderr]
+            si[:hStdError] = handle_for(opts[:stderr].fileno)
+            ok = set_handle_information(si[:hStdError].address,
+                                        HANDLE_FLAG_INHERIT,
+                                        HANDLE_FLAG_INHERIT)
+            ok or raise Error, last_error_message
+          end
         end
 
         if opts[:duplex]
