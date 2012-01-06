@@ -209,11 +209,10 @@ describe ChildProcess do
     process.duplex = true
 
     process.start
+    process.wait
 
     stdout_w.close
     stderr_w.close
-
-    process.wait
 
     stdout.read.should == "stdout\n"
     stderr.read.should == "stderr\n"
