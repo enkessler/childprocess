@@ -59,14 +59,14 @@ module ChildProcess
           Lib.generate_console_ctrl_event(CTRL_BREAK_EVENT, @pid)
         when WIN_SIGKILL
           ok = Lib.terminate_process(@handle, @pid)
-          ok or raise Error, Lib.last_error_message
+          Lib.check_error ok
         else
           thread_id     = FFI::MemoryPointer.new(:ulong)
           module_handle = Lib.get_module_handle("kernel32")
           proc_address  = Lib.get_proc_address(module_handle, "ExitProcess")
 
           thread = Lib.create_remote_thread(@handle, 0, 0, proc_address, 0, 0, thread_id)
-          thread or raise Error, Lib.last_error_message
+          check_error thread
 
           Lib.wait_for_single_object(thread, 5)
           true

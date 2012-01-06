@@ -20,19 +20,17 @@ module ChildProcess
           inherit = true
 
           if opts[:stdout]
-            si[:hStdOutput] = handle_for(opts[:stdout].fileno)
-            ok = set_handle_information(si[:hStdOutput].address,
-                                        HANDLE_FLAG_INHERIT,
-                                        HANDLE_FLAG_INHERIT)
-            ok or raise Error, last_error_message
+            handle = handle_for(opts[:stdout].fileno)
+            set_handle_inheritance handle, true
+
+            si[:hStdOutput] = handle
           end
 
           if opts[:stderr]
-            si[:hStdError] = handle_for(opts[:stderr].fileno)
-            ok = set_handle_information(si[:hStdError].address,
-                                        HANDLE_FLAG_INHERIT,
-                                        HANDLE_FLAG_INHERIT)
-            ok or raise Error, last_error_message
+            handle = handle_for(opts[:stderr].fileno)
+            set_handle_inheritance handle, true
+
+            si[:hStdError] = handle
           end
         end
 
@@ -42,13 +40,12 @@ module ChildProcess
           sa             = SecurityAttributes.new(:inherit => true)
 
           ok = create_pipe(read_pipe_ptr, write_pipe_ptr, sa, 0)
-          ok or raise Error, last_error_message
+          check_error ok
 
           read_pipe = read_pipe_ptr.read_pointer
           write_pipe = write_pipe_ptr.read_pointer
 
-          ok = set_handle_information(write_pipe.address, HANDLE_FLAG_INHERIT, 0)
-          ok or raise Error, last_error_message
+          set_handle_inheritance(write_pipe.address, false)
 
           si[:hStdInput] = read_pipe
         end
@@ -136,7 +133,7 @@ module ChildProcess
         ok = _duplicate_handle(
           proc, handle, proc, dup, 0, false, DUPLICATE_SAME_ACCESS)
 
-        ok or raise Error, last_error_message
+        check_error ok
 
         dup.read_pointer
       ensure
@@ -162,6 +159,33 @@ module ChildProcess
         ptr.write_bytes env_str, 0, env_str.bytesize
 
         ptr
+      end
+
+      def self.set_handle_inheritance(handle, bool)
+        status = set_handle_information(
+          handle,
+          HANDLE_FLAG_INHERIT,
+          bool ? HANDLE_FLAG_INHERIT : 0
+        )
+
+        check_error status
+      end
+
+      def self.get_handle_inheritance(handle)
+        flags = FFI::MemoryPointer.new(:uint)
+
+        status = get_handle_information(
+          handle,
+          flags
+        )
+
+        check_error status
+
+        flags.read_uint
+      end
+
+      def self.check_error(bool)
+        bool or raise Error, last_error_message
       end
 
       #
@@ -293,6 +317,13 @@ module ChildProcess
       # );
 
       attach_function :set_handle_information, :SetHandleInformation, [:long, :ulong, :ulong], :bool
+
+      # BOOL WINAPI GetHandleInformation(
+      #   __in   HANDLE hObject,
+      #   __out  LPDWORD lpdwFlags
+      # );
+
+      attach_function :get_handle_information, :GetHandleInformation, [:long, :pointer], :bool
 
       # BOOL WINAPI CreatePipe(
       #   __out     PHANDLE hReadPipe,
