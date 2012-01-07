@@ -74,8 +74,9 @@ module ChildProcess
     end
 
     #
-    # By default, a child process will inherit open file descriptors from the parent process.
-    # This helper provides a cross-platform way of making sure that doesn't happen for the given file/io.
+    # By default, a child process will inherit open file descriptors from the
+    # parent process. This helper provides a cross-platform way of making sure
+    # that doesn't happen for the given file/io.
     #
 
     def close_on_exec(file)
