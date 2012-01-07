@@ -262,14 +262,16 @@ module ChildProcess
           when Fixnum
             handle = get_osfhandle(fd_or_io)
           else
-            if fd_or_io.respond_to?(:to_io)
+            if fd_or_io.respond_to?(:fileno)
+              handle = get_osfhandle(fd_or_io.fileno)
+            elsif fd_or_io.respond_to?(:to_io)
               io = fd_or_io.to_io
 
               unless io.kind_of?(IO)
                 raise TypeError, "expected #to_io to return an instance of IO"
               end
 
-              handle = get_osfhandle(io.fileno)
+              return handle_for(io)
             else
               raise TypeError, "invalid type: #{fd_or_io.inspect}"
             end
