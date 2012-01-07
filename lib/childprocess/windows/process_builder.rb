@@ -6,47 +6,39 @@ module ChildProcess
 
       def initialize(args)
         @args        = args
+
         @inherit     = false
         @detach      = false
         @duplex      = false
+        @environment = nil
+
         @stdout      = nil
         @stderr      = nil
         @stdin       = nil
-        @environment = nil
+
         @flags       = 0
+        @cmd_ptr     = nil
+        @env_ptr     = nil
       end
 
       def start
-        cmd_ptr = create_command_pointer
-        env_ptr = create_environment_pointer
+        create_command_pointer
+        create_environment_pointer
 
         setup_detach
         setup_io
 
-        ok = Lib.create_process(
-          nil,          # application name
-          cmd_ptr,      # command line
-          nil,          # process attributes
-          nil,          # thread attributes
-          @inherit,     # inherit handles
-          @flags,       # creation flags
-          env_ptr,      # environment
-          nil,          # current directory
-          startup_info, # startup info
-          process_info  # process info
-        )
-
-        ok or raise LaunchError, Lib.last_error_message
-
+        pid = create_process
         close_handles
-        process_info[:dwProcessId]
+
+        pid
       end
 
       private
 
       def create_command_pointer
         string = @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
-        FFI::MemoryPointer.from_string string
+        @cmd_ptr = FFI::MemoryPointer.from_string string
       end
 
       def create_environment_pointer
@@ -67,10 +59,27 @@ module ChildProcess
         strings << "\0" # terminate the env block
         env_str = strings.join
 
-        ptr = FFI::MemoryPointer.new(:long, env_str.bytesize)
-        ptr.write_bytes env_str, 0, env_str.bytesize
+        @env_ptr = FFI::MemoryPointer.new(:long, env_str.bytesize)
+        @env_ptr.write_bytes env_str, 0, env_str.bytesize
+      end
 
-        ptr
+      def create_process
+        ok = Lib.create_process(
+          nil,          # application name
+          @cmd_ptr,     # command line
+          nil,          # process attributes
+          nil,          # thread attributes
+          @inherit,     # inherit handles
+          @flags,       # creation flags
+          @env_ptr,     # environment
+          nil,          # current directory
+          startup_info, # startup info
+          process_info  # process info
+        )
+
+        ok or raise LaunchError, Lib.last_error_message
+
+        process_info[:dwProcessId]
       end
 
       def startup_info
