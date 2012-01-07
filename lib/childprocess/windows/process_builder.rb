@@ -160,7 +160,7 @@ module ChildProcess
 
         case str
         when /[\s\\'"]/
-          %{#{quote}#{str}#{quote}}
+          [quote, str, quote].join
         else
           str
         end
