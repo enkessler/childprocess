@@ -46,11 +46,7 @@ module ChildProcess
     end
 
     def jruby_on_unix?
-      return false unless jruby?
-      # patterns grabbed from http://lopica.sourceforge.net/os.html
-      require "java"
-      name = java.lang.System.getProperty("os.name").downcase
-      name =~ /mac os|linux|solaris|bsd/
+      jruby? and [:macosx, :linux, :unix].include? os
     end
 
     def windows?
