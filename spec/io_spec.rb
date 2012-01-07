@@ -7,8 +7,6 @@ describe ChildProcess do
         io.sync = true
         io.puts idx
       end
-
-      sleep 0.2
     CODE
 
     out = Tempfile.new("stdout-spec")
@@ -39,8 +37,6 @@ describe ChildProcess do
         io.sync = true
         io.puts idx
       end
-
-      sleep 0.2
     CODE
 
     out = Tempfile.new("stdout-spec")
@@ -52,7 +48,6 @@ describe ChildProcess do
       process.wait
 
       out.rewind
-
       out.read.should == "0\n"
     ensure
       out.close
@@ -126,9 +121,8 @@ describe ChildProcess do
     process.io.inherit!
 
     process.start
-    sleep 0.5 # give the forked process a chance to exec() (which closes the fd)
-
     server.close
+
     lambda { TCPServer.new("localhost", 4433).close }.should_not raise_error
   end
 end
