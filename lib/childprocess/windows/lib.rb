@@ -252,7 +252,11 @@ module ChildProcess
           )
 
           str = buf.read_string(size).strip
-          "#{str} (#{errnum})"
+          if errnum == 0
+            "Unknown error (Windows says #{str.inspect}, but it did not.)"
+          else
+            "#{str} (#{errnum})"
+          end
         end
 
         def handle_for(fd_or_io)
