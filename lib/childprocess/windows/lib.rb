@@ -20,11 +20,10 @@ module ChildProcess
     DETACHED_PROCESS              = 0x00000008
 
     STARTF_USESTDHANDLES          = 0x00000100
-    INVALID_HANDLE_VALUE          = 0xFFFFFFFF
+    INVALID_HANDLE_VALUE          = -1
     HANDLE_FLAG_INHERIT           = 0x00000001
 
     DUPLICATE_SAME_ACCESS         = 0x00000002
-
     CREATE_UNICODE_ENVIRONMENT    = 0x00000400
 
     module Lib
@@ -161,14 +160,14 @@ module ChildProcess
       #   __in  DWORD dwFlags
       # );
 
-      attach_function :set_handle_information, :SetHandleInformation, [:long, :ulong, :ulong], :bool
+      attach_function :set_handle_information, :SetHandleInformation, [:pointer, :ulong, :ulong], :bool
 
       # BOOL WINAPI GetHandleInformation(
       #   __in   HANDLE hObject,
       #   __out  LPDWORD lpdwFlags
       # );
 
-      attach_function :get_handle_information, :GetHandleInformation, [:long, :pointer], :bool
+      attach_function :get_handle_information, :GetHandleInformation, [:pointer, :pointer], :bool
 
       # BOOL WINAPI CreatePipe(
       #   __out     PHANDLE hReadPipe,
@@ -248,8 +247,8 @@ module ChildProcess
           buf = FFI::MemoryPointer.new :char, 512
 
           size = format_message(
-          FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
-          nil, errnum, 0, buf, buf.size, nil
+            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+            nil, errnum, 0, buf, buf.size, nil
           )
 
           str = buf.read_string(size).strip
@@ -280,7 +279,7 @@ module ChildProcess
             raise Error, last_error_message
           end
 
-          handle
+          FFI::Pointer.new handle
         end
 
         def io_for(handle, flags = File::RDONLY)
@@ -289,7 +288,7 @@ module ChildProcess
             raise Error, last_error_message
           end
 
-          ::IO.for_fd fd, flags
+          FFI::IO.for_fd fd, flags
         end
 
         def duplicate_handle(handle)

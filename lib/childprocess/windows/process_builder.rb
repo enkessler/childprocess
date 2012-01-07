@@ -60,7 +60,7 @@ module ChildProcess
         env_str = strings.join
 
         @env_ptr = FFI::MemoryPointer.new(:long, env_str.bytesize)
-        @env_ptr.write_bytes env_str, 0, env_str.bytesize
+        @env_ptr.put_bytes 0, env_str, 0, env_str.bytesize
       end
 
       def create_process
@@ -124,24 +124,15 @@ module ChildProcess
         @read_pipe  = read_pipe_ptr.read_pointer
         @write_pipe = write_pipe_ptr.read_pointer
 
-        Lib.set_handle_inheritance @write_pipe.address, false
+        @inherit = true
+        Lib.set_handle_inheritance @read_pipe, true
+        Lib.set_handle_inheritance @write_pipe, false
 
         startup_info[:hStdInput] = @read_pipe
       end
 
-      def close_handles
-        Lib.close_handle process_info[:hProcess]
-        Lib.close_handle process_info[:hThread]
-
-        if @duplex
-          @stdin = Lib.io_for(Lib.duplicate_handle(@write_pipe), File::WRONLY)
-          Lib.close_handle @read_pipe
-          Lib.close_handle @write_pipe
-        end
-      end
-
       def std_stream_handle_for(io)
-        handle = Lib.handle_for(io.fileno)
+        handle = Lib.handle_for(io)
 
         begin
           Lib.set_handle_inheritance handle, true
@@ -153,6 +144,17 @@ module ChildProcess
         end
 
         handle
+      end
+
+      def close_handles
+        Lib.close_handle process_info[:hProcess]
+        Lib.close_handle process_info[:hThread]
+
+        if @duplex
+          @stdin = Lib.io_for(Lib.duplicate_handle(@write_pipe), File::WRONLY)
+          Lib.close_handle @read_pipe
+          Lib.close_handle @write_pipe
+        end
       end
 
       def quote_if_necessary(str)
