@@ -13,7 +13,7 @@ module ChildProcess
         pid_ptr = FFI::MemoryPointer.new(:pid_t)
 
         actions = Lib::FileActions.new
-        attrs   = nil
+        attrs   = Lib::Attrs.new
 
         if @io
           if @io.stdout
@@ -50,6 +50,7 @@ module ChildProcess
         end
 
         actions.free
+        attrs.free
 
         if ret != 0
           raise LaunchError, "#{Lib.strerror(ret)} (#{ret})"

@@ -6,9 +6,14 @@ module ChildProcess
   class LaunchError < StandardError; end
 
   class MissingPlatformError < StandardError
-    def message
-      "posix_spawn is not yet supported on #{FFI::Platform::NAME}, falling back to fork/exec\n" +
-      "please file a bug at http://github.com/jarib/childprocess/issues"
+    def initialize
+      platform = defined?(FFI::Platform::NAME) ? FFI::Platform::NAME : RUBY_PLATFORM
+
+      message = "posix_spawn is not yet supported on #{}, falling back to fork() + exec(). " +
+                "Please file a bug at http://github.com/jarib/childprocess/issues"
+
+      super(message)
     end
+
   end
 end
