@@ -37,8 +37,12 @@ module ChildProcess
         src = Array(includes).map { |include| "#include <#{include}>" }.join("\n")
         src += <<-EOF
 
+#include <stdio.h>
 #include <stddef.h>
-int main() { return sizeof(#{type_name}); }
+int main() {
+  printf("%d", (unsigned int)sizeof(#{type_name}));
+  return 0;
+}
         EOF
 
         File.open(TMP_PROGRAM, 'w') do |file|
@@ -51,8 +55,17 @@ int main() { return sizeof(#{type_name}); }
           raise "failed to compile program: #{cmd.inspect}\n#{src}"
         end
 
-        system "./#{EXE_NAME}"
-        @sizeof[type_name] = $?.exitstatus
+        output = `./#{EXE_NAME} 2>&1`
+
+        unless $?.success?
+          raise "failed to run program: #{cmd.inspect}\n#{output}"
+        end
+
+        if output.to_i < 1
+          raise "sizeof(#{type_name}) == #{output.to_i} (output=#{output})"
+        end
+
+        @sizeof[type_name] = output.to_i
       ensure
         File.delete TMP_PROGRAM if File.exist?(TMP_PROGRAM)
         File.delete EXE_NAME if File.exist?(EXE_NAME)
