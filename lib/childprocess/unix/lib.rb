@@ -56,6 +56,30 @@ module ChildProcess
       # int posix_spawnattr_destroy(posix_spawnattr_t *attr);
       attach_function :posix_spawnattr_destroy, [:pointer], :int
 
+      # int posix_spawnattr_setflags(posix_spawnattr_t *attr, short flags);
+      attach_function :posix_spawnattr_setflags, [:pointer, :short], :int
+
+      # int posix_spawnattr_getflags(const posix_spawnattr_t *restrict attr, short *restrict flags);
+      attach_function :posix_spawnattr_getflags, [:pointer, :pointer], :int
+
+      # int posix_spawnattr_setpgroup(posix_spawnattr_t *attr, pid_t pgroup);
+      attach_function :posix_spawnattr_setpgroup, [:pointer, :pid_t], :int
+
+      # int posix_spawnattr_getpgroup(const posix_spawnattr_t *restrict attr, pid_t *restrict pgroup);
+      attach_function :posix_spawnattr_getpgroup, [:pointer, :pointer], :int
+
+      # int posix_spawnattr_setsigdefault(posix_spawnattr_t *restrict attr, const sigset_t *restrict sigdefault);
+      attach_function :posix_spawnattr_setsigdefault, [:pointer, :pointer], :int
+
+      # int posix_spawnattr_getsigdefault(const posix_spawnattr_t *restrict attr, sigset_t *restrict sigdefault);
+      attach_function :posix_spawnattr_getsigdefault, [:pointer, :pointer], :int
+
+      # int posix_spawnattr_setsigmask(posix_spawnattr_t *restrict attr, const sigset_t *restrict sigmask);
+      attach_function :posix_spawnattr_setsigmask, [:pointer, :pointer], :int
+
+      # int posix_spawnattr_getsigmask(const posix_spawnattr_t *restrict attr, sigset_t *restrict sigmask);
+      attach_function :posix_spawnattr_getsigmask, [:pointer, :pointer], :int
+
       def self.check(errno)
         if errno != 0
           raise Error, Lib.strerror(errno)
