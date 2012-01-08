@@ -43,7 +43,7 @@ module ChildProcess
 
         ret = Lib.posix_spawnp(
           pid_ptr,
-          @args.first, # TODO: pass to /bin/sh if this is the only arg?
+          @args.first, # TODO: not sure this matches exec() behaviour
           actions,
           attrs,
           argv,
@@ -63,7 +63,6 @@ module ChildProcess
         end
 
         @pid = pid_ptr.read_int
-
         ::Process.detach(@pid) if detach?
       end
 

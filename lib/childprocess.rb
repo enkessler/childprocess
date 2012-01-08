@@ -19,7 +19,7 @@ module ChildProcess
         if posix_spawn?
           Unix::PosixSpawnProcess.new(args)
         else
-          Unix::Process.new(args)
+          Unix::ForkExecProcess.new(args)
         end
       else
         raise Error, "unsupported platform #{platform.inspect}"
