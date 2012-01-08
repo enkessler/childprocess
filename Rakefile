@@ -49,3 +49,11 @@ task :jar => [:clean, :build] do
   sh "jar cf childprocess.jar -C #{tmpdir}/gems/#{gem_name}/lib ."
   sh "jar tf childprocess.jar"
 end
+
+namespace :generate do
+  desc 'Calculate size of posix_spawn structs for the current platform'
+  task :sizes do
+    require './lib/childprocess/tools/sizeof.rb'
+    ChildProcess::Tools::SizeOf.generate
+  end
+end

@@ -58,7 +58,23 @@ module ChildProcess
     end
 
     def posix_spawn?
-      @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
+      enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
+      return false unless enabled
+
+      require 'ffi'
+      begin
+        require "childprocess/unix/platform/#{FFI::Platform::NAME}/sizes"
+      rescue LoadError
+        raise ChildProcess::MissingPlatformError
+      end
+
+      require "childprocess/unix/lib"
+      require 'childprocess/unix/posix_spawn_process'
+
+      true
+    rescue ChildProcess::MissingPlatformError => ex
+      $stderr.puts ex.message
+      false
     end
 
     def posix_spawn=(bool)

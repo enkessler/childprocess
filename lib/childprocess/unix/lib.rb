@@ -1,5 +1,3 @@
-require 'ffi'
-
 module ChildProcess
   module Unix
     module Lib
@@ -65,15 +63,8 @@ module ChildProcess
       end
 
       class FileActions
-        class Data < FFI::Struct
-          layout :allocated, :int,
-                 :used, :int,
-                 :spawn_action, :pointer,
-                 :pad, [:int, 64]
-        end
-
         def initialize
-          @data = Data.new
+          @data = FFI::MemoryPointer.new(1, Platform::SIZEOF.fetch(:posix_spawn_file_actions_t), false)
           Lib.check Lib.posix_spawn_file_actions_init(@data)
         end
 
@@ -108,13 +99,13 @@ module ChildProcess
         end
 
         def to_ptr
-          @data.to_ptr
+          @data
         end
       end # FileActions
 
       class Attrs
         def initialize
-          @data = FFI::MemoryPointer.new(:pointer)
+          @data = FFI::MemoryPointer.new(1, Platform::SIZEOF.fetch(:posix_spawnattr_t), false)
           Lib.check Lib.posix_spawnattr_init(@data)
         end
 

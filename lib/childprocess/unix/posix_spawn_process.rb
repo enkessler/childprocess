@@ -1,6 +1,12 @@
+require 'ffi'
+
 module ChildProcess
   module Unix
     class PosixSpawnProcess < Process
+      def initialize(args)
+        super
+      end
+
       private
 
       def launch_process
@@ -13,13 +19,13 @@ module ChildProcess
           if @io.stdout
             actions.add_dup @io.stdout.fileno, $stdout.fileno
           else
-            actions.add_open $stdout.fileno, "/dev/null", File::WRONLY | File::CREAT  | File::TRUNC, 0644
+            actions.add_open $stdout.fileno, "/dev/null", File::WRONLY, 0644
           end
 
           if @io.stderr
             actions.add_dup @io.stderr.fileno, $stderr.fileno
           else
-            actions.add_open $stderr.fileno, "/dev/null", File::WRONLY | File::CREAT  | File::TRUNC, 0644
+            actions.add_open $stderr.fileno, "/dev/null", File::WRONLY, 0644
           end
         end
 
@@ -31,7 +37,7 @@ module ChildProcess
 
         ret = Lib.posix_spawnp(
           pid_ptr,
-          @args.first, # TODO: /bin/sh if this is the only arg
+          @args.first, # TODO: pass to /bin/sh if this is the only arg?
           actions,
           attrs,
           argv,
