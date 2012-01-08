@@ -18,6 +18,10 @@ module ChildProcessSpecHelper
     ruby_process("-e", "sleep")
   end
 
+  def invalid_process
+    @process = ChildProcess.build("unlikelytoexist")
+  end
+
   def ignored(signal)
     code = <<-RUBY
       trap(#{signal.inspect}, "IGNORE")
@@ -90,17 +94,38 @@ module ChildProcessSpecHelper
     raise last_error unless ok
   end
 
+  def cat
+    if ChildProcess.os == :windows
+      ruby(<<-CODE)
+            STDIN.sync  = true
+            STDOUT.sync = true
+
+            puts STDIN.read
+          CODE
+    else
+      ChildProcess.build("cat")
+    end
+  end
+
   def ruby(code)
     ruby_process(tmp_script(code))
+  end
+
+  def exit_timeout
+    10
   end
 
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
 
-RSpec.configure do |config|
-  config.include(ChildProcessSpecHelper)
-  config.after(:each) {
+RSpec.configure do |c|
+  c.include(ChildProcessSpecHelper)
+  c.after(:each) {
     @process && @process.alive? && @process.stop
   }
+
+  if defined?(JRUBY_VERSION)
+    c.filter_run_excluding :jruby => false
+  end
 end

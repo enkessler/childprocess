@@ -1,9 +1,6 @@
 module ChildProcess
   module Unix
     class Process < AbstractProcess
-      #
-      # @return [Fixnum] the pid of the process after it has started
-      #
       attr_reader :pid
 
       def io
@@ -28,12 +25,6 @@ module ChildProcess
         true
       end
 
-      #
-      # Did the process exit?
-      #
-      # @return [Boolean]
-      #
-
       def exited?
         return true if @exit_code
 
@@ -49,11 +40,13 @@ module ChildProcess
         !!pid
       end
 
-      private
-
       def wait
-        @exit_code = ::Process.waitpid @pid
+        pid, status = ::Process.waitpid2 @pid
+
+        @exit_code = status.exitstatus || status.termsig
       end
+
+      private
 
       def send_term
         send_signal 'TERM'
@@ -76,11 +69,18 @@ module ChildProcess
           stderr = @io.stderr
         end
 
+        # pipe used to detect exec() failure
+        exec_r, exec_w = ::IO.pipe
+        ChildProcess.close_on_exec exec_w
+
         if duplex?
           reader, writer = ::IO.pipe
         end
 
         @pid = fork {
+          exec_r.close
+          set_env
+
           STDOUT.reopen(stdout || "/dev/null")
           STDERR.reopen(stderr || "/dev/null")
 
@@ -89,15 +89,30 @@ module ChildProcess
             writer.close
           end
 
-          exec(*@args)
+          begin
+            exec(*@args)
+          rescue SystemCallError => ex
+            exec_w << ex.message
+          end
         }
+
+        exec_w.close
 
         if duplex?
           io._stdin = writer
           reader.close
         end
 
+        # if we don't eventually get EOF, exec() failed
+        unless exec_r.eof?
+          raise LaunchError, exec_r.read || "executing command with #{@args.inspect} failed"
+        end
+
         ::Process.detach(@pid) if detach?
+      end
+
+      def set_env
+        @environment.each { |k, v| ENV[k.to_s] = v.to_s }
       end
 
     end # Process

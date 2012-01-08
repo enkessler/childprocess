@@ -7,23 +7,37 @@ external programs running in the background on any Ruby / OS combination.
 The code originated in the selenium-webdriver gem, but should prove useful as
 a standalone library.
 
+[![Build Status](https://secure.travis-ci.org/jarib/childprocess.png)](http://travis-ci.org/jarib/childprocess)
+
 Usage
 -----
 ```ruby
 process = ChildProcess.build("ruby", "-e", "sleep")
 
-# inherit stdout/stderr from parent
+# inherit stdout/stderr from parent...
 process.io.inherit!
 
-# or pass an IO
+# ...or pass an IO
 process.io.stdout = Tempfile.new("child-output")
+
+# start the process
 
 process.start
 
+# check process status
 process.alive?    #=> true
 process.exited?   #=> false
 
-process.stop
+# wait indefinitely for process to exit...
+process.wait
+process.exited?   #=> true
+
+# ...or poll for exit + force quit
+begin
+  process.poll_for_exit(10)
+rescue ChildProcess::TimeoutError
+  process.stop # tries increasingly harsher methods to kill the process.
+end
 ```
 
 The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
@@ -36,7 +50,6 @@ How the process is launched and killed depends on the platform:
 * Unix     : fork + exec
 * Windows  : CreateProcess and friends
 * JRuby    : java.lang.{Process,ProcessBuilder}
-* IronRuby : System.Diagnostics.Process
 
 Note on Patches/Pull Requests
 -----------------------------
@@ -52,4 +65,4 @@ Note on Patches/Pull Requests
 Copyright
 ---------
 
-Copyright (c) 2010-2011 Jari Bakken. See LICENSE for details.
+Copyright (c) 2010-2012 Jari Bakken. See LICENSE for details.

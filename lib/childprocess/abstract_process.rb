@@ -15,6 +15,11 @@ module ChildProcess
     attr_accessor :duplex
 
     #
+    # Modify the child's environment variables
+    #
+    attr_reader :environment
+
+    #
     # Create a new process with the given args.
     #
     # @api private
@@ -22,12 +27,13 @@ module ChildProcess
     #
 
     def initialize(args)
-      @args      = args
-      @started   = false
-      @exit_code = nil
-      @io        = nil
-      @detach    = false
-      @duplex    = false
+      @args        = args
+      @started     = false
+      @exit_code   = nil
+      @io          = nil
+      @detach      = false
+      @duplex      = false
+      @environment = {}
     end
 
     #
@@ -37,6 +43,10 @@ module ChildProcess
     def io
       raise SubclassResponsibility, "io"
     end
+
+    #
+    # @return [Fixnum] the pid of the process after it has started
+    #
 
     def pid
       raise SubclassResponsibility, "pid"
@@ -63,6 +73,16 @@ module ChildProcess
 
     def stop(timeout = 3)
       raise SubclassResponsibility, "stop"
+    end
+
+    #
+    # Block until the process has been terminated.
+    #
+    # @return [Fixnum] The exit status of the process
+    #
+
+    def wait
+      raise SubclassResponsibility, "wait"
     end
 
     #

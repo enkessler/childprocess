@@ -3,6 +3,12 @@ require "java"
 module ChildProcess
   module JRuby
     class Process < AbstractProcess
+      def initialize(args)
+        super(args)
+
+        @pumps = []
+      end
+
       def io
         @io ||= JRuby::IO.new
       end
@@ -12,6 +18,8 @@ module ChildProcess
 
         assert_started
         @exit_code = @process.exitValue
+        stop_pumps
+
         true
       rescue java.lang.IllegalThreadStateException
         false
@@ -23,8 +31,13 @@ module ChildProcess
         assert_started
 
         @process.destroy
-        @process.waitFor # no way to actually use the timeout here..
+        wait # no way to actually use the timeout here..
+      end
 
+      def wait
+        @process.waitFor
+
+        stop_pumps
         @exit_code = @process.exitValue
       end
 
@@ -37,7 +50,7 @@ module ChildProcess
       #
       def pid
         if @process.getClass.getName != "java.lang.UNIXProcess"
-          raise NotImplementedError.new("pid is not supported by JRuby child processes on Windows")
+          raise NotImplementedError, "pid is only supported by JRuby child processes on Unix"
         end
 
         # About the best way we can do this is with a nasty reflection-based impl
@@ -52,26 +65,33 @@ module ChildProcess
 
       def launch_process(&blk)
         pb = java.lang.ProcessBuilder.new(@args)
-        pb.directory(java.io.File.new(Dir.pwd))
-        env = pb.environment
-        ENV.each { |k,v| env.put(k, v) }
 
-        @process = pb.start
+        pb.directory java.io.File.new(Dir.pwd)
+        set_env pb.environment
+
+        begin
+          @process = pb.start
+        rescue java.io.IOException => ex
+          raise LaunchError, ex.message
+        end
 
         setup_io
       end
 
       def setup_io
         if @io
-          redirect @process.getErrorStream, @io.stderr
-          redirect @process.getInputStream, @io.stdout
+          redirect(@process.getErrorStream, @io.stderr)
+          redirect(@process.getInputStream, @io.stdout)
         else
           @process.getErrorStream.close
           @process.getInputStream.close
         end
 
         if duplex?
-          io._stdin = @process.getOutputStream.to_io
+          stdin = @process.getOutputStream.to_io
+          stdin.sync = true
+
+          io._stdin = stdin
         else
           @process.getOutputStream.close
         end
@@ -83,8 +103,16 @@ module ChildProcess
           return
         end
 
-        output = output.to_outputstream
-        Thread.new { Redirector.new(input, output).run }
+        @pumps << Pump.new(input, output.to_outputstream).run
+      end
+
+      def stop_pumps
+        @pumps.each { |pump| pump.stop }
+      end
+
+      def set_env(env)
+        ENV.each { |k,v| env.put(k, v) } # not sure why this is needed
+        @environment.each { |k,v| env.put(k.to_s, v.to_s) }
       end
 
     end # Process

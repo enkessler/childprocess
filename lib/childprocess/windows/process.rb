@@ -1,9 +1,7 @@
 module ChildProcess
   module Windows
     class Process < AbstractProcess
-      #
-      # @return [Fixnum] the pid of the process after it has started
-      #
+
       attr_reader :pid
 
       def io
@@ -22,6 +20,14 @@ module ChildProcess
         @handle.close
       end
 
+      def wait
+        @handle.wait
+        @exit_code = @handle.exit_code
+        @handle.close
+
+        @exit_code
+      end
+
       def exited?
         return true if @exit_code
         assert_started
@@ -33,6 +39,7 @@ module ChildProcess
 
         if exited
           @exit_code = code
+          @handle.close
         end
 
         exited
@@ -41,35 +48,26 @@ module ChildProcess
       private
 
       def launch_process
-        opts = {
-          :inherit => false,
-          :detach  => detach?,
-          :duplex  => duplex?
-        }
+        builder = ProcessBuilder.new(@args)
+        builder.inherit     = false
+        builder.detach      = detach?
+        builder.duplex      = duplex?
+        builder.environment = @environment unless @environment.empty?
 
         if @io
-          opts[:stdout] = @io.stdout
-          opts[:stderr] = @io.stderr
+          builder.stdout      = @io.stdout
+          builder.stderr      = @io.stderr
         end
 
-        @pid = Lib.create_proc(command_string, opts)
-        @handle = Handle.open(@pid)
+        @pid = builder.start
+        @handle = Handle.open @pid
 
         if duplex?
-          io._stdin = opts[:stdin]
+          raise Error, "no stdin stream" unless builder.stdin
+          io._stdin = builder.stdin
         end
 
         self
-      end
-
-      def command_string
-        @command_string ||= (
-          @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
-        )
-      end
-
-      def quote_if_necessary(str)
-        str =~ /[\s\\]/ ? %{"#{str}"} : str
       end
 
     end # Process

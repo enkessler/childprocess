@@ -25,10 +25,9 @@ module ChildProcess
   end # Windows
 end # ChildProcess
 
-require "childprocess/windows/constants"
+require "childprocess/windows/lib"
 require "childprocess/windows/structs"
-require "childprocess/windows/functions"
 require "childprocess/windows/handle"
-require "childprocess/windows/api"
 require "childprocess/windows/io"
+require "childprocess/windows/process_builder"
 require "childprocess/windows/process"
