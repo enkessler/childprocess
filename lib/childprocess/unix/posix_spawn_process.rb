@@ -11,9 +11,9 @@ module ChildProcess
 
       def launch_process
         pid_ptr = FFI::MemoryPointer.new(:pid_t)
-
         actions = Lib::FileActions.new
-        attrs   = nil # Lib::Attrs.new
+        attrs   = Lib::Attrs.new
+        flags   = 0
 
         if @io
           if @io.stdout
@@ -35,6 +35,12 @@ module ChildProcess
           actions.add_close writer.fileno
         end
 
+        if defined?(Platform::POSIX_SPAWN_USEVFORK)
+          flags |= Platform::POSIX_SPAWN_USEVFORK
+        end
+
+        attrs.flags = flags
+
         ret = Lib.posix_spawnp(
           pid_ptr,
           @args.first, # TODO: pass to /bin/sh if this is the only arg?
@@ -50,7 +56,7 @@ module ChildProcess
         end
 
         actions.free
-        # attrs.free
+        attrs.free
 
         if ret != 0
           raise LaunchError, "#{Lib.strerror(ret)} (#{ret})"

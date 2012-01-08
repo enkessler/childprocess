@@ -88,20 +88,20 @@ module ChildProcess
 
       class FileActions
         def initialize
-          @data = FFI::MemoryPointer.new(1, Platform::SIZEOF.fetch(:posix_spawn_file_actions_t), false)
-          Lib.check Lib.posix_spawn_file_actions_init(@data)
+          @ptr = FFI::MemoryPointer.new(1, Platform::SIZEOF.fetch(:posix_spawn_file_actions_t), false)
+          Lib.check Lib.posix_spawn_file_actions_init(@ptr)
         end
 
         def add_close(fileno)
           Lib.check Lib.posix_spawn_file_actions_addclose(
-            @data,
+            @ptr,
             fileno
           )
         end
 
         def add_open(fileno, path, oflag, mode)
           Lib.check Lib.posix_spawn_file_actions_addopen(
-            @data,
+            @ptr,
             fileno,
             path,
             oflag,
@@ -111,35 +111,46 @@ module ChildProcess
 
         def add_dup(fileno, new_fileno)
           Lib.check Lib.posix_spawn_file_actions_adddup2(
-            @data,
+            @ptr,
             fileno,
             new_fileno
           )
         end
 
         def free
-          Lib.check Lib.posix_spawn_file_actions_destroy(@data)
-          @data = nil
+          Lib.check Lib.posix_spawn_file_actions_destroy(@ptr)
+          @ptr = nil
         end
 
         def to_ptr
-          @data
+          @ptr
         end
       end # FileActions
 
       class Attrs
         def initialize
-          @data = FFI::MemoryPointer.new(1, Platform::SIZEOF.fetch(:posix_spawnattr_t), false)
-          Lib.check Lib.posix_spawnattr_init(@data)
+          @ptr = FFI::MemoryPointer.new(1, Platform::SIZEOF.fetch(:posix_spawnattr_t), false)
+          Lib.check Lib.posix_spawnattr_init(@ptr)
         end
 
         def free
-          Lib.check Lib.posix_spawnattr_destroy(@data)
-          @data = nil
+          Lib.check Lib.posix_spawnattr_destroy(@ptr)
+          @ptr = nil
+        end
+
+        def flags=(flags)
+          Lib.check Lib.posix_spawnattr_setflags(@ptr, flags)
+        end
+
+        def flags
+          ptr = FFI::MemoryPointer.new(:short)
+          Lib.check Lib.posix_spawnattr_getflags(@ptr, ptr)
+
+          ptr.read_short
         end
 
         def to_ptr
-          @data
+          @ptr
         end
       end # Attrs
 

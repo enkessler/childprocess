@@ -50,10 +50,13 @@ task :jar => [:clean, :build] do
   sh "jar tf childprocess.jar"
 end
 
-namespace :generate do
-  desc 'Calculate size of posix_spawn structs for the current platform'
-  task :sizes do
-    require './lib/childprocess/tools/sizeof.rb'
-    ChildProcess::Tools::SizeOf.generate
-  end
+task :env do
+  $:.unshift File.expand_path("../lib", __FILE__)
+  require 'childprocess'
+end
+
+desc 'Calculate size of posix_spawn structs for the current platform'
+task :generate => :env do
+  require 'childprocess/tools/generator'
+  ChildProcess::Tools::Generator.generate
 end

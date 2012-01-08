@@ -63,7 +63,7 @@ module ChildProcess
 
       require 'ffi'
       begin
-        require "childprocess/unix/platform/#{FFI::Platform::NAME}/sizes"
+        require "childprocess/unix/platform/#{FFI::Platform::NAME}"
       rescue LoadError
         raise ChildProcess::MissingPlatformError
       end
