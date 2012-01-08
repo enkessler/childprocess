@@ -16,7 +16,11 @@ module ChildProcess
       when :windows
         Windows::Process.new(args)
       when :macosx, :linux, :unix, :cygwin
-        Unix::Process.new(args)
+        if posix_spawn?
+          Unix::PosixSpawnProcess.new(args)
+        else
+          Unix::Process.new(args)
+        end
       else
         raise Error, "unsupported platform #{platform.inspect}"
       end
@@ -51,6 +55,14 @@ module ChildProcess
 
     def windows?
       !jruby? && os == :windows
+    end
+
+    def posix_spawn?
+      @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
+    end
+
+    def posix_spawn=(bool)
+      @posix_spawn = bool
     end
 
     def os
