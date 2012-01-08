@@ -28,7 +28,7 @@ module ChildProcess
         fetch_constant 'POSIX_SPAWN_SETSIGDEF',  :include  => 'spawn.h'
         fetch_constant 'POSIX_SPAWN_SETSIGMASK', :include  => 'spawn.h'
 
-        if ChildProcess.os == :linux
+        if ChildProcess.linux?
           fetch_constant 'POSIX_SPAWN_USEVFORK', :include => 'spawn.h', :define => {'_GNU_SOURCE' => nil}
         end
 
@@ -84,7 +84,7 @@ int main() {
           SRC
         end.join("\n")
         program << "\n"
-        
+
         includes = Array(opts[:include]) + DEFAULT_INCLUDES
         program << includes.map { |include| "#include <#{include}>" }.join("\n")
         program << "\n#{src}"

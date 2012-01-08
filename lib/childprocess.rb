@@ -45,6 +45,10 @@ module ChildProcess
       !jruby? && [:macosx, :linux, :unix].include?(os)
     end
 
+    def linux?
+      os == :linux
+    end
+
     def jruby?
       platform == :jruby
     end

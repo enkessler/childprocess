@@ -35,7 +35,7 @@ module ChildProcess
           actions.add_close writer.fileno
         end
 
-        if defined?(Platform::POSIX_SPAWN_USEVFORK)
+        if defined? Platform::POSIX_SPAWN_USEVFORK
           flags |= Platform::POSIX_SPAWN_USEVFORK
         end
 
