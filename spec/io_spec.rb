@@ -87,8 +87,8 @@ describe ChildProcess do
 
   it "works with pipes", :jruby => false do
     process = ruby(<<-CODE)
-      STDOUT.puts "stdout"
-      STDERR.puts "stderr"
+      STDOUT.print "stdout"
+      STDERR.print "stderr"
     CODE
 
     stdout, stdout_w = IO.pipe
@@ -109,8 +109,8 @@ describe ChildProcess do
     stdout_w.close
     stderr_w.close
 
-    stdout.read.should == "stdout\n"
-    stderr.read.should == "stderr\n"
+    stdout.read.should == "stdout"
+    stderr.read.should == "stderr"
   end
 
   it "can set close-on-exec when IO is inherited" do
