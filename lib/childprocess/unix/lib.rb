@@ -7,10 +7,6 @@ module ChildProcess
 
       attach_function :strerror, [:int], :string
 
-      if ChildProcess.linux?
-        attach_variable :environ, :pointer
-      end
-
       # int posix_spawnp(
       #   pid_t *restrict pid,
       #   const char *restrict file,

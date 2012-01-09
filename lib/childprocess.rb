@@ -41,6 +41,10 @@ module ChildProcess
       end
     end
 
+    def platform_name
+      @platform_name ||= "#{arch}-#{os}"
+    end
+
     def unix?
       !jruby? && [:macosx, :linux, :unix].include?(os)
     end
@@ -67,7 +71,7 @@ module ChildProcess
 
       require 'ffi'
       begin
-        require "childprocess/unix/platform/#{FFI::Platform::NAME}"
+        require "childprocess/unix/platform/#{ChildProcess.platform_name}"
       rescue LoadError
         raise ChildProcess::MissingPlatformError
       end
@@ -88,7 +92,7 @@ module ChildProcess
     def os
       @os ||= (
         require "rbconfig"
-        host_os = RbConfig::CONFIG['host_os']
+        host_os = RbConfig::CONFIG['host_os'].downcase
 
         case host_os
         when /mswin|msys|mingw32|cygwin/
@@ -101,6 +105,27 @@ module ChildProcess
           :unix
         else
           raise Error, "unknown os: #{host_os.inspect}"
+        end
+      )
+    end
+
+    def arch
+      @arch ||= (
+        host_cpu = RbConfig::CONFIG['host_cpu'].downcase
+        case host_cpu
+        when /i[3456]86/
+          # Darwin always reports i686, even when running in 64bit mod
+          if os == :macosx && 0xfee1deadbeef.is_a?(Fixnum)
+            "x86_64"
+          else
+            "i386"
+          end
+        when /amd64|x86_64/
+          "x86_64"
+        when /ppc|powerpc/
+          "powerpc"
+        else
+          host_cpu
         end
       )
     end

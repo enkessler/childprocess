@@ -14,7 +14,7 @@ module ChildProcess
 
       def initialize
         @cc        = ENV['CC'] || 'gcc'
-        @out       = File.expand_path("../../unix/platform/#{FFI::Platform::NAME}.rb", __FILE__)
+        @out       = File.expand_path("../../unix/platform/#{ChildProcess.platform_name}.rb", __FILE__)
         @sizeof    = {}
         @constants = {}
       end
