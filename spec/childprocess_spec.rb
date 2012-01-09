@@ -10,7 +10,14 @@ describe ChildProcess do
     process.should be_started
   end
 
-  it "raises ChildProcess::LaunchError if the process can't be started" do
+  # We can't detect failure to execve() when using posix_spawn() on Linux
+  # without waiting for the child to exit with code 127.
+  #
+  # See e.g. http://repo.or.cz/w/glibc.git/blob/669704fd:/sysdeps/posix/spawni.c#l34
+  #
+  # We could work around this by doing the PATH search ourselves, but not sure
+  # it's worth it.
+  it "raises ChildProcess::LaunchError if the process can't be started", :posix_spawn_on_linux => false do
     lambda { invalid_process.start }.should raise_error(ChildProcess::LaunchError)
   end
 
