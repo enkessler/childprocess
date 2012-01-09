@@ -22,6 +22,7 @@ module ChildProcess
       def generate
         fetch_size 'posix_spawn_file_actions_t', :include => "spawn.h"
         fetch_size 'posix_spawnattr_t', :include => "spawn.h"
+        fetch_size 'sigset_t', :include => "signal.h"
 
         fetch_constant 'POSIX_SPAWN_RESETIDS',   :include  => 'spawn.h'
         fetch_constant 'POSIX_SPAWN_SETPGROUP',  :include  => 'spawn.h'
