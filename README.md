@@ -47,7 +47,7 @@ Implementation
 
 How the process is launched and killed depends on the platform:
 
-* Unix     : fork + exec
+* Unix     : fork + exec (or posix_spawn if enabled)
 * Windows  : CreateProcess and friends
 * JRuby    : java.lang.{Process,ProcessBuilder}
 
