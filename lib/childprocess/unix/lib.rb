@@ -157,3 +157,15 @@ module ChildProcess
     end
   end
 end
+
+# missing on rubinius
+class FFI::MemoryPointer
+  unless method_defined?(:from_string)
+    def self.from_string(str)
+      ptr = new(1, str.bytesize + 1)
+      ptr.write_string("#{str}\0")
+
+      ptr
+    end
+  end
+end
