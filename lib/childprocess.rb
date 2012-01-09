@@ -77,7 +77,7 @@ module ChildProcess
 
       true
     rescue ChildProcess::MissingPlatformError => ex
-      $stderr.puts ex.message
+      warn_once ex.message
       false
     end
 
@@ -120,6 +120,17 @@ module ChildProcess
         Windows::Lib.dont_inherit file
       else
         raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform.inspect}"
+      end
+    end
+
+    private
+
+    def warn_once(msg)
+      @warnings ||= {}
+
+      unless @warnings[msg]
+        @warnings[msg] = true
+        $stderr.puts msg
       end
     end
 
