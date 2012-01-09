@@ -3,10 +3,6 @@ require 'ffi'
 module ChildProcess
   module Unix
     class PosixSpawnProcess < Process
-      def initialize(args)
-        super
-      end
-
       private
 
       def launch_process
