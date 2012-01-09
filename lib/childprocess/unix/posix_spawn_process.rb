@@ -67,11 +67,16 @@ module ChildProcess
       end
 
       def argv
-        arg_ptrs = @args.map { |e| FFI::MemoryPointer.from_string(e.to_s) }
+        arg_ptrs = @args.map do |e|
+          if e.include?("\0")
+            raise ArgumentError, "argument cannot contain null bytes: #{e.inspect}"
+          end
+          FFI::MemoryPointer.from_string(e.to_s)
+        end
         arg_ptrs << nil
 
         argv = FFI::MemoryPointer.new(:pointer, arg_ptrs.size)
-        argv.write_array_of_pointer(arg_ptrs)
+        argv.put_array_of_pointer(0, arg_ptrs)
 
         argv
       end
@@ -88,7 +93,7 @@ module ChildProcess
         env_ptrs << nil
 
         env = FFI::MemoryPointer.new(:pointer, env_ptrs.size)
-        env.write_array_of_pointer(env_ptrs)
+        env.put_array_of_pointer(0, env_ptrs)
 
         env
       end
