@@ -94,8 +94,14 @@ module ChildProcess
         env
       end
 
-      def fileno_for(obj)
-        obj.fileno
+      if ChildProcess.jruby?
+        def fileno_for(obj)
+          ChildProcess::JRuby.posix_fileno_for(obj)
+        end
+      else
+        def fileno_for(obj)
+          obj.fileno
+        end
       end
 
     end
