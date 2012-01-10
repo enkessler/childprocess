@@ -49,8 +49,8 @@ module ChildProcess
 
         # extras
         @environment.each do |key, value|
-          if key.include?("=")
-            raise InvalidEnvironmentVariableName, key
+          if key =~ /=|\0/ || val.include?("\0")
+            raise InvalidEnvironmentVariable, key
           end
 
           strings << "#{key}=#{value}\0"

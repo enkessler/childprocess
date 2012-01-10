@@ -79,13 +79,12 @@ module ChildProcess
 
       def env
         env_ptrs = ENV.to_hash.merge(@environment).map do |key, val|
-          if key.include?("=")
-            raise InvalidEnvironmentVariableName, key
+          if key =~ /=|\0/ || val.include?("\0")
+            raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
           end
 
           FFI::MemoryPointer.from_string("#{key}=#{val}")
         end
-
         env_ptrs << nil
 
         env = FFI::MemoryPointer.new(:pointer, env_ptrs.size)
