@@ -48,12 +48,12 @@ module ChildProcess
         strings = ENV.map { |k,v| "#{k}=#{v}\0" }
 
         # extras
-        @environment.each do |key, value|
+        @environment.each do |key, val|
           if key =~ /=|\0/ || val.include?("\0")
-            raise InvalidEnvironmentVariable, key
+            raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
           end
 
-          strings << "#{key}=#{value}\0"
+          strings << "#{key}=#{val}\0"
         end
 
         strings << "\0" # terminate the env block
