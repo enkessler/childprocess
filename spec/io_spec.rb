@@ -85,7 +85,7 @@ describe ChildProcess do
   # http://travis-ci.org/#!/jarib/childprocess/jobs/487331
   #
 
-  it "works with pipes", :jruby => false do
+  it "works with pipes", :process_builder => false do
     process = ruby(<<-CODE)
       STDOUT.print "stdout"
       STDERR.print "stderr"

@@ -133,8 +133,8 @@ RSpec.configure do |c|
     @process && @process.alive? && @process.stop
   }
 
-  if defined?(JRUBY_VERSION)
-    c.filter_run_excluding :jruby => false
+  if ChildProcess.jruby? && !ChildProcess.posix_spawn?
+    c.filter_run_excluding :process_builder => false
   end
 
   if ChildProcess.linux? && ChildProcess.posix_spawn?
