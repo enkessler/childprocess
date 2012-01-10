@@ -10,21 +10,17 @@ module ChildProcess
 
   class << self
     def new(*args)
-      case platform
-      when :jruby
-        if os == :windows
-          Windows::Process.new(args)
-        else
-          JRuby::Process.new(args)
-        end
-      when :windows
-        Windows::Process.new(args)
+      case os
       when :macosx, :linux, :unix, :cygwin
         if posix_spawn?
           Unix::PosixSpawnProcess.new(args)
+        elsif jruby?
+          JRuby::Process.new(args)
         else
           Unix::ForkExecProcess.new(args)
         end
+      when :windows
+        Windows::Process.new(args)
       else
         raise Error, "unsupported platform #{platform.inspect}"
       end
