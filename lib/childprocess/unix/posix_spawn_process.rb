@@ -13,22 +13,22 @@ module ChildProcess
 
         if @io
           if @io.stdout
-            actions.add_dup @io.stdout.fileno, $stdout.fileno
+            actions.add_dup fileno_for(@io.stdout), fileno_for($stdout)
           else
-            actions.add_open $stdout.fileno, "/dev/null", File::WRONLY, 0644
+            actions.add_open fileno_for($stdout), "/dev/null", File::WRONLY, 0644
           end
 
           if @io.stderr
-            actions.add_dup @io.stderr.fileno, $stderr.fileno
+            actions.add_dup fileno_for(@io.stderr), fileno_for($stderr)
           else
-            actions.add_open $stderr.fileno, "/dev/null", File::WRONLY, 0644
+            actions.add_open fileno_for($stderr), "/dev/null", File::WRONLY, 0644
           end
         end
 
         if duplex?
           reader, writer = ::IO.pipe
-          actions.add_dup reader.fileno, $stdin.fileno
-          actions.add_close writer.fileno
+          actions.add_dup fileno_for(reader), fileno_for($stdin)
+          actions.add_close fileno_for(writer)
         end
 
         if defined? Platform::POSIX_SPAWN_USEVFORK
@@ -92,6 +92,10 @@ module ChildProcess
         env.put_array_of_pointer(0, env_ptrs)
 
         env
+      end
+
+      def fileno_for(obj)
+        obj.fileno
       end
 
     end
