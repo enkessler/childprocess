@@ -264,25 +264,20 @@ module ChildProcess
             raise Error, "No way of getting the native file descriptor in JRuby"
           end
 
-          case fd_or_io
-          when IO
+          if fd_or_io.kind_of?(IO) || fd_or_io.respond_to?(:fileno)
             handle = get_osfhandle(fd_or_io.fileno)
-          when Fixnum
+          elsif fd_or_io.kind_of?(Fixnum)
             handle = get_osfhandle(fd_or_io)
-          else
-            if fd_or_io.respond_to?(:fileno)
-              handle = get_osfhandle(fd_or_io.fileno)
-            elsif fd_or_io.respond_to?(:to_io)
-              io = fd_or_io.to_io
+          elsif fd_or_io.respond_to?(:to_io)
+            io = fd_or_io.to_io
 
-              unless io.kind_of?(IO)
-                raise TypeError, "expected #to_io to return an instance of IO"
-              end
-
-              return handle_for(io)
-            else
-              raise TypeError, "invalid type: #{fd_or_io.inspect}"
+            unless io.kind_of?(IO)
+              raise TypeError, "expected #to_io to return an instance of IO"
             end
+
+            handle = get_osfhandle(io.fileno)
+          else
+            raise TypeError, "invalid type: #{fd_or_io.inspect}"
           end
 
           if handle == INVALID_HANDLE_VALUE

@@ -41,6 +41,7 @@ module ChildProcess
       end
 
       def wait
+        assert_started
         pid, status = ::Process.waitpid2 @pid
 
         @exit_code = status.exitstatus || status.termsig
@@ -61,58 +62,6 @@ module ChildProcess
 
         log "sending #{sig}"
         ::Process.kill sig, @pid
-      end
-
-      def launch_process
-        if @io
-          stdout = @io.stdout
-          stderr = @io.stderr
-        end
-
-        # pipe used to detect exec() failure
-        exec_r, exec_w = ::IO.pipe
-        ChildProcess.close_on_exec exec_w
-
-        if duplex?
-          reader, writer = ::IO.pipe
-        end
-
-        @pid = fork {
-          exec_r.close
-          set_env
-
-          STDOUT.reopen(stdout || "/dev/null")
-          STDERR.reopen(stderr || "/dev/null")
-
-          if duplex?
-            STDIN.reopen(reader)
-            writer.close
-          end
-
-          begin
-            exec(*@args)
-          rescue SystemCallError => ex
-            exec_w << ex.message
-          end
-        }
-
-        exec_w.close
-
-        if duplex?
-          io._stdin = writer
-          reader.close
-        end
-
-        # if we don't eventually get EOF, exec() failed
-        unless exec_r.eof?
-          raise LaunchError, exec_r.read || "executing command with #{@args.inspect} failed"
-        end
-
-        ::Process.detach(@pid) if detach?
-      end
-
-      def set_env
-        @environment.each { |k, v| ENV[k.to_s] = v.to_s }
       end
 
     end # Process
