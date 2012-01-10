@@ -114,7 +114,8 @@ describe ChildProcess do
   end
 
   it "can set close-on-exec when IO is inherited" do
-    server = TCPServer.new("localhost", 4433)
+    port = random_free_port
+    server = TCPServer.new("127.0.0.1", port)
     ChildProcess.close_on_exec server
 
     process = sleeping_ruby
@@ -123,6 +124,6 @@ describe ChildProcess do
     process.start
     server.close
 
-    lambda { TCPServer.new("localhost", 4433).close }.should_not raise_error
+    lambda { TCPServer.new("127.0.0.1", port).close }.should_not raise_error
   end
 end

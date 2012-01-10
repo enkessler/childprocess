@@ -115,6 +115,14 @@ module ChildProcessSpecHelper
     10
   end
 
+  def random_free_port
+    server = TCPServer.new('127.0.0.1', 0)
+    port   = server.addr[1]
+    server.close
+
+    port
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
