@@ -260,12 +260,12 @@ module ChildProcess
         end
 
         def handle_for(fd_or_io)
-          if ChildProcess.jruby?
-            raise Error, "No way of getting the native file descriptor in JRuby"
-          end
-
           if fd_or_io.kind_of?(IO) || fd_or_io.respond_to?(:fileno)
-            handle = get_osfhandle(fd_or_io.fileno)
+            if ChildProcess.jruby?
+              handle = ChildProcess::JRuby.windows_handle_for(fd_or_io)
+            else
+              handle = get_osfhandle(fd_or_io.fileno)
+            end
           elsif fd_or_io.kind_of?(Fixnum)
             handle = get_osfhandle(fd_or_io)
           elsif fd_or_io.respond_to?(:to_io)
