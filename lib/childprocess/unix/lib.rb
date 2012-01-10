@@ -5,6 +5,15 @@ module ChildProcess
 
       ffi_lib FFI::Library::LIBC
 
+      if ChildProcess.os == :macosx
+        attach_function :_NSGetEnviron, [], :pointer
+        def self.environ
+          _NSGetEnviron().read_pointer
+        end
+      else
+        attach_variable :environ, :pointer
+      end
+
       attach_function :strerror, [:int], :string
 
       # int posix_spawnp(
