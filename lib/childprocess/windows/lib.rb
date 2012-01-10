@@ -252,12 +252,20 @@ module ChildProcess
           )
 
           str = buf.read_string(size).strip
-          "#{str} (#{errnum})"
+          if errnum == 0
+            "Unknown error (Windows says #{str.inspect}, but it did not.)"
+          else
+            "#{str} (#{errnum})"
+          end
         end
 
         def handle_for(fd_or_io)
           if fd_or_io.kind_of?(IO) || fd_or_io.respond_to?(:fileno)
-            handle = get_osfhandle(fd_or_io.fileno)
+            if ChildProcess.jruby?
+              handle = ChildProcess::JRuby.windows_handle_for(fd_or_io)
+            else
+              handle = get_osfhandle(fd_or_io.fileno)
+            end
           elsif fd_or_io.kind_of?(Fixnum)
             handle = get_osfhandle(fd_or_io)
           elsif fd_or_io.respond_to?(:to_io)

@@ -31,6 +31,23 @@ module ChildProcess
       # fall back
       obj.fileno
     end
+
+    def self.windows_handle_for(obj)
+      channel = ::JRuby.reference(obj).channel
+      fileno = obj.fileno
+
+      begin
+        fileno = channel.getFDVal
+      rescue NoMethodError
+        fileno = channel.fd if channel.respond_to?(:fd)
+      end
+
+      if fileno.kind_of? Java::JavaIo::FileDescriptor
+        fileno.handle
+      else
+        Windows::Lib.handle_for fileno
+      end
+    end
   end
 end
 

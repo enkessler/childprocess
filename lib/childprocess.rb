@@ -10,17 +10,17 @@ module ChildProcess
 
   class << self
     def new(*args)
-      case platform
-      when :jruby
-        JRuby::Process.new(args)
-      when :windows
-        Windows::Process.new(args)
+      case os
       when :macosx, :linux, :unix, :cygwin
         if posix_spawn?
           Unix::PosixSpawnProcess.new(args)
+        elsif jruby?
+          JRuby::Process.new(args)
         else
           Unix::ForkExecProcess.new(args)
         end
+      when :windows
+        Windows::Process.new(args)
       else
         raise Error, "unsupported platform #{platform.inspect}"
       end
@@ -32,10 +32,6 @@ module ChildProcess
         :jruby
       elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ironruby"
         :ironruby
-      elsif RUBY_PLATFORM =~ /mswin|msys|mingw32/
-        :windows
-      elsif RUBY_PLATFORM =~ /cygwin/
-        :cygwin
       else
         os
       end
@@ -46,7 +42,7 @@ module ChildProcess
     end
 
     def unix?
-      !jruby? && [:macosx, :linux, :unix].include?(os)
+      !windows?
     end
 
     def linux?
@@ -57,12 +53,8 @@ module ChildProcess
       platform == :jruby
     end
 
-    def jruby_on_unix?
-      jruby? and [:macosx, :linux, :unix].include? os
-    end
-
     def windows?
-      !jruby? && os == :windows
+      os == :windows
     end
 
     def posix_spawn?
@@ -99,12 +91,14 @@ module ChildProcess
         host_os = RbConfig::CONFIG['host_os'].downcase
 
         case host_os
-        when /mswin|msys|mingw32|cygwin/
-          :windows
-        when /darwin|mac os/
-          :macosx
         when /linux/
           :linux
+        when /darwin|mac os/
+          :macosx
+        when /mswin|msys|mingw32/
+          :windows
+        when /cygwin/
+          :cygwin
         when /solaris|bsd/
           :unix
         else
@@ -165,3 +159,5 @@ module ChildProcess
 
   end # class << self
 end # ChildProcess
+
+require 'jruby' if ChildProcess.jruby?

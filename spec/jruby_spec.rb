@@ -1,7 +1,7 @@
 require File.expand_path('../spec_helper', __FILE__)
 require "pid_behavior"
 
-if ChildProcess.jruby?
+if ChildProcess.jruby? && !ChildProcess.windows?
   describe ChildProcess::JRuby::IO do
     let(:io) { ChildProcess::JRuby::IO.new }
 
@@ -11,7 +11,7 @@ if ChildProcess.jruby?
   end
 
   describe ChildProcess::JRuby::Process do
-    if ChildProcess.jruby_on_unix?
+    if ChildProcess.unix?
       it_behaves_like "a platform that provides the child's pid"
     else
       it "raises an error when trying to access the child's pid" do
