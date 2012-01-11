@@ -123,6 +123,24 @@ module ChildProcessSpecHelper
     port
   end
 
+  def wait_until(timeout = 10, &blk)
+    end_time = Time.now + timeout
+
+    until Time.now >= end_time
+      return if yield
+      sleep 0.05
+    end
+
+    raise "timed out"
+  end
+
+  def can_bind?(host, port)
+    TCPServer.new(host, port).close
+    true
+  rescue
+    false
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true

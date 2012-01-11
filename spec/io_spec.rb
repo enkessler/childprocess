@@ -124,6 +124,6 @@ describe ChildProcess do
     process.start
     server.close
 
-    lambda { TCPServer.new("127.0.0.1", port).close }.should_not raise_error
+    wait_until { can_bind? "127.0.0.1", port }
   end
 end
