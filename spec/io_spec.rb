@@ -109,8 +109,10 @@ describe ChildProcess do
     stdout_w.close
     stderr_w.close
 
-    stdout.read.should == "stdout"
-    stderr.read.should == "stderr"
+    out = stdout.read
+    err = stderr.read
+
+    [out, err].should == %w[stdout stderr]
   end
 
   it "can set close-on-exec when IO is inherited" do
