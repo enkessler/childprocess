@@ -1,8 +1,8 @@
+
 module ChildProcess
   module Unix
     module Lib
       extend FFI::Library
-
       ffi_lib FFI::Library::LIBC
 
       if ChildProcess.os == :macosx
@@ -10,7 +10,7 @@ module ChildProcess
         def self.environ
           _NSGetEnviron().read_pointer
         end
-      else
+      elsif respond_to? :attach_variable
         attach_variable :environ, :pointer
       end
 
