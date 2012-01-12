@@ -37,7 +37,9 @@ module ChildProcess
 
         attrs.flags = flags
 
-        GC.disable # prevent GC of argv/env ptrs
+        # wrap in helper classes in order to avoid GC'ed pointers
+        argv = Argv.new(@args)
+        envp = Envp.new(ENV.to_hash.merge(@environment))
 
         ret = Lib.posix_spawnp(
           pid_ptr,
@@ -45,10 +47,8 @@ module ChildProcess
           actions,
           attrs,
           argv,
-          env
+          envp
         )
-
-        GC.enable
 
         if duplex?
           io._stdin = writer
@@ -66,37 +66,6 @@ module ChildProcess
         ::Process.detach(@pid) if detach?
       end
 
-      def argv
-        arg_ptrs = @args.map do |e|
-          if e.include?("\0")
-            raise ArgumentError, "argument cannot contain null bytes: #{e.inspect}"
-          end
-          FFI::MemoryPointer.from_string(e.to_s)
-        end
-        arg_ptrs << nil
-
-        argv = FFI::MemoryPointer.new(:pointer, arg_ptrs.size)
-        argv.put_array_of_pointer(0, arg_ptrs)
-
-        argv
-      end
-
-      def env
-        env_ptrs = ENV.to_hash.merge(@environment).map do |key, val|
-          if key =~ /=|\0/ || val.include?("\0")
-            raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
-          end
-
-          FFI::MemoryPointer.from_string("#{key}=#{val}")
-        end
-        env_ptrs << nil
-
-        env = FFI::MemoryPointer.new(:pointer, env_ptrs.size)
-        env.put_array_of_pointer(0, env_ptrs)
-
-        env
-      end
-
       if ChildProcess.jruby?
         def fileno_for(obj)
           ChildProcess::JRuby.posix_fileno_for(obj)
@@ -106,6 +75,48 @@ module ChildProcess
           obj.fileno
         end
       end
+
+      class Argv
+        def initialize(args)
+          @ptrs = args.map do |e|
+            if e.include?("\0")
+              raise ArgumentError, "argument cannot contain null bytes: #{e.inspect}"
+            end
+
+            FFI::MemoryPointer.from_string(e.to_s)
+          end
+
+          @ptrs << nil
+        end
+
+        def to_ptr
+          argv = FFI::MemoryPointer.new(:pointer, @ptrs.size)
+          argv.put_array_of_pointer(0, @ptrs)
+
+          argv
+        end
+      end # Argv
+
+      class Envp
+        def initialize(env)
+          @ptrs = env.map do |key, val|
+            if key =~ /=|\0/ || val.include?("\0")
+              raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
+            end
+
+            FFI::MemoryPointer.from_string("#{key}=#{val}")
+          end
+
+          @ptrs << nil
+        end
+
+        def to_ptr
+          env = FFI::MemoryPointer.new(:pointer, @ptrs.size)
+          env.put_array_of_pointer(0, @ptrs)
+
+          env
+        end
+      end # Envp
 
     end
   end
