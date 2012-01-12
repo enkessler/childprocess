@@ -3,7 +3,13 @@ rvm:
   - 1.9.2
   - 1.9.3
   - jruby
-  # - rbx
+  - rbx
 env:
   - CHILDPROCESS_POSIX_SPAWN=true
   - CHILDPROCESS_POSIX_SPAWN=false
+matrix:
+  exclude:
+    - rvm: rbx
+      env: CHILDPROCESS_POSIX_SPAWN=true
+    - rvm: jruby
+      env: CHILDPROCESS_POSIX_SPAWN=true
