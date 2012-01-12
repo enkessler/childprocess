@@ -57,6 +57,8 @@ module ChildProcess
       os == :windows
     end
 
+    @posix_spawn = false
+
     def posix_spawn?
       enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
       return false unless enabled
