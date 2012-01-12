@@ -46,6 +46,7 @@ module ChildProcess
       end
 
       def fetch_size(type_name, opts = {})
+        print "sizeof(#{type_name}): "
         src = <<-EOF
 int main() {
   printf("%d", (unsigned int)sizeof(#{type_name}));
@@ -59,10 +60,14 @@ int main() {
           raise "sizeof(#{type_name}) == #{output.to_i} (output=#{output})"
         end
 
-        @sizeof[type_name] = output.to_i
+        size = output.to_i
+        @sizeof[type_name] = size
+
+        puts size
       end
 
       def fetch_constant(name, opts)
+        print "#{name}: "
         src = <<-EOF
 int main() {
   printf("%d", (unsigned int)#{name});
@@ -71,12 +76,14 @@ int main() {
         EOF
 
         output = execute(src, opts)
-        @constants[name] = Integer(output)
+        value  = Integer(output)
+        @constants[name] = value
+
+        puts value
       end
 
 
       def execute(src, opts)
-
         program = Array(opts[:define]).map do |key, value|
           <<-SRC
 #ifndef #{key}
