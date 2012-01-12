@@ -37,6 +37,8 @@ module ChildProcess
 
         attrs.flags = flags
 
+        GC.disable # prevent GC of argv/env ptrs
+
         ret = Lib.posix_spawnp(
           pid_ptr,
           @args.first, # TODO: not sure this matches exec() behaviour
@@ -45,6 +47,8 @@ module ChildProcess
           argv,
           env
         )
+
+        GC.enable
 
         if duplex?
           io._stdin = writer
