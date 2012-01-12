@@ -122,11 +122,14 @@ describe ChildProcess do
       process = ruby("print Dir.pwd")
       process.io.stdout = process.io.stderr = file
 
-      process.start
+      Dir.chdir(Dir.tmpdir) do
+        process.start
+      end
+
       process.wait
 
       file.rewind
-      file.read.should == Dir.pwd
+      file.read.should == Dir.tmpdir
     end
   end
 
