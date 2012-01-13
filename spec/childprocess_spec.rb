@@ -101,6 +101,22 @@ describe ChildProcess do
     end
   end
 
+  it "can unset env vars" do
+    Tempfile.open("env-spec") do |file|
+      ENV['CHILDPROCESS_UNSET'] = '1'
+      process = write_env(file.path)
+      process.environment['CHILDPROCESS_UNSET'] = nil
+      process.start
+
+      process.wait
+      file.rewind
+
+      child_env = eval(file.read)
+      child_env.should_not have_key('CHILDPROCESS_UNSET')
+    end
+  end
+
+
   it "passes arguments to the child" do
     args = ["foo", "bar"]
 

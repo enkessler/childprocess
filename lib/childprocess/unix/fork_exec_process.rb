@@ -52,7 +52,7 @@ module ChildProcess
       end
 
       def set_env
-        @environment.each { |k, v| ENV[k.to_s] = v.to_s }
+        @environment.each { |k, v| ENV[k.to_s] = v.nil? ? nil : v.to_s }
       end
 
     end # Process

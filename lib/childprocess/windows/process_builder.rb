@@ -44,12 +44,12 @@ module ChildProcess
       def create_environment_pointer
         return unless @environment.kind_of?(Hash) && @environment.any?
 
-        # inherited env
-        strings = ENV.map { |k,v| "#{k}=#{v}\0" }
+        strings = []
 
-        # extras
-        @environment.each do |key, val|
-          if key =~ /=|\0/ || val.include?("\0")
+        ENV.to_hash.merge(@environment).each do |key, val|
+          next if val.nil?
+
+          if key.to_s =~ /=|\0/ || val.to_s.include?("\0")
             raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
           end
 

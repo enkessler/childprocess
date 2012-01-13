@@ -111,8 +111,9 @@ module ChildProcess
       end
 
       def set_env(env)
-        ENV.each { |k,v| env.put(k, v) } # not sure why this is needed
-        @environment.each { |k,v| env.put(k.to_s, v.to_s) }
+        ENV.to_hash.merge(@environment).each do |k,v|
+          env.put(k.to_s, v.to_s) if v
+        end
       end
 
     end # Process

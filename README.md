@@ -20,6 +20,10 @@ process.io.inherit!
 # ...or pass an IO
 process.io.stdout = Tempfile.new("child-output")
 
+# modify the environment for the child
+process.environment["a"] = "b"
+process.environment["c"] = nil
+
 # start the process
 
 process.start

@@ -100,12 +100,14 @@ module ChildProcess
       class Envp
         def initialize(env)
           @ptrs = env.map do |key, val|
+            next if val.nil?
+
             if key =~ /=|\0/ || val.include?("\0")
               raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
             end
 
             FFI::MemoryPointer.from_string("#{key}=#{val}")
-          end
+          end.compact
 
           @ptrs << nil
         end
