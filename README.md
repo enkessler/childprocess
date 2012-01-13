@@ -25,7 +25,6 @@ process.environment["a"] = "b"
 process.environment["c"] = nil
 
 # start the process
-
 process.start
 
 # check process status
