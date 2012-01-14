@@ -10,7 +10,14 @@ describe ChildProcess do
     process.should be_started
   end
 
-  it "raises ChildProcess::LaunchError if the process can't be started" do
+  # We can't detect failure to execve() when using posix_spawn() on Linux
+  # without waiting for the child to exit with code 127.
+  #
+  # See e.g. http://repo.or.cz/w/glibc.git/blob/669704fd:/sysdeps/posix/spawni.c#l34
+  #
+  # We could work around this by doing the PATH search ourselves, but not sure
+  # it's worth it.
+  it "raises ChildProcess::LaunchError if the process can't be started", :posix_spawn_on_linux => false do
     lambda { invalid_process.start }.should raise_error(ChildProcess::LaunchError)
   end
 
@@ -94,6 +101,22 @@ describe ChildProcess do
     end
   end
 
+  it "can unset env vars" do
+    Tempfile.open("env-spec") do |file|
+      ENV['CHILDPROCESS_UNSET'] = '1'
+      process = write_env(file.path)
+      process.environment['CHILDPROCESS_UNSET'] = nil
+      process.start
+
+      process.wait
+      file.rewind
+
+      child_env = eval(file.read)
+      child_env.should_not have_key('CHILDPROCESS_UNSET')
+    end
+  end
+
+
   it "passes arguments to the child" do
     args = ["foo", "bar"]
 
@@ -115,11 +138,14 @@ describe ChildProcess do
       process = ruby("print Dir.pwd")
       process.io.stdout = process.io.stderr = file
 
-      process.start
+      Dir.chdir(Dir.tmpdir) do
+        process.start
+      end
+
       process.wait
 
       file.rewind
-      file.read.should == Dir.pwd
+      file.read.should == Dir.tmpdir
     end
   end
 

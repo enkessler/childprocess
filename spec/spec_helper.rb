@@ -115,6 +115,32 @@ module ChildProcessSpecHelper
     10
   end
 
+  def random_free_port
+    server = TCPServer.new('127.0.0.1', 0)
+    port   = server.addr[1]
+    server.close
+
+    port
+  end
+
+  def wait_until(timeout = 10, &blk)
+    end_time = Time.now + timeout
+
+    until Time.now >= end_time
+      return if yield
+      sleep 0.05
+    end
+
+    raise "timed out"
+  end
+
+  def can_bind?(host, port)
+    TCPServer.new(host, port).close
+    true
+  rescue
+    false
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
@@ -125,7 +151,11 @@ RSpec.configure do |c|
     @process && @process.alive? && @process.stop
   }
 
-  if defined?(JRUBY_VERSION)
-    c.filter_run_excluding :jruby => false
+  if ChildProcess.jruby? && !ChildProcess.posix_spawn?
+    c.filter_run_excluding :process_builder => false
+  end
+
+  if ChildProcess.linux? && ChildProcess.posix_spawn?
+    c.filter_run_excluding :posix_spawn_on_linux => false
   end
 end

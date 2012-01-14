@@ -20,8 +20,11 @@ process.io.inherit!
 # ...or pass an IO
 process.io.stdout = Tempfile.new("child-output")
 
-# start the process
+# modify the environment for the child
+process.environment["a"] = "b"
+process.environment["c"] = nil
 
+# start the process
 process.start
 
 # check process status
@@ -47,7 +50,7 @@ Implementation
 
 How the process is launched and killed depends on the platform:
 
-* Unix     : fork + exec
+* Unix     : fork + exec (or posix_spawn if enabled)
 * Windows  : CreateProcess and friends
 * JRuby    : java.lang.{Process,ProcessBuilder}
 

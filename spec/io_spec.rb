@@ -85,10 +85,10 @@ describe ChildProcess do
   # http://travis-ci.org/#!/jarib/childprocess/jobs/487331
   #
 
-  it "works with pipes", :jruby => false do
+  it "works with pipes", :process_builder => false do
     process = ruby(<<-CODE)
-      STDOUT.puts "stdout"
-      STDERR.puts "stderr"
+      STDOUT.print "stdout"
+      STDERR.print "stderr"
     CODE
 
     stdout, stdout_w = IO.pipe
@@ -109,12 +109,15 @@ describe ChildProcess do
     stdout_w.close
     stderr_w.close
 
-    stdout.read.should == "stdout\n"
-    stderr.read.should == "stderr\n"
+    out = stdout.read
+    err = stderr.read
+
+    [out, err].should == %w[stdout stderr]
   end
 
   it "can set close-on-exec when IO is inherited" do
-    server = TCPServer.new("localhost", 4433)
+    port = random_free_port
+    server = TCPServer.new("127.0.0.1", port)
     ChildProcess.close_on_exec server
 
     process = sleeping_ruby
@@ -123,6 +126,6 @@ describe ChildProcess do
     process.start
     server.close
 
-    lambda { TCPServer.new("localhost", 4433).close }.should_not raise_error
+    wait_until { can_bind? "127.0.0.1", port }
   end
 end

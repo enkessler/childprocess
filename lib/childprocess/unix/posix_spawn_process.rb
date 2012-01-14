@@ -1,3 +1,5 @@
+require 'ffi'
+
 module ChildProcess
   module Unix
     class PosixSpawnProcess < Process
@@ -5,37 +7,47 @@ module ChildProcess
 
       def launch_process
         pid_ptr = FFI::MemoryPointer.new(:pid_t)
-
         actions = Lib::FileActions.new
-        attrs   = nil
+        attrs   = Lib::Attrs.new
+        flags   = 0
 
         if @io
           if @io.stdout
-            actions.add_dup @io.stdout.fileno, $stdout.fileno
+            actions.add_dup fileno_for(@io.stdout), fileno_for($stdout)
           else
-            actions.add_open $stdout.fileno, "/dev/null", File::WRONLY | File::CREAT  | File::TRUNC, 0644
+            actions.add_open fileno_for($stdout), "/dev/null", File::WRONLY, 0644
           end
 
           if @io.stderr
-            actions.add_dup @io.stderr.fileno, $stderr.fileno
+            actions.add_dup fileno_for(@io.stderr), fileno_for($stderr)
           else
-            actions.add_open $stderr.fileno, "/dev/null", File::WRONLY | File::CREAT  | File::TRUNC, 0644
+            actions.add_open fileno_for($stderr), "/dev/null", File::WRONLY, 0644
           end
         end
 
         if duplex?
           reader, writer = ::IO.pipe
-          actions.add_dup reader.fileno, $stdin.fileno
-          actions.add_close writer.fileno
+          actions.add_dup fileno_for(reader), fileno_for($stdin)
+          actions.add_close fileno_for(writer)
         end
+
+        if defined? Platform::POSIX_SPAWN_USEVFORK
+          flags |= Platform::POSIX_SPAWN_USEVFORK
+        end
+
+        attrs.flags = flags
+
+        # wrap in helper classes in order to avoid GC'ed pointers
+        argv = Argv.new(@args)
+        envp = Envp.new(ENV.to_hash.merge(@environment))
 
         ret = Lib.posix_spawnp(
           pid_ptr,
-          @args.first, # TODO: /bin/sh if this is the only arg
+          @args.first, # TODO: not sure this matches exec() behaviour
           actions,
           attrs,
           argv,
-          env
+          envp
         )
 
         if duplex?
@@ -44,42 +56,69 @@ module ChildProcess
         end
 
         actions.free
+        attrs.free
 
         if ret != 0
           raise LaunchError, "#{Lib.strerror(ret)} (#{ret})"
         end
 
         @pid = pid_ptr.read_int
-
         ::Process.detach(@pid) if detach?
       end
 
-      def argv
-        arg_ptrs = @args.map { |e| FFI::MemoryPointer.from_string(e.to_s) }
-        arg_ptrs << nil
-
-        argv = FFI::MemoryPointer.new(:pointer, arg_ptrs.size)
-        argv.write_array_of_pointer(arg_ptrs)
-
-        argv
+      if ChildProcess.jruby?
+        def fileno_for(obj)
+          ChildProcess::JRuby.posix_fileno_for(obj)
+        end
+      else
+        def fileno_for(obj)
+          obj.fileno
+        end
       end
 
-      def env
-        env_ptrs = ENV.to_hash.merge(@environment).map do |key, val|
-          if key.include?("=")
-            raise InvalidEnvironmentVariableName, key
+      class Argv
+        def initialize(args)
+          @ptrs = args.map do |e|
+            if e.include?("\0")
+              raise ArgumentError, "argument cannot contain null bytes: #{e.inspect}"
+            end
+
+            FFI::MemoryPointer.from_string(e.to_s)
           end
 
-          FFI::MemoryPointer.from_string("#{key}=#{val}")
+          @ptrs << nil
         end
 
-        env_ptrs << nil
+        def to_ptr
+          argv = FFI::MemoryPointer.new(:pointer, @ptrs.size)
+          argv.put_array_of_pointer(0, @ptrs)
 
-        env = FFI::MemoryPointer.new(:pointer, env_ptrs.size)
-        env.write_array_of_pointer(env_ptrs)
+          argv
+        end
+      end # Argv
 
-        env
-      end
+      class Envp
+        def initialize(env)
+          @ptrs = env.map do |key, val|
+            next if val.nil?
+
+            if key =~ /=|\0/ || val.include?("\0")
+              raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
+            end
+
+            FFI::MemoryPointer.from_string("#{key}=#{val}")
+          end.compact
+
+          @ptrs << nil
+        end
+
+        def to_ptr
+          env = FFI::MemoryPointer.new(:pointer, @ptrs.size)
+          env.put_array_of_pointer(0, @ptrs)
+
+          env
+        end
+      end # Envp
 
     end
   end
