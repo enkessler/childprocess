@@ -1,4 +1,3 @@
-require 'ffi'
 require 'fileutils'
 
 module ChildProcess
