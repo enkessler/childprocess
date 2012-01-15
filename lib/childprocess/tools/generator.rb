@@ -119,8 +119,8 @@ int main() {
       end
 
       def result
-        if @sizeof.empty?
-          raise "no sizes collected, nothing to do"
+        if @sizeof.empty? && @constants.empty?
+          raise "no data collected, nothing to do"
         end
 
         out =  ['module ChildProcess::Unix::Platform']
