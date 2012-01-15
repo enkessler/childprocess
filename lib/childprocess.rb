@@ -11,7 +11,7 @@ module ChildProcess
   class << self
     def new(*args)
       case os
-      when :macosx, :linux, :unix, :cygwin
+      when :macosx, :linux, :solaris, :bsd, :cygwin
         if posix_spawn?
           Unix::PosixSpawnProcess.new(args)
         elsif jruby?
@@ -101,8 +101,10 @@ module ChildProcess
           :windows
         when /cygwin/
           :cygwin
-        when /solaris|bsd/
-          :unix
+        when /solaris/
+          :solaris
+        when /bsd/
+          :bsd
         else
           raise Error, "unknown os: #{host_os.inspect}"
         end
