@@ -11,7 +11,7 @@ module ChildProcess
   class << self
     def new(*args)
       case os
-      when :macosx, :linux, :unix, :cygwin
+      when :macosx, :linux, :solaris, :bsd, :cygwin
         if posix_spawn?
           Unix::PosixSpawnProcess.new(args)
         elsif jruby?
@@ -22,7 +22,7 @@ module ChildProcess
       when :windows
         Windows::Process.new(args)
       else
-        raise Error, "unsupported platform #{platform.inspect}"
+        raise Error, "unsupported platform #{platform_name.inspect}"
       end
     end
     alias_method :build, :new
@@ -101,8 +101,10 @@ module ChildProcess
           :windows
         when /cygwin/
           :cygwin
-        when /solaris|bsd/
-          :unix
+        when /solaris/
+          :solaris
+        when /bsd/
+          :bsd
         else
           raise Error, "unknown os: #{host_os.inspect}"
         end
@@ -144,7 +146,7 @@ module ChildProcess
       elsif windows?
         Windows::Lib.dont_inherit file
       else
-        raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform.inspect}"
+        raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform_name.inspect}"
       end
     end
 
