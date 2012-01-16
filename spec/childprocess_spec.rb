@@ -150,7 +150,7 @@ describe ChildProcess do
   end
 
   it "can handle whitespace, special characters and quotes in arguments" do
-    args = ["foo bar", 'foo\bar', "'i-am-quoted'", '"i am double quoted"']
+    args = ['\"foo\" bar', "\"foo\" bar", "foo bar", 'foo\bar', "'i-am-quoted'", '"i am double quoted"']
 
     Tempfile.open("argv-spec") do |file|
       process = write_argv(file.path, *args).start
@@ -159,6 +159,7 @@ describe ChildProcess do
       file.rewind
       file.read.should == args.inspect
     end
+
   end
 
   it "times out when polling for exit" do
