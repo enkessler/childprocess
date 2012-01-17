@@ -149,17 +149,37 @@ describe ChildProcess do
     end
   end
 
-  it "can handle whitespace, special characters and quotes in arguments" do
-    args = ['\"foo\" bar', "\"foo\" bar", "foo bar", 'foo\bar', "'i-am-quoted'", '"i am double quoted"']
+  describe "argument handling" do
 
-    Tempfile.open("argv-spec") do |file|
-      process = write_argv(file.path, *args).start
-      process.wait
-
-      file.rewind
-      file.read.should == args.inspect
+    it "quotes args with whitespace" do
+      args = ["foo bar", "baz"]
+      Tempfile.open("argv-spec") do |file|
+        process = write_argv(file.path, *args).start
+        process.wait
+        file.rewind
+        file.read.should == '["foo bar", "baz"]'
+      end
     end
 
+    it "splits args with embedded quotes" do
+      args = ["\"foo bar\" baz"]
+      Tempfile.open("argv-spec") do |file|
+        process = write_argv(file.path, *args).start
+        process.wait
+        file.rewind
+        file.read.should == '["foo bar", "baz"]'
+      end
+    end
+
+    it "ignores already quoted strings" do
+      args = ["'i-am-quoted'", '"i am double quoted"']
+      Tempfile.open("argv-spec") do |file|
+        process = write_argv(file.path, *args).start
+        process.wait
+        file.rewind
+        file.read.should == '["i-am-quoted", "i am double quoted"]'
+      end
+    end
   end
 
   it "times out when polling for exit" do

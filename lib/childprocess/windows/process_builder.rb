@@ -157,11 +157,21 @@ module ChildProcess
         end
       end
 
+      # quote if a string isn't already quoted and it contains whitespace
+      #
+      # @return [String] quoted with '"'
       def quote_if_necessary(str)
-        quote = str.start_with?('"') ? "'" : '"'
+        return str if (str.nil? || str.start_with?('"') || str.start_with?("'"))
 
-        case str
-        when /[\s\\'"]/
+        if str.match(/\s/)
+          case str
+          when /[\"]/
+            quote = "'"
+          when /[\']/
+            quote = '"'
+          else
+            quote = '"'
+          end
           [quote, str, quote].join
         else
           str
