@@ -190,7 +190,7 @@ describe ChildProcess do
         if ChildProcess.windows?
           file.read.should == '["i-am-quoted", "i am double quoted"]'
         else
-          file.read.should == %{["'i-am-quoted'", "\"i am double quoted"\"]}
+          file.read.should == %{["'i-am-quoted'", "\\"i am double quoted\\""]}
         end
       end
     end
