@@ -1,7 +1,7 @@
 module ChildProcess
   module Windows
     class ProcessBuilder
-      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr
+      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr, :app_name
       attr_reader :stdin
 
       def initialize(args)
@@ -19,6 +19,8 @@ module ChildProcess
         @flags       = 0
         @cmd_ptr     = nil
         @env_ptr     = nil
+
+        @app_name = nil
       end
 
       def start
@@ -65,7 +67,7 @@ module ChildProcess
 
       def create_process
         ok = Lib.create_process(
-          nil,          # application name
+          @app_name,    # application name, i.e. 'cmd.exe' for processing .bat files
           @cmd_ptr,     # command line
           nil,          # process attributes
           nil,          # thread attributes
