@@ -22,7 +22,7 @@ if ChildProcess.windows?
     end
   end
 
-  describe ChildProcess::Windows::ProcessBuilder, :focus => true do
+  describe ChildProcess::Windows::ProcessBuilder do
     describe "batch file handling" do
 
       before :each do

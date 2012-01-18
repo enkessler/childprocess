@@ -43,7 +43,7 @@ module ChildProcess
         string = @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
 
         # .bat file handling, must be run under cmd.exe
-        if string && app_name.nil?
+        if string && @app_name.nil?
           batch_file = string.match(/'?"?.*\.bat\s?/) ? true : false
           if batch_file
             @app_name = quote_if_necessary(File.join(ENV["WINDIR"], "system32", "cmd.exe"))
@@ -104,6 +104,8 @@ module ChildProcess
         @process_info ||= ProcessInfo.new
       end
 
+      # NOTE: A process created with the DETACHED_PROCESS flag cannot inherit
+      # its parent's standard I/O devices
       def setup_detach
         @flags |= DETACHED_PROCESS if @detach
       end
