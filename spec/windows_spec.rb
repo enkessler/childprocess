@@ -21,19 +21,20 @@ if ChildProcess.windows?
     end
   end
 
-  describe ChildProcess::Windows::ProcessBuilder do
+  describe ChildProcess::Windows::ProcessBuilder, :focus => true do
     describe "batch file handling" do
 
-      it "handles multiple args" do
-        args = ["foo", "bar", "baz"]
-        code = <<-DOS
+      before :each do
+        @code = <<-DOS
           @echo ARGS: %*"
         DOS
+      end
 
-        bat = Tempfile.new(["childprocess-temp", ".bat"])
-        bat << code
+      it "auto quotes spaces in batch file path when args separate" do
+        args = ["foo", "bar", "baz"]
+        bat = Tempfile.new(["childprocess temp", ".bat"])
+        bat << @code
         bat.close
-        bat.path
         process = ChildProcess.build(bat.path, *args)
         out = Tempfile.new("stdout-bat-spec")
         begin
@@ -42,6 +43,24 @@ if ChildProcess.windows?
           process.wait
           out.rewind
           out.read.should match(/ARGS: foo bar baz/)
+        ensure
+          out.close
+        end
+      end
+
+      it "requires manual quoting when building process with string" do
+        bat = Tempfile.new(["childprocess temp", ".bat"])
+        bat << @code
+        bat.close
+        command_line = "\"#{bat.path}\" non-quoted args"
+        process = ChildProcess.build(command_line)
+        out = Tempfile.new("stdout-bat-spec")
+        begin
+          process.io.stdout = out
+          process.start
+          process.wait
+          out.rewind
+          out.read.should match(/ARGS: non-quoted args/)
         ensure
           out.close
         end
