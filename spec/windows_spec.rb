@@ -35,12 +35,12 @@ if ChildProcess.windows?
         bat = Tempfile.new(["childprocess temp", ".bat"])
         bat << @code
         bat.close
-        process = ChildProcess.build(bat.path, *args)
+        @process = ChildProcess.build(bat.path, *args)
         out = Tempfile.new("stdout-bat-spec")
         begin
-          process.io.stdout = out
-          process.start
-          process.wait
+          @process.io.stdout = out
+          @process.start
+          @process.wait
           out.rewind
           out.read.should match(/ARGS: foo bar baz/)
         ensure
@@ -53,12 +53,12 @@ if ChildProcess.windows?
         bat << @code
         bat.close
         command_line = "\"#{bat.path}\" non-quoted args"
-        process = ChildProcess.build(command_line)
+        @process = ChildProcess.build(command_line)
         out = Tempfile.new("stdout-bat-spec")
         begin
-          process.io.stdout = out
-          process.start
-          process.wait
+          @process.io.stdout = out
+          @process.start
+          @process.wait
           out.rewind
           out.read.should match(/ARGS: non-quoted args/)
         ensure
