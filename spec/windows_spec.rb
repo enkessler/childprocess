@@ -2,6 +2,7 @@ require File.expand_path('../spec_helper', __FILE__)
 require "pid_behavior"
 
 if ChildProcess.windows?
+
   describe ChildProcess::Windows::Process do
     it_behaves_like "a platform that provides the child's pid"
   end
@@ -61,6 +62,29 @@ if ChildProcess.windows?
           @process.wait
           out.rewind
           out.read.should match(/ARGS: non-quoted args/)
+        ensure
+          out.close
+        end
+      end
+
+      it "doesn't require full path when that bat file is in the current folder" do
+        bat = Tempfile.new(["childprocess temp", ".bat"])
+        bat << @code
+        bat.close
+        filename = File.basename(bat.path)
+        folder = File.dirname(bat.path)
+        command_line = "\"#{filename}\" \'quoted args\'"
+        @process = ChildProcess.build(command_line)
+        out = Tempfile.new("stdout-bat-spec")
+        begin
+          @process.io.stdout = out
+          path =
+          in_path(folder) do
+            @process.start
+          end
+          @process.wait
+          out.rewind
+          out.read.should match(/ARGS: \'quoted args\'/)
         ensure
           out.close
         end
