@@ -21,10 +21,11 @@ module ChildProcess
         @env_ptr     = nil
 
         @app_name = nil
+        @app_name_ptr = nil
       end
 
       def start
-        create_command_pointer
+        create_command_pointers
         create_environment_pointer
 
         setup_detach
@@ -38,9 +39,20 @@ module ChildProcess
 
       private
 
-      def create_command_pointer
+      def create_command_pointers
         string = @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
+
+        # .bat file handling, must be run under cmd.exe
+        if string && app_name.nil?
+          batch_file = string.match(/'?"?.*\.bat\s?/) ? true : false
+          if batch_file
+            @app_name = quote_if_necessary(File.join(ENV["WINDIR"], "system32", "cmd.exe"))
+            string = "/c #{string}"
+          end
+        end
+
         @cmd_ptr = FFI::MemoryPointer.from_string string
+        @app_name_ptr = FFI::MemoryPointer.from_string(@app_name) if @app_name
       end
 
       def create_environment_pointer
@@ -67,7 +79,7 @@ module ChildProcess
 
       def create_process
         ok = Lib.create_process(
-          @app_name,    # application name, i.e. 'cmd.exe' for processing .bat files
+          @app_name_ptr,# application name, i.e. 'cmd.exe' for processing .bat files
           @cmd_ptr,     # command line
           nil,          # process attributes
           nil,          # thread attributes

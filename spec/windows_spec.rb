@@ -20,4 +20,33 @@ if ChildProcess.windows?
       lambda { io.stdout = fake_io }.should raise_error(ArgumentError, /must have :fileno or :to_io/)
     end
   end
+
+  describe ChildProcess::Windows::ProcessBuilder do
+    describe "batch file handling" do
+
+      it "handles multiple args" do
+        args = ["foo", "bar", "baz"]
+        code = <<-DOS
+          @echo ARGS: %*"
+        DOS
+
+        bat = Tempfile.new(["childprocess-temp", ".bat"])
+        bat << code
+        bat.close
+        bat.path
+        process = ChildProcess.build(bat.path, *args)
+        out = Tempfile.new("stdout-bat-spec")
+        begin
+          process.io.stdout = out
+          process.start
+          process.wait
+          out.rewind
+          out.read.should match(/ARGS: foo bar baz/)
+        ensure
+          out.close
+        end
+      end
+
+    end
+  end
 end
