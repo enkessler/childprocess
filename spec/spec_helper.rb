@@ -141,6 +141,20 @@ module ChildProcessSpecHelper
     false
   end
 
+  # pass a block to execute the code in the given path
+  def in_path(path, &block)
+    Dir.chdir(path, &block)
+  end
+
+  def shell_quote(string)
+    return "" if string.nil? or string.empty?
+    if ChildProcess.windows?
+      %{"#{string}"}
+    else
+      string.split("'").map{|m| "'#{m}'" }.join("\\'")
+    end
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
