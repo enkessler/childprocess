@@ -101,7 +101,7 @@ module ChildProcess
           :windows
         when /cygwin/
           :cygwin
-        when /solaris/
+        when /solaris|sunos/
           :solaris
         when /bsd/
           :bsd
