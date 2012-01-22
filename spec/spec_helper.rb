@@ -151,7 +151,7 @@ RSpec.configure do |c|
     @process && @process.alive? && @process.stop
   }
 
-  if ChildProcess.jruby? && !ChildProcess.posix_spawn?
+  if ChildProcess.jruby? && ChildProcess.new("true").instance_of?(ChildProcess::JRuby::Process)
     c.filter_run_excluding :process_builder => false
   end
 
