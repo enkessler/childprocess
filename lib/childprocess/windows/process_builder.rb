@@ -1,7 +1,7 @@
 module ChildProcess
   module Windows
     class ProcessBuilder
-      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr
+      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr, :app_name
       attr_reader :stdin
 
       def initialize(args)
@@ -19,10 +19,13 @@ module ChildProcess
         @flags       = 0
         @cmd_ptr     = nil
         @env_ptr     = nil
+
+        @app_name = nil
+        @app_name_ptr = nil
       end
 
       def start
-        create_command_pointer
+        create_command_pointers
         create_environment_pointer
 
         setup_detach
@@ -36,9 +39,20 @@ module ChildProcess
 
       private
 
-      def create_command_pointer
+      def create_command_pointers
         string = @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
+
+        # .bat file handling, must be run under cmd.exe
+        if string && @app_name.nil?
+          batch_file = string.match(/'?"?.*\.bat\s?/) ? true : false
+          if batch_file
+            @app_name = quote_if_necessary(File.join(ENV["WINDIR"], "system32", "cmd.exe"))
+            string = "/c #{string}"
+          end
+        end
+
         @cmd_ptr = FFI::MemoryPointer.from_string string
+        @app_name_ptr = FFI::MemoryPointer.from_string(@app_name) if @app_name
       end
 
       def create_environment_pointer
@@ -65,7 +79,7 @@ module ChildProcess
 
       def create_process
         ok = Lib.create_process(
-          nil,          # application name
+          @app_name_ptr,# application name, i.e. 'cmd.exe' for processing .bat files
           @cmd_ptr,     # command line
           nil,          # process attributes
           nil,          # thread attributes
@@ -90,6 +104,8 @@ module ChildProcess
         @process_info ||= ProcessInfo.new
       end
 
+      # NOTE: A process created with the DETACHED_PROCESS flag cannot inherit
+      # its parent's standard I/O devices
       def setup_detach
         @flags |= DETACHED_PROCESS if @detach
       end
@@ -157,11 +173,21 @@ module ChildProcess
         end
       end
 
+      # quote if a string isn't already quoted and it contains whitespace
+      #
+      # @return [String] quoted with '"'
       def quote_if_necessary(str)
-        quote = str.start_with?('"') ? "'" : '"'
+        return str if (str.nil? || str.start_with?('"') || str.start_with?("'"))
 
-        case str
-        when /[\s\\'"]/
+        if str.match(/\s/)
+          case str
+          when /[\"]/
+            quote = "'"
+          when /[\']/
+            quote = '"'
+          else
+            quote = '"'
+          end
           [quote, str, quote].join
         else
           str

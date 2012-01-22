@@ -18,6 +18,7 @@ module ChildProcess
     CTRL_BREAK_EVENT              = 1
 
     DETACHED_PROCESS              = 0x00000008
+    CREATE_NEW_CONSOLE            = 0x00000010
 
     STARTF_USESTDHANDLES          = 0x00000100
     INVALID_HANDLE_VALUE          = -1

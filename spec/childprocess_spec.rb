@@ -149,15 +149,50 @@ describe ChildProcess do
     end
   end
 
-  it "can handle whitespace, special characters and quotes in arguments" do
-    args = ["foo bar", 'foo\bar', "'i-am-quoted'", '"i am double quoted"']
+  describe "argument handling" do
 
-    Tempfile.open("argv-spec") do |file|
-      process = write_argv(file.path, *args).start
-      process.wait
+    it "handles simple whitespace" do
+      args = ["foo bar", "baz"]
+      Tempfile.open("argv-spec") do |file|
+        process = write_argv(file.path, *args).start
+        process.wait
+        file.rewind
+        if ChildProcess.windows?
+          # homebrew join for CreateProcess
+          file.read.should == '["foo bar", "baz"]'
+        else
+          # Shellwords
+          file.read.should == '["foo bar", "baz"]'
+        end
+      end
+    end
 
-      file.rewind
-      file.read.should == args.inspect
+    it "handles embedded quotes" do
+      args = ["\"foo bar\" baz"]
+      Tempfile.open("argv-spec") do |file|
+        process = write_argv(file.path, *args).start
+        process.wait
+        file.rewind
+        if ChildProcess.windows?
+          file.read.should == '["foo bar", "baz"]'
+        else
+          file.read.should == '["\"foo bar\" baz"]'
+        end
+      end
+    end
+
+    it "handles already quoted strings" do
+      args = ["'i-am-quoted'", '"i am double quoted"']
+      Tempfile.open("argv-spec") do |file|
+        process = write_argv(file.path, *args).start
+        process.wait
+        file.rewind
+        if ChildProcess.windows?
+          file.read.should == '["i-am-quoted", "i am double quoted"]'
+        else
+          file.read.should == %{["'i-am-quoted'", "\\"i am double quoted\\""]}
+        end
+      end
     end
   end
 

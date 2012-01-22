@@ -141,11 +141,30 @@ module ChildProcessSpecHelper
     false
   end
 
+  # pass a block to execute the code in the given path
+  def in_path(path, &block)
+    Dir.chdir(path, &block)
+  end
+
+  def shell_quote(string)
+    return "" if string.nil? or string.empty?
+    if ChildProcess.windows?
+      %{"#{string}"}
+    else
+      string.split("'").map{|m| "'#{m}'" }.join("\\'")
+    end
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true
 
 RSpec.configure do |c|
+
+  c.filter_run :focus => true
+  c.run_all_when_everything_filtered = true
+  c.treat_symbols_as_metadata_keys_with_true_values = true
+
   c.include(ChildProcessSpecHelper)
   c.after(:each) {
     @process && @process.alive? && @process.stop
