@@ -72,7 +72,7 @@ module ChildProcess
           @inherit,     # inherit handles
           @flags,       # creation flags
           @env_ptr,     # environment
-          nil,          # current directory
+          cwd,          # current directory
           startup_info, # startup info
           process_info  # process info
         )
@@ -92,6 +92,10 @@ module ChildProcess
 
       def setup_detach
         @flags |= DETACHED_PROCESS if @detach
+      end
+
+      def cwd
+        @cwd ||= FFI::MemoryPointer.from_string(Dir.pwd)
       end
 
       def setup_io
