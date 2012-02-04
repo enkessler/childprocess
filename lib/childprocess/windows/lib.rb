@@ -138,12 +138,12 @@ module ChildProcess
       attach_function :terminate_process, :TerminateProcess, [:pointer, :uint], :bool
 
       #
-      # long _get_osfhandle(
+      # intptr_t _get_osfhandle(
       #    int fd
       # );
       #
 
-      attach_function :get_osfhandle, :_get_osfhandle, [:int], :long
+      attach_function :get_osfhandle, :_get_osfhandle, [:int], :intptr_t
 
       #
       # int _open_osfhandle (

@@ -8,9 +8,9 @@ end
 class Java::JavaIo::FileDescriptor
   if ChildProcess.os == :windows
     field_reader :handle
-  else
-    field_reader :fd
   end
+
+  field_reader :fd
 end
 
 module ChildProcess
