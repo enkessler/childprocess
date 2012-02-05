@@ -143,6 +143,13 @@ module ChildProcess
         file.close_on_exec = true
       elsif file.respond_to?(:fcntl) && defined?(Fcntl::FD_CLOEXEC)
         file.fcntl Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
+
+        if jruby? && posix_spawn?
+          # on JRuby, the fcntl call above apparently isn't enough when
+          # we're launching the process through posix_spawn.
+          fileno = JRuby.posix_fileno_for(file)
+          Unix::Lib.fcntl fileno, Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
+        end
       elsif windows?
         Windows::Lib.dont_inherit file
       else

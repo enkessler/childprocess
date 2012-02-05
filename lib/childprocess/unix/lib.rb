@@ -1,4 +1,3 @@
-
 module ChildProcess
   module Unix
     module Lib
@@ -15,6 +14,8 @@ module ChildProcess
       end
 
       attach_function :strerror, [:int], :string
+      attach_function :chdir, [:string], :int
+      attach_function :fcntl, [:int, :int, :int], :int # fcntl actually takes varags, but we only need this version.
 
       # int posix_spawnp(
       #   pid_t *restrict pid,

@@ -41,6 +41,13 @@ module ChildProcess
         argv = Argv.new(@args)
         envp = Envp.new(ENV.to_hash.merge(@environment))
 
+        if ChildProcess.jruby?
+          # on JRuby, the current working directory is for some reason not inherited.
+          # We'll work around it by making a chdir call through FFI.
+          # TODO: report this to JRuby
+          Lib.chdir Dir.pwd
+        end
+
         ret = Lib.posix_spawnp(
           pid_ptr,
           @args.first, # TODO: not sure this matches exec() behaviour

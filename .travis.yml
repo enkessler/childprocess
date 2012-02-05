@@ -11,5 +11,3 @@ matrix:
   exclude:
     - rvm: rbx
       env: CHILDPROCESS_POSIX_SPAWN=true
-    - rvm: jruby
-      env: CHILDPROCESS_POSIX_SPAWN=true
