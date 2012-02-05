@@ -128,4 +128,25 @@ describe ChildProcess do
 
     wait_until { can_bind? "127.0.0.1", port }
   end
+
+  it "handles long output" do
+    process = ruby <<-CODE
+    print 'a'*3000
+    CODE
+
+    out = Tempfile.new("long-output")
+    out.sync = true
+
+    begin
+      process.io.stdout = out
+
+      process.start
+      process.wait
+
+      out.rewind
+      out.read.size.should == 3000
+    ensure
+      out.close
+    end
+  end
 end
