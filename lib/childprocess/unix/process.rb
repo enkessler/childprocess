@@ -30,6 +30,7 @@ module ChildProcess
 
         assert_started
         pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
+        pid = nil if pid == 0 # may happen on jruby
 
         log(:pid => pid, :status => status)
 
