@@ -30,6 +30,7 @@ module ChildProcess
 
           while read != -1
             avail = [@input.available, 1].max
+            avail = BUFFER_SIZE if avail > BUFFER_SIZE
             read = @input.read(buffer, 0, avail)
 
             if read > 0
