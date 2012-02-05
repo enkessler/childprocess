@@ -8,6 +8,8 @@ module ChildProcess
   autoload :Windows,  'childprocess/windows'
   autoload :JRuby,    'childprocess/jruby'
 
+  @posix_spawn = false
+
   class << self
     def new(*args)
       case os
@@ -56,8 +58,6 @@ module ChildProcess
     def windows?
       os == :windows
     end
-
-    @posix_spawn = false
 
     def posix_spawn?
       enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
