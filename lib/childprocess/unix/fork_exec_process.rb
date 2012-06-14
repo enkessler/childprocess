@@ -30,7 +30,13 @@ module ChildProcess
           end
 
           begin
-            exec(*@args)
+            if @cwd.nil?
+              exec(*@args)
+            else
+              Dir.chdir(@cwd) do
+                exec(*@args)
+              end
+            end
           rescue SystemCallError => ex
             exec_w << ex.message
           end
