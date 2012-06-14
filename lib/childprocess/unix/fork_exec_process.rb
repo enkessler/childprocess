@@ -18,6 +18,10 @@ module ChildProcess
         end
 
         @pid = fork {
+          if !@cwd.nil?
+            Dir.chdir(@cwd)
+          end
+
           exec_r.close
           set_env
 
@@ -30,13 +34,7 @@ module ChildProcess
           end
 
           begin
-            if @cwd.nil?
-              exec(*@args)
-            else
-              Dir.chdir(@cwd) do
-                exec(*@args)
-              end
-            end
+            exec(*@args)
           rescue SystemCallError => ex
             exec_w << ex.message
           end
