@@ -168,4 +168,27 @@ describe ChildProcess do
     lambda { process.poll_for_exit(0.1) }.should raise_error(ChildProcess::TimeoutError)
   end
 
+  it "can change working directory" do
+    process = ruby <<-CODE
+    STDOUT.print Dir.pwd
+    CODE
+
+    Dir.mktmpdir { |dir|
+      process.cwd = dir
+
+      orig_pwd = Dir.pwd
+
+      Tempfile.open('cwd') do |file|
+        process.io.stdout = file
+       
+        process.start
+        process.wait
+
+        file.rewind
+        file.read.should == dir
+      end
+
+      Dir.pwd.should == orig_pwd
+    }
+  end
 end
