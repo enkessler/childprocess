@@ -18,7 +18,7 @@ module ChildProcess
         end
 
         @pid = fork {
-          if !@cwd.nil?
+          if @cwd
             Dir.chdir(@cwd)
           end
 
