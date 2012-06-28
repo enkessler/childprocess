@@ -123,6 +123,17 @@ module ChildProcessSpecHelper
     port
   end
 
+  def with_tmpdir(&blk)
+    name = "#{Time.now.strftime("%Y%m%d")}-#{$$}-#{rand(0x100000000).to_s(36)}"
+    FileUtils.mkdir_p(name)
+
+    begin
+      yield File.expand_path(name)
+    ensure
+      FileUtils.rm_rf name
+    end
+  end
+
   def wait_until(timeout = 10, &blk)
     end_time = Time.now + timeout
 

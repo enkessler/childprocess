@@ -169,18 +169,16 @@ describe ChildProcess do
   end
 
   it "can change working directory" do
-    process = ruby <<-CODE
-    STDOUT.print Dir.pwd
-    CODE
+    process = ruby "print Dir.pwd"
 
-    Dir.mktmpdir { |dir|
+    with_tmpdir { |dir|
       process.cwd = dir
 
       orig_pwd = Dir.pwd
 
       Tempfile.open('cwd') do |file|
         process.io.stdout = file
-       
+
         process.start
         process.wait
 
