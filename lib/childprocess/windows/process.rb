@@ -53,6 +53,7 @@ module ChildProcess
         builder.detach      = detach?
         builder.duplex      = duplex?
         builder.environment = @environment unless @environment.empty?
+        builder.cwd         = @cwd
 
         if @io
           builder.stdout      = @io.stdout

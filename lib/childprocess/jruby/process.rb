@@ -66,7 +66,7 @@ module ChildProcess
       def launch_process(&blk)
         pb = java.lang.ProcessBuilder.new(@args)
 
-        pb.directory java.io.File.new(Dir.pwd)
+        pb.directory java.io.File.new(@cwd || Dir.pwd)
         set_env pb.environment
 
         begin

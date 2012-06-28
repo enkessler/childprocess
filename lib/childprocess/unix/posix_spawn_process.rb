@@ -1,9 +1,12 @@
 require 'ffi'
+require 'thread'
 
 module ChildProcess
   module Unix
     class PosixSpawnProcess < Process
       private
+
+      @@cwd_lock = Mutex.new
 
       def launch_process
         pid_ptr = FFI::MemoryPointer.new(:pid_t)
@@ -41,21 +44,26 @@ module ChildProcess
         argv = Argv.new(@args)
         envp = Envp.new(ENV.to_hash.merge(@environment))
 
-        if ChildProcess.jruby?
-          # on JRuby, the current working directory is for some reason not inherited.
-          # We'll work around it by making a chdir call through FFI.
-          # TODO: report this to JRuby
-          Lib.chdir Dir.pwd
-        end
+        ret = 0
+        @@cwd_lock.synchronize do
+          Dir.chdir(@cwd || Dir.pwd) do
+            if ChildProcess.jruby?
+              # on JRuby, the current working directory is for some reason not inherited.
+              # We'll work around it by making a chdir call through FFI.
+              # TODO: report this to JRuby
+              Lib.chdir Dir.pwd
+            end
 
-        ret = Lib.posix_spawnp(
-          pid_ptr,
-          @args.first, # TODO: not sure this matches exec() behaviour
-          actions,
-          attrs,
-          argv,
-          envp
-        )
+            ret = Lib.posix_spawnp(
+              pid_ptr,
+              @args.first, # TODO: not sure this matches exec() behaviour
+              actions,
+              attrs,
+              argv,
+              envp
+            )
+          end
+        end
 
         if duplex?
           io._stdin = writer

@@ -20,6 +20,11 @@ module ChildProcess
     attr_reader :environment
 
     #
+    # Set the child's current working directory.
+    #
+    attr_accessor :cwd
+
+    #
     # Create a new process with the given args.
     #
     # @api private

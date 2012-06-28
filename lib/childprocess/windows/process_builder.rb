@@ -1,7 +1,7 @@
 module ChildProcess
   module Windows
     class ProcessBuilder
-      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr
+      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr, :cwd
       attr_reader :stdin
 
       def initialize(args)
@@ -11,6 +11,7 @@ module ChildProcess
         @detach      = false
         @duplex      = false
         @environment = nil
+        @cwd         = nil
 
         @stdout      = nil
         @stderr      = nil
@@ -19,11 +20,13 @@ module ChildProcess
         @flags       = 0
         @cmd_ptr     = nil
         @env_ptr     = nil
+        @cwd_ptr     = nil
       end
 
       def start
         create_command_pointer
         create_environment_pointer
+        create_cwd_pointer
 
         setup_detach
         setup_io
@@ -63,6 +66,10 @@ module ChildProcess
         @env_ptr.put_bytes 0, env_str, 0, env_str.bytesize
       end
 
+      def create_cwd_pointer
+        @cwd_ptr = FFI::MemoryPointer.from_string(@cwd || Dir.pwd)
+      end
+
       def create_process
         ok = Lib.create_process(
           nil,          # application name
@@ -72,7 +79,7 @@ module ChildProcess
           @inherit,     # inherit handles
           @flags,       # creation flags
           @env_ptr,     # environment
-          cwd,          # current directory
+          @cwd_ptr,     # current directory
           startup_info, # startup info
           process_info  # process info
         )
@@ -92,10 +99,6 @@ module ChildProcess
 
       def setup_detach
         @flags |= DETACHED_PROCESS if @detach
-      end
-
-      def cwd
-        @cwd ||= FFI::MemoryPointer.from_string(Dir.pwd)
       end
 
       def setup_io

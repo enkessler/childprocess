@@ -18,6 +18,10 @@ module ChildProcess
         end
 
         @pid = fork {
+          if @cwd
+            Dir.chdir(@cwd)
+          end
+
           exec_r.close
           set_env
 
