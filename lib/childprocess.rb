@@ -4,9 +4,6 @@ require 'childprocess/abstract_io'
 require "fcntl"
 
 module ChildProcess
-  autoload :Unix,     'childprocess/unix'
-  autoload :Windows,  'childprocess/windows'
-  autoload :JRuby,    'childprocess/jruby'
 
   @posix_spawn = false
 
@@ -172,3 +169,7 @@ module ChildProcess
 end # ChildProcess
 
 require 'jruby' if ChildProcess.jruby?
+
+require 'childprocess/unix'    if ChildProcess.unix?
+require 'childprocess/windows' if ChildProcess.windows?
+require 'childprocess/jruby'   if ChildProcess.jruby?
