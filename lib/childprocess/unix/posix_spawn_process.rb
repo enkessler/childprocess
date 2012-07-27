@@ -101,7 +101,7 @@ module ChildProcess
             FFI::MemoryPointer.from_string(e.to_s)
           end
 
-          @ptrs << nil
+          @ptrs << FFI::Pointer.new(0)
         end
 
         def to_ptr
@@ -124,7 +124,7 @@ module ChildProcess
             FFI::MemoryPointer.from_string("#{key}=#{val}")
           end.compact
 
-          @ptrs << nil
+          @ptrs << FFI::Pointer.new(0)
         end
 
         def to_ptr
