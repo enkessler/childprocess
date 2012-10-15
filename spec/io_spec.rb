@@ -78,6 +78,40 @@ describe ChildProcess do
     end
   end
 
+  it "can write to stdin interactively if duplex = true" do
+    process = cat
+
+    out = Tempfile.new("duplex")
+    out.sync = true
+
+    out_receiver = File.open(out.path, "rb")
+    begin
+      process.io.stdout = out
+      process.io.stderr = out
+      process.duplex = true
+
+      process.start
+      process.io.stdin.puts "hello"
+      sleep 0.1
+      out_receiver.read.should == "hello\n"
+      process.io.stdin.puts "new"
+      sleep 0.1
+      out_receiver.read.should == "new\n"
+      process.io.stdin.write "world\n"
+      process.io.stdin.flush
+      sleep 0.1
+      out_receiver.read.should == "world\n"
+      process.io.stdin.close
+      process.poll_for_exit(exit_timeout)
+
+      out_receiver.rewind
+      out_receiver.read.should == "hello\nnew\nworld\n"
+     ensure
+      out_receiver.close
+      out.close
+    end
+  end
+
   #
   # this works on JRuby 1.6.5 on my Mac, but for some reason
   # hangs on Travis (running 1.6.5.1 + OpenJDK).
