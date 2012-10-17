@@ -54,6 +54,26 @@ describe ChildProcess do
     end
   end
 
+  it "pumps all output" do
+    10.times do |i|
+      process = echo
+      
+      out = Tempfile.new("duplex")
+      
+      begin
+        process.io.stdout = out
+        
+        process.start
+        process.poll_for_exit(exit_timeout)
+        
+        out.rewind
+        out.read.should == "hello\n"
+      ensure
+        out.close
+      end
+    end
+  end
+
   it "can write to stdin if duplex = true" do
     process = cat
 

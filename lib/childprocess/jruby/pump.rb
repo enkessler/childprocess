@@ -25,7 +25,7 @@ module ChildProcess
       def pump
         buffer = Java.byte[BUFFER_SIZE].new
 
-        until @stop
+        until @stop && (@input.available == 0)
           read, avail = 0, 0
 
           while read != -1
