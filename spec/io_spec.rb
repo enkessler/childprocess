@@ -57,15 +57,15 @@ describe ChildProcess do
   it "pumps all output" do
     10.times do |i|
       process = echo
-      
+
       out = Tempfile.new("duplex")
-      
+
       begin
         process.io.stdout = out
-        
+
         process.start
         process.poll_for_exit(exit_timeout)
-        
+
         out.rewind
         out.read.should == "hello\n"
       ensure
@@ -112,34 +112,26 @@ describe ChildProcess do
 
       process.start
       process.io.stdin.puts "hello"
-      sleep 0.1
-      out_receiver.read.should == "hello\n"
+
+      wait_until { rewind_and_read(out_receiver).should == "hello\n" }
 
       process.io.stdin.putc "n"
-      sleep 0.1
-      out_receiver.read.should == "n"
+      wait_until { rewind_and_read(out_receiver).should == "hello\nn" }
 
       process.io.stdin.print "e"
-      sleep 0.1
-      out_receiver.read.should == "e"
+      wait_until { rewind_and_read(out_receiver).should == "hello\nne" }
 
       process.io.stdin.printf "w"
-      sleep 0.1
-      out_receiver.read.should == "w"
+      wait_until { rewind_and_read(out_receiver).should == "hello\nnew" }
 
       process.io.stdin.write "\nworld\n"
-      sleep 0.1
-      out_receiver.read.should == "\nworld\n"
+      wait_until { rewind_and_read(out_receiver).should == "hello\nnew\nworld\n" }
 
       process.io.stdin.write_nonblock "The end\n"
-      sleep 0.1
-      out_receiver.read.should == "The end\n"
+      wait_until { rewind_and_read(out_receiver).should == "hello\nnew\nworld\nThe end\n" }
 
       process.io.stdin.close
       process.poll_for_exit(exit_timeout)
-
-      out_receiver.rewind
-      out_receiver.read.should == "hello\nnew\nworld\nThe end\n"
      ensure
       out_receiver.close
       out.close

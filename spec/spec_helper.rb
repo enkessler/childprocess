@@ -149,13 +149,22 @@ module ChildProcessSpecHelper
 
   def wait_until(timeout = 10, &blk)
     end_time = Time.now + timeout
+    last_exception = nil
 
     until Time.now >= end_time
-      return if yield
+      begin
+        return if yield
+      rescue RSpec::Expectations::ExpectationNotMetError => ex
+        last_exception = ex
+      end
+
       sleep 0.05
     end
 
-    raise "timed out"
+    msg = "timed out after #{timeout} seconds"
+    msg << ":\n#{last_exception.message}" if last_exception
+
+    raise msg
   end
 
   def can_bind?(host, port)
@@ -163,6 +172,11 @@ module ChildProcessSpecHelper
     true
   rescue
     false
+  end
+
+  def rewind_and_read(io)
+    io.rewind
+    io.read
   end
 
 end # ChildProcessSpecHelper
