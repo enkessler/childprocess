@@ -114,18 +114,32 @@ describe ChildProcess do
       process.io.stdin.puts "hello"
       sleep 0.1
       out_receiver.read.should == "hello\n"
-      process.io.stdin.puts "new"
+
+      process.io.stdin.putc "n"
       sleep 0.1
-      out_receiver.read.should == "new\n"
-      process.io.stdin.write "world\n"
-      process.io.stdin.flush
+      out_receiver.read.should == "n"
+
+      process.io.stdin.print "e"
       sleep 0.1
-      out_receiver.read.should == "world\n"
+      out_receiver.read.should == "e"
+
+      process.io.stdin.printf "w"
+      sleep 0.1
+      out_receiver.read.should == "w"
+
+      process.io.stdin.write "\nworld\n"
+      sleep 0.1
+      out_receiver.read.should == "\nworld\n"
+
+      process.io.stdin.write_nonblock "The end\n"
+      sleep 0.1
+      out_receiver.read.should == "The end\n"
+
       process.io.stdin.close
       process.poll_for_exit(exit_timeout)
 
       out_receiver.rewind
-      out_receiver.read.should == "hello\nnew\nworld\n"
+      out_receiver.read.should == "hello\nnew\nworld\nThe end\n"
      ensure
       out_receiver.close
       out.close

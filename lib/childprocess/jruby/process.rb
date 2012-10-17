@@ -91,9 +91,19 @@ module ChildProcess
           stdin = @process.getOutputStream.to_io
           stdin.sync = true
           stdin.instance_variable_set(:@java_stream, @process.getOutputStream)
-          def stdin.__flushit; @java_stream.flush; end #The stream provided is a BufferedeOutputStream, so we have to flush it to make the bytes flow to the process
-          def stdin.flush; super; self.__flushit; end
-          def stdin.puts(*args); super(*args); self.__flushit; end
+          class << stdin
+            #The stream provided is a BufferedeOutputStream, so we
+            #have to flush it to make the bytes flow to the process
+            def __flushit
+              @java_stream.flush
+            end 
+            [:flush, :print, :printf, :putc, :puts, :write, :write_nonblock].each do |m|
+              define_method(m) do |*args|
+                super(*args)
+                self.__flushit
+              end
+            end
+          end
 
           io._stdin = stdin
         else
