@@ -88,24 +88,7 @@ module ChildProcess
         end
 
         if duplex?
-          stdin = @process.getOutputStream.to_io
-          stdin.sync = true
-          stdin.instance_variable_set(:@java_stream, @process.getOutputStream)
-          class << stdin
-            #The stream provided is a BufferedeOutputStream, so we
-            #have to flush it to make the bytes flow to the process
-            def __flushit
-              @java_stream.flush
-            end 
-            [:flush, :print, :printf, :putc, :puts, :write, :write_nonblock].each do |m|
-              define_method(m) do |*args|
-                super(*args)
-                self.__flushit
-              end
-            end
-          end
-
-          io._stdin = stdin
+          io._stdin = create_stdin
         else
           @process.getOutputStream.close
         end
@@ -128,6 +111,31 @@ module ChildProcess
         ENV.to_hash.merge(@environment).each do |k,v|
           env.put(k.to_s, v.to_s) if v
         end
+      end
+
+      def create_stdin
+        output_stream = @process.getOutputStream
+
+        stdin = output_stream.to_io
+        stdin.sync = true
+        stdin.instance_variable_set(:@childprocess_java_stream, output_stream)
+
+        class << stdin
+          # The stream provided is a BufferedeOutputStream, so we
+          # have to flush it to make the bytes flow to the process
+          def __childprocess_flush__
+            @childprocess_java_stream.flush
+          end
+
+          [:flush, :print, :printf, :putc, :puts, :write, :write_nonblock].each do |m|
+            define_method(m) do |*args|
+              super(*args)
+              self.__childprocess_flush__
+            end
+          end
+        end
+
+        stdin
       end
 
     end # Process
