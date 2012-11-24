@@ -18,5 +18,6 @@ coverage
 rdoc
 pkg
 .rbx
+Gemfile.lock
 
 ## PROJECT::SPECIFIC

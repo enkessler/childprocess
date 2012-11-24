@@ -1,5 +1,4 @@
-childprocess
-============
+# childprocess
 
 This gem aims at being a simple and reliable solution for controlling
 external programs running in the background on any Ruby / OS combination.
@@ -9,8 +8,12 @@ a standalone library.
 
 [![Build Status](https://secure.travis-ci.org/jarib/childprocess.png)](http://travis-ci.org/jarib/childprocess)
 
-Usage
------
+# Usage
+
+The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
+
+### Basic examples
+
 ```ruby
 process = ChildProcess.build("ruby", "-e", "sleep")
 
@@ -24,6 +27,9 @@ process.io.stdout = Tempfile.new("child-output")
 process.environment["a"] = "b"
 process.environment["c"] = nil
 
+# set the child's working directory
+process.cwd = '/some/path'
+
 # start the process
 process.start
 
@@ -35,6 +41,10 @@ process.exited?   #=> false
 process.wait
 process.exited?   #=> true
 
+# get the exit code
+
+process.exit_code #=> 0
+
 # ...or poll for exit + force quit
 begin
   process.poll_for_exit(10)
@@ -43,10 +53,64 @@ rescue ChildProcess::TimeoutError
 end
 ```
 
-The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
+### Advanced examples
 
-Implementation
---------------
+#### Write to stdin
+
+```ruby
+process = ChildProcess.build("cat")
+
+out      = Tempfile.new("duplex")
+out.sync = true
+
+process.io.stdout = process.io.stderr = out
+process.duplex    = true
+
+process.start
+process.io.stdin.puts "hello world"
+process.io.stdin.close
+
+process.poll_for_exit(exit_timeout_in_seconds)
+
+out.rewind
+out.read #=> "hello world\n"
+```
+
+#### Pipe output to another ChildProcess
+
+```ruby
+search           = ChildProcess.build("grep", '-E', %w(redis memcached).join('|'))
+search.duplex    = true # sets up pipe so process.io.stdin will be available after .start
+search.io.stdout = $stdout
+search.start
+
+listing           = ChildProcess.build("ps", "aux")
+listing.io.stdout = search.io.stdin
+listing.start
+listing.wait
+
+search.io.stdin.close
+search.wait
+```
+
+#### Prefer posix_spawn on *nix
+
+If the parent process is using a lot of memory, `fork+exec` can be very expensive. The `posix_spawn()` API removes this overhead.
+
+```
+ChildProcess.posix_spawn = true
+process = ChildProcess.build(*args)
+```
+
+#### Detach from parent
+
+```
+process = ChildProcess.build("sleep", "10")
+process.detach = true
+process.start
+```
+
+# Implementation
 
 How the process is launched and killed depends on the platform:
 
