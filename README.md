@@ -96,14 +96,14 @@ search.wait
 
 If the parent process is using a lot of memory, `fork+exec` can be very expensive. The `posix_spawn()` API removes this overhead.
 
-```
+```ruby
 ChildProcess.posix_spawn = true
 process = ChildProcess.build(*args)
 ```
 
 #### Detach from parent
 
-```
+```ruby
 process = ChildProcess.build("sleep", "10")
 process.detach = true
 process.start
