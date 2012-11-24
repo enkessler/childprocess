@@ -42,7 +42,6 @@ process.wait
 process.exited?   #=> true
 
 # get the exit code
-
 process.exit_code #=> 0
 
 # ...or poll for exit + force quit
@@ -64,7 +63,7 @@ out      = Tempfile.new("duplex")
 out.sync = true
 
 process.io.stdout = process.io.stderr = out
-process.duplex    = true
+process.duplex    = true # sets up pipe so process.io.stdin will be available after .start
 
 process.start
 process.io.stdin.puts "hello world"
@@ -80,7 +79,7 @@ out.read #=> "hello world\n"
 
 ```ruby
 search           = ChildProcess.build("grep", '-E', %w(redis memcached).join('|'))
-search.duplex    = true # sets up pipe so process.io.stdin will be available after .start
+search.duplex    = true # sets up pipe so search.io.stdin will be available after .start
 search.io.stdout = $stdout
 search.start
 
@@ -114,22 +113,18 @@ process.start
 
 How the process is launched and killed depends on the platform:
 
-* Unix     : fork + exec (or posix_spawn if enabled)
-* Windows  : CreateProcess and friends
-* JRuby    : java.lang.{Process,ProcessBuilder}
+* Unix     : `fork + exec` (or `posix_spawn` if enabled)
+* Windows  : `CreateProcess()` and friends
+* JRuby    : `java.lang.{Process,ProcessBuilder}`
 
-Note on Patches/Pull Requests
------------------------------
+# Note on Patches/Pull Requests
 
 * Fork the project.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+* Add tests for it. This is important so I don't break it in a future version unintentionally.
+* Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
-Copyright
----------
+# Copyright
 
 Copyright (c) 2010-2012 Jari Bakken. See LICENSE for details.
