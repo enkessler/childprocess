@@ -59,13 +59,13 @@ end
 ```ruby
 r, w = IO.pipe
 
-proc = ChildProcess.build("echo", "test")
-proc.io.stdout = w
+proc = ChildProcess.build("cat", "foo")
+proc.io.stdout = proc.io.stderr = w
 proc.start
 proc.wait
 
 w.close
-r.read #=> "test\n"
+p r.read #=> "test\n"
 ```
 
 #### Write to stdin
