@@ -54,6 +54,20 @@ end
 
 ### Advanced examples
 
+#### Output to pipe
+
+```ruby
+r, w = IO.pipe
+
+proc = ChildProcess.build("echo", "test")
+proc.io.stdout = w
+proc.start
+proc.wait
+
+w.close
+r.read #=> "test\n"
+```
+
 #### Write to stdin
 
 ```ruby
