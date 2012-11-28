@@ -3,14 +3,14 @@
 This gem aims at being a simple and reliable solution for controlling
 external programs running in the background on any Ruby / OS combination.
 
-The code originated in the selenium-webdriver gem, but should prove useful as
+The code originated in the [selenium-webdriver](https://rubygems.org/gems/selenium-webdriver) gem, but should prove useful as
 a standalone library.
 
 [![Build Status](https://secure.travis-ci.org/jarib/childprocess.png)](http://travis-ci.org/jarib/childprocess)
 
 # Usage
 
-The object returned from ChildProcess.build will implement ChildProcess::AbstractProcess.
+The object returned from `ChildProcess.build` will implement `ChildProcess::AbstractProcess`.
 
 ### Basic examples
 
