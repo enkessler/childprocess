@@ -36,6 +36,7 @@ module ChildProcess
       @started     = false
       @exit_code   = nil
       @io          = nil
+      @cwd         = nil
       @detach      = false
       @duplex      = false
       @environment = {}
