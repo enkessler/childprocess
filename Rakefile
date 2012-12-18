@@ -11,7 +11,6 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.ruby_opts  = "-I lib:spec"
   spec.pattern    = 'spec/**/*_spec.rb'
-  spec.rcov_opts  = %w[--exclude spec,ruby-debug,/Library/Ruby,.gem --include lib/childprocess]
 end
 
 desc 'Run specs for rcov'
