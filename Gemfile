@@ -1,4 +1,7 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-# Specify your gem's dependencies in child_process.gemspec
+if ENV['TRAVIS']
+  gem 'coveralls', require: false
+end
+
 gemspec
