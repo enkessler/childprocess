@@ -141,4 +141,4 @@ How the process is launched and killed depends on the platform:
 
 # Copyright
 
-Copyright (c) 2010-2012 Jari Bakken. See LICENSE for details.
+Copyright (c) 2010-2013 Jari Bakken. See LICENSE for details.
