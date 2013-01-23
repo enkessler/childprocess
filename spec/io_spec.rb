@@ -111,26 +111,31 @@ describe ChildProcess do
       process.duplex = true
 
       process.start
-      process.io.stdin.puts "hello"
 
-      wait_until { rewind_and_read(out_receiver).should == "hello\n" }
+      stdin = process.io.stdin
+      lf = ChildProcess.windows? ? "\r\n" : "\n"
 
-      process.io.stdin.putc "n"
-      wait_until { rewind_and_read(out_receiver).should == "hello\nn" }
+      stdin.puts "hello"
+      stdin.flush
+      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}" }
 
-      process.io.stdin.print "e"
-      wait_until { rewind_and_read(out_receiver).should == "hello\nne" }
+      stdin.putc "n"
+      stdin.flush
+      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}n" }
 
-      process.io.stdin.printf "w"
-      wait_until { rewind_and_read(out_receiver).should == "hello\nnew" }
+      stdin.print "e"
+      stdin.flush
+      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}ne" }
 
-      process.io.stdin.write "\nworld\n"
-      wait_until { rewind_and_read(out_receiver).should == "hello\nnew\nworld\n" }
+      stdin.printf "w"
+      stdin.flush
+      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}new" }
 
-      process.io.stdin.write_nonblock "The end\n"
-      wait_until { rewind_and_read(out_receiver).should == "hello\nnew\nworld\nThe end\n" }
+      stdin.write "\nworld\n"
+      stdin.flush
+      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}new#{lf}world#{lf}" }
 
-      process.io.stdin.close
+      stdin.close
       process.poll_for_exit(exit_timeout)
      ensure
       out_receiver.close

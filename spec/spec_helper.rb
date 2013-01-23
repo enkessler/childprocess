@@ -97,10 +97,8 @@ module ChildProcessSpecHelper
   def cat
     if ChildProcess.os == :windows
       ruby(<<-CODE)
-            STDIN.sync  = true
-            STDOUT.sync = true
-
-            puts STDIN.read
+            STDIN.sync = STDOUT.sync = true
+            IO.copy_stream(STDIN, STDOUT)
           CODE
     else
       ChildProcess.build("cat")
