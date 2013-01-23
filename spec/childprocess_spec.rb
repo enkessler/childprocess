@@ -163,6 +163,15 @@ describe ChildProcess do
     end
   end
 
+  it 'handles whitespace in the executable name' do
+    path = File.expand_path('foo bar')
+
+    with_executable_at(path) do |proc|
+      proc.start.should == proc
+      proc.should be_started
+    end
+  end
+
   it "times out when polling for exit" do
     process = sleeping_ruby.start
     lambda { process.poll_for_exit(0.1) }.should raise_error(ChildProcess::TimeoutError)

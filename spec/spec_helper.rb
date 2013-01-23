@@ -124,6 +124,25 @@ module ChildProcessSpecHelper
     ruby_process(tmp_script(code))
   end
 
+  def with_executable_at(path, &blk)
+    if ChildProcess.os == :windows
+      path << ".cmd"
+      content = "@echo foo"
+    else
+      content = "#!/bin/sh\necho foo"
+    end
+
+    File.open(path, 'w', 0744) { |io| io << content }
+    proc = ChildProcess.build(path)
+
+    begin
+      yield proc
+    ensure
+      proc.stop if proc.alive?
+      File.delete path
+    end
+  end
+
   def exit_timeout
     10
   end

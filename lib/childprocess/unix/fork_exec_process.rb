@@ -33,8 +33,10 @@ module ChildProcess
             writer.close
           end
 
+          executable, *args = @args
+
           begin
-            exec(*@args)
+            exec([executable, executable], *args)
           rescue SystemCallError => ex
             exec_w << ex.message
           end
