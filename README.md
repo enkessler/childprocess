@@ -62,11 +62,17 @@ r, w = IO.pipe
 proc = ChildProcess.build("echo", "foo")
 proc.io.stdout = proc.io.stderr = w
 proc.start
-proc.wait
-
 w.close
-r.read #=> "test\n"
+
+begin
+  loop { print r.readpartial(8192) }
+rescue EOFError
+end
+
+proc.wait
 ```
+
+Note that if you just want to get the output of a command, the backtick method on Kernel may be a better fit.
 
 #### Write to stdin
 
