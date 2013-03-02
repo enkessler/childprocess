@@ -32,6 +32,10 @@ module ChildProcess
     #
 
     def initialize(args)
+      unless args.all? { |e| e.kind_of?(String) }
+        raise ArgumentError, "all arguments must be String: #{args.inspect}"
+      end
+
       @args        = args
       @started     = false
       @exit_code   = nil

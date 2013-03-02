@@ -18,7 +18,12 @@ describe ChildProcess do
   # We could work around this by doing the PATH search ourselves, but not sure
   # it's worth it.
   it "raises ChildProcess::LaunchError if the process can't be started", :posix_spawn_on_linux => false do
-    lambda { invalid_process.start }.should raise_error(ChildProcess::LaunchError)
+    expect { invalid_process.start }.to raise_error(ChildProcess::LaunchError)
+  end
+
+  it 'raises ArgumentError if given a non-string argument' do
+    expect { ChildProcess.build(nil, "unlikelytoexist") }.to raise_error(ArgumentError)
+    expect { ChildProcess.build("foo", 1) }.to raise_error(ArgumentError)
   end
 
   it "knows if the process crashed" do
