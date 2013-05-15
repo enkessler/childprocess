@@ -203,7 +203,7 @@ Thread.abort_on_exception = true
 RSpec.configure do |c|
   c.include(ChildProcessSpecHelper)
   c.after(:each) {
-    @process && @process.alive? && @process.stop
+    defined?(@process) && @process.alive? && @process.stop
   }
 
   if ChildProcess.jruby? && ChildProcess.new("true").instance_of?(ChildProcess::JRuby::Process)
