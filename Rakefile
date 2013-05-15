@@ -9,7 +9,7 @@ include Rake::DSL if defined?(::Rake::DSL)
 
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.ruby_opts  = "-I lib:spec"
+  spec.ruby_opts  = "-I lib:spec -w"
   spec.pattern    = 'spec/**/*_spec.rb'
 end
 
