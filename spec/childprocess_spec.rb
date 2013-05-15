@@ -6,7 +6,7 @@ describe ChildProcess do
   it "returns self when started" do
     process = sleeping_ruby
 
-    process.start.should == process
+    process.start.should eq process
     process.should be_started
   end
 
@@ -100,8 +100,8 @@ describe ChildProcess do
         file.rewind
         child_env = eval(file.read)
 
-        child_env['INHERITED'].should == 'yes'
-        child_env['CHILD_ONLY'].should == 'yes'
+        child_env['INHERITED'].should eq 'yes'
+        child_env['CHILD_ONLY'].should eq 'yes'
       end
     end
   end
@@ -172,7 +172,7 @@ describe ChildProcess do
     path = File.expand_path('foo bar')
 
     with_executable_at(path) do |proc|
-      proc.start.should == proc
+      proc.start.should eq proc
       proc.should be_started
     end
   end

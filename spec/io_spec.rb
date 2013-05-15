@@ -23,8 +23,8 @@ describe ChildProcess do
       out.rewind
       err.rewind
 
-      out.read.should == "0\n"
-      err.read.should == "1\n"
+      out.read.should eq "0\n"
+      err.read.should eq "1\n"
     ensure
       out.close
       err.close
