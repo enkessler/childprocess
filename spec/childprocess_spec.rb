@@ -50,8 +50,17 @@ describe ChildProcess do
 
   it "escalates if TERM is ignored" do
     process = ignored('TERM').start
+    sleep(5)
     process.stop
     process.should be_exited
+  end
+
+  it "accepts signals to pass to kill" do
+    process = dies_on_int.start
+    sleep(5)
+    process.stop(3, 'INT')
+    process.should be_exited
+    process.exit_code.should eq 0
   end
 
   it "accepts a timeout argument to #stop" do

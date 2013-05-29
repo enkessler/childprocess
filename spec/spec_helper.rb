@@ -31,6 +31,16 @@ module ChildProcessSpecHelper
     ruby_process tmp_script(code)
   end
 
+  def dies_on_int
+    code = <<-RUBY
+      trap('TERM', "IGNORE")
+      trap('INT') {exit 0}
+      sleep
+    RUBY
+
+    ruby_process tmp_script(code)
+  end
+
   def write_env(path)
     code = <<-RUBY
       File.open(#{path.inspect}, "w") { |f| f << ENV.inspect }
