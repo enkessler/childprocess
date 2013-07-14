@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.description = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
 
   s.rubyforge_project = "childprocess"
+  s.license           = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- spec/*`.split("\n")
