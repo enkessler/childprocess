@@ -9,10 +9,10 @@ if ChildProcess.unix? && !ChildProcess.jruby? && !ChildProcess.posix_spawn?
     it "handles ECHILD race condition where process dies between timeout and KILL" do
       process = sleeping_ruby
 
-      process.stub!(:fork).and_return('fakepid')
-      process.stub!(:send_term)
-      process.stub!(:poll_for_exit).and_raise(ChildProcess::TimeoutError)
-      process.stub!(:send_kill).and_raise(Errno::ECHILD.new)
+      process.stub(:fork).and_return('fakepid')
+      process.stub(:send_term)
+      process.stub(:poll_for_exit).and_raise(ChildProcess::TimeoutError)
+      process.stub(:send_kill).and_raise(Errno::ECHILD.new)
 
       process.start
       lambda { process.stop }.should_not raise_error
@@ -23,10 +23,10 @@ if ChildProcess.unix? && !ChildProcess.jruby? && !ChildProcess.posix_spawn?
     it "handles ESRCH race condition where process dies between timeout and KILL" do
       process = sleeping_ruby
 
-      process.stub!(:fork).and_return('fakepid')
-      process.stub!(:send_term)
-      process.stub!(:poll_for_exit).and_raise(ChildProcess::TimeoutError)
-      process.stub!(:send_kill).and_raise(Errno::ESRCH.new)
+      process.stub(:fork).and_return('fakepid')
+      process.stub(:send_term)
+      process.stub(:poll_for_exit).and_raise(ChildProcess::TimeoutError)
+      process.stub(:send_kill).and_raise(Errno::ESRCH.new)
 
       process.start
       lambda { process.stop }.should_not raise_error
