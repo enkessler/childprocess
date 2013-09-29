@@ -27,6 +27,9 @@ process.io.stdout = Tempfile.new("child-output")
 process.environment["a"] = "b"
 process.environment["c"] = nil
 
+# stop inheriting the environment (default true)
+process.inherit_environment = false
+
 # set the child's working directory
 process.cwd = '/some/path'
 

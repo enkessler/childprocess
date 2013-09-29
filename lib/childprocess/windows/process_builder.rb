@@ -1,7 +1,7 @@
 module ChildProcess
   module Windows
     class ProcessBuilder
-      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr, :cwd
+      attr_accessor :inherit, :detach, :duplex, :environment, :inherit_environment, :stdout, :stderr, :cwd
       attr_reader :stdin
 
       def initialize(args)
@@ -10,7 +10,8 @@ module ChildProcess
         @inherit     = false
         @detach      = false
         @duplex      = false
-        @environment = nil
+        @environment = {}
+        @inherit_environment = true
         @cwd         = nil
 
         @stdout      = nil
@@ -45,11 +46,12 @@ module ChildProcess
       end
 
       def create_environment_pointer
-        return unless @environment.kind_of?(Hash) && @environment.any?
+        return unless @environment.any? || !@inherit_environment
 
         strings = []
 
-        ENV.to_hash.merge(@environment).each do |key, val|
+        env = @inherit_environment ? ENV.to_hash.merge(@environment) : @environment
+        env.each do |key, val|
           next if val.nil?
 
           if key.to_s =~ /=|\0/ || val.to_s.include?("\0")

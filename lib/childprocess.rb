@@ -9,7 +9,7 @@ module ChildProcess
 
   class << self
     def new(*args)
-      case os
+      process = case os
       when :macosx, :linux, :solaris, :bsd, :cygwin, :aix
         if posix_spawn?
           Unix::PosixSpawnProcess.new(args)

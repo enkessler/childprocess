@@ -58,6 +58,7 @@ module ChildProcess
       end
 
       def set_env
+        ENV.replace({}) unless inherit_environment?
         @environment.each { |k, v| ENV[k.to_s] = v.nil? ? nil : v.to_s }
       end
 

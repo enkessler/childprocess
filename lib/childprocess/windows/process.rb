@@ -52,7 +52,8 @@ module ChildProcess
         builder.inherit     = false
         builder.detach      = detach?
         builder.duplex      = duplex?
-        builder.environment = @environment unless @environment.empty?
+        builder.inherit_environment = inherit_environment?
+        builder.environment = @environment
         builder.cwd         = @cwd
 
         if @io

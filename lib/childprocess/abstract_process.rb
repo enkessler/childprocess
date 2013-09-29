@@ -20,6 +20,12 @@ module ChildProcess
     attr_reader :environment
 
     #
+    # Set this to false to stop inheriting the environment
+    #
+    attr_accessor :inherit_environment
+    alias inherit_environment? inherit_environment
+
+    #
     # Set the child's current working directory.
     #
     attr_accessor :cwd
@@ -44,6 +50,7 @@ module ChildProcess
       @detach      = false
       @duplex      = false
       @environment = {}
+      @inherit_environment = true
     end
 
     #

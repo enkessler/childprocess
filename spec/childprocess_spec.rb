@@ -106,6 +106,23 @@ describe ChildProcess do
     end
   end
 
+  it "doesn't inherits the parent's env vars if this is disabled" do
+    Tempfile.open("env-spec") do |file|
+      with_env('INHERITED' => 'yes') do
+        process = write_env(file.path)
+        process.inherit_environment = false
+
+        process.start
+        process.wait
+
+        file.rewind
+        child_env = eval(file.read)
+
+        child_env.should_not have_key('INHERITED')
+      end
+    end
+  end
+
   it "can unset env vars" do
     Tempfile.open("env-spec") do |file|
       ENV['CHILDPROCESS_UNSET'] = '1'

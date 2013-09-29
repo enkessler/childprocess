@@ -42,7 +42,8 @@ module ChildProcess
 
         # wrap in helper classes in order to avoid GC'ed pointers
         argv = Argv.new(@args)
-        envp = Envp.new(ENV.to_hash.merge(@environment))
+        env  = inherit_environment? ? ENV.to_hash.merge(@environment) : @environment
+        envp = Envp.new(env)
 
         ret = 0
         @@cwd_lock.synchronize do
