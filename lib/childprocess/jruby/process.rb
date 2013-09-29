@@ -108,7 +108,8 @@ module ChildProcess
       end
 
       def set_env(env)
-        ENV.to_hash.merge(@environment).each do |k,v|
+        base = inherit_environment? ? ENV.to_hash.merge(@environment) : @environment
+        base.each do |k,v|
           env.put(k.to_s, v.to_s) if v
         end
       end
