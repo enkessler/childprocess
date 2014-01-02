@@ -19,5 +19,6 @@ rdoc
 pkg
 .rbx
 Gemfile.lock
+.ruby-version
 
 ## PROJECT::SPECIFIC
