@@ -13,5 +13,4 @@ matrix:
     - rvm: jruby
       env: CHILDPROCESS_POSIX_SPAWN=true
     - rvm: rbx
-      env: CHILDPROCESS_POSIX_SPAWN=true
     - rvm: ruby-head
