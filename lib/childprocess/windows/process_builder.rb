@@ -1,13 +1,12 @@
 module ChildProcess
   module Windows
     class ProcessBuilder
-      attr_accessor :inherit, :detach, :duplex, :environment, :stdout, :stderr, :cwd
+      attr_accessor :detach, :duplex, :environment, :stdout, :stderr, :cwd
       attr_reader :stdin
 
       def initialize(args)
         @args        = args
 
-        @inherit     = false
         @detach      = false
         @duplex      = false
         @environment = nil
@@ -76,7 +75,7 @@ module ChildProcess
           @cmd_ptr,     # command line
           nil,          # process attributes
           nil,          # thread attributes
-          @inherit,     # inherit handles
+          true,         # inherit handles
           @flags,       # creation flags
           @env_ptr,     # environment
           @cwd_ptr,     # current directory
@@ -105,41 +104,32 @@ module ChildProcess
         startup_info[:dwFlags] ||= 0
         startup_info[:dwFlags] |= STARTF_USESTDHANDLES
 
-        @inherit = true
+        if @stdout
+          startup_info[:hStdOutput] = std_stream_handle_for(@stdout)
+        end
 
-        if @stdout || @stderr
-          if @stdout
-            startup_info[:hStdOutput] = std_stream_handle_for(@stdout)
-          end
-
-          if @stderr
-            startup_info[:hStdError] = std_stream_handle_for(@stderr)
-          end
+        if @stderr
+          startup_info[:hStdError] = std_stream_handle_for(@stderr)
         end
 
         if @duplex
-          setup_stdin
+          read_pipe_ptr  = FFI::MemoryPointer.new(:pointer)
+          write_pipe_ptr = FFI::MemoryPointer.new(:pointer)
+          sa             = SecurityAttributes.new(:inherit => true)
+
+          ok = Lib.create_pipe(read_pipe_ptr, write_pipe_ptr, sa, 0)
+          Lib.check_error ok
+
+          @read_pipe  = read_pipe_ptr.read_pointer
+          @write_pipe = write_pipe_ptr.read_pointer
+
+          Lib.set_handle_inheritance @read_pipe, true
+          Lib.set_handle_inheritance @write_pipe, false
+
+          startup_info[:hStdInput] = @read_pipe
         else
           startup_info[:hStdInput] = std_stream_handle_for(STDIN)
         end
-      end
-
-      def setup_stdin
-        read_pipe_ptr  = FFI::MemoryPointer.new(:pointer)
-        write_pipe_ptr = FFI::MemoryPointer.new(:pointer)
-        sa             = SecurityAttributes.new(:inherit => true)
-
-        ok = Lib.create_pipe(read_pipe_ptr, write_pipe_ptr, sa, 0)
-        Lib.check_error ok
-
-        @read_pipe  = read_pipe_ptr.read_pointer
-        @write_pipe = write_pipe_ptr.read_pointer
-
-        @inherit = true
-        Lib.set_handle_inheritance @read_pipe, true
-        Lib.set_handle_inheritance @write_pipe, false
-
-        startup_info[:hStdInput] = @read_pipe
       end
 
       def std_stream_handle_for(io)

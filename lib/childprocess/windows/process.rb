@@ -53,7 +53,6 @@ module ChildProcess
 
       def launch_process
         builder = ProcessBuilder.new(@args)
-        builder.inherit     = false
         builder.detach      = detach?
         builder.duplex      = duplex?
         builder.environment = @environment unless @environment.empty?
