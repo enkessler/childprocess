@@ -175,7 +175,7 @@ module ChildProcessSpecHelper
         last_exception = ex
       end
 
-      sleep 0.05
+      sleep 0.01
     end
 
     msg = "timed out after #{timeout} seconds"
