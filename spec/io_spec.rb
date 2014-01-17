@@ -113,27 +113,26 @@ describe ChildProcess do
       process.start
 
       stdin = process.io.stdin
-      lf = ChildProcess.windows? ? "\r\n" : "\n"
 
       stdin.puts "hello"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}" }
+      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\n\z/m }
 
       stdin.putc "n"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}n" }
+      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\n\z/m }
 
       stdin.print "e"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}ne" }
+      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nne\z/m }
 
       stdin.printf "w"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}new" }
+      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nnew\z/m }
 
       stdin.write "\nworld\n"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should == "hello#{lf}new#{lf}world#{lf}" }
+      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nnew\r?\nworld\r?\n\z/m }
 
       stdin.close
       process.poll_for_exit(exit_timeout)
