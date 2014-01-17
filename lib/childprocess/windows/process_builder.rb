@@ -102,12 +102,12 @@ module ChildProcess
       end
 
       def setup_io
+        startup_info[:dwFlags] ||= 0
+        startup_info[:dwFlags] |= STARTF_USESTDHANDLES
+
+        @inherit = true
+
         if @stdout || @stderr
-          startup_info[:dwFlags] ||= 0
-          startup_info[:dwFlags] |= STARTF_USESTDHANDLES
-
-          @inherit = true
-
           if @stdout
             startup_info[:hStdOutput] = std_stream_handle_for(@stdout)
           end
@@ -117,7 +117,11 @@ module ChildProcess
           end
         end
 
-        setup_stdin if @duplex
+        if @duplex
+          setup_stdin
+        else
+          startup_info[:hStdInput] = std_stream_handle_for(STDIN)
+        end
       end
 
       def setup_stdin
