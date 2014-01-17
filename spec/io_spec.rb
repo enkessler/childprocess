@@ -120,7 +120,7 @@ describe ChildProcess do
 
       stdin.putc "n"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\n\z/m }
+      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nn\z/m }
 
       stdin.print "e"
       stdin.flush
