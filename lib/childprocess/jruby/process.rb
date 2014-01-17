@@ -35,10 +35,14 @@ module ChildProcess
       end
 
       def wait
-        @process.waitFor
+        if exited?
+          exit_code
+        else
+          @process.waitFor
 
-        stop_pumps
-        @exit_code = @process.exitValue
+          stop_pumps
+          @exit_code = @process.exitValue
+        end
       end
 
       #

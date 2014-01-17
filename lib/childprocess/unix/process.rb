@@ -43,9 +43,13 @@ module ChildProcess
 
       def wait
         assert_started
-        _, status = ::Process.waitpid2 @pid
 
-        @exit_code = status.exitstatus || status.termsig
+        if exited?
+          exit_code
+        else
+          _, status = ::Process.waitpid2 @pid
+          @exit_code = status.exitstatus || status.termsig
+        end
       end
 
       private

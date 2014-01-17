@@ -21,11 +21,15 @@ module ChildProcess
       end
 
       def wait
-        @handle.wait
-        @exit_code = @handle.exit_code
-        @handle.close
+        if exited?
+          exit_code
+        else
+          @handle.wait
+          @exit_code = @handle.exit_code
+          @handle.close
 
-        @exit_code
+          @exit_code
+        end
       end
 
       def exited?

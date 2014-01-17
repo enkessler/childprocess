@@ -48,6 +48,13 @@ describe ChildProcess do
     return_value.should == 0
   end
 
+  it 'ignores #wait if process already finished' do
+    process = exit_with(0).start
+    sleep 0.01 until process.exited?
+
+    process.wait.should == 0
+  end
+
   it "escalates if TERM is ignored" do
     process = ignored('TERM').start
     process.stop
