@@ -66,7 +66,7 @@ module ChildProcess
         assert_started
 
         log "sending #{sig}"
-        ::Process.kill sig, @pid
+        ::Process.kill sig, -@pid
       end
 
     end # Process

@@ -1,30 +1,34 @@
 module ChildProcess
   module Windows
-    FORMAT_MESSAGE_FROM_SYSTEM    = 0x00001000
-    FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000
+    FORMAT_MESSAGE_FROM_SYSTEM            = 0x00001000
+    FORMAT_MESSAGE_ARGUMENT_ARRAY         = 0x00002000
 
-    PROCESS_ALL_ACCESS            = 0x1F0FFF
-    PROCESS_QUERY_INFORMATION     = 0x0400
-    PROCESS_VM_READ               = 0x0010
-    PROCESS_STILL_ACTIVE          = 259
+    PROCESS_ALL_ACCESS                    = 0x1F0FFF
+    PROCESS_QUERY_INFORMATION             = 0x0400
+    PROCESS_VM_READ                       = 0x0010
+    PROCESS_STILL_ACTIVE                  = 259
 
-    INFINITE                      = 0xFFFFFFFF
+    INFINITE                              = 0xFFFFFFFF
 
-    WIN_SIGINT                    = 2
-    WIN_SIGBREAK                  = 3
-    WIN_SIGKILL                   = 9
+    WIN_SIGINT                            = 2
+    WIN_SIGBREAK                          = 3
+    WIN_SIGKILL                           = 9
 
-    CTRL_C_EVENT                  = 0
-    CTRL_BREAK_EVENT              = 1
+    CTRL_C_EVENT                          = 0
+    CTRL_BREAK_EVENT                      = 1
 
-    DETACHED_PROCESS              = 0x00000008
+    DETACHED_PROCESS                      = 0x00000008
 
-    STARTF_USESTDHANDLES          = 0x00000100
-    INVALID_HANDLE_VALUE          = -1
-    HANDLE_FLAG_INHERIT           = 0x00000001
+    STARTF_USESTDHANDLES                  = 0x00000100
+    INVALID_HANDLE_VALUE                  = -1
+    HANDLE_FLAG_INHERIT                   = 0x00000001
 
-    DUPLICATE_SAME_ACCESS         = 0x00000002
-    CREATE_UNICODE_ENVIRONMENT    = 0x00000400
+    DUPLICATE_SAME_ACCESS                 = 0x00000002
+    CREATE_UNICODE_ENVIRONMENT            = 0x00000400
+
+    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE    = 0x2000
+    JOB_OBJECT_EXTENDED_LIMIT_INFORMATION = 9
+    JOB_OBJECT_BASIC_LIMIT_INFORMATION    = 2
 
     module Lib
       enum :wait_status, [
@@ -62,12 +66,6 @@ module ChildProcess
         :pointer], :bool
 
       #
-      # DWORD WINAPI GetLastError(void);
-      #
-
-      attach_function :get_last_error, :GetLastError, [], :ulong
-
-      #
       #   DWORD WINAPI FormatMessage(
       #   __in      DWORD dwFlags,
       #   __in_opt  LPCVOID lpSource,
@@ -101,6 +99,35 @@ module ChildProcess
 
       attach_function :open_process, :OpenProcess, [:ulong, :bool, :ulong], :pointer
 
+      #
+      # HANDLE WINAPI CreateJobObject(
+      #   _In_opt_  LPSECURITY_ATTRIBUTES lpJobAttributes,
+      #   _In_opt_  LPCTSTR lpName
+      # );
+      #
+
+      attach_function :create_job_object, :CreateJobObjectA, [:pointer, :pointer], :pointer
+
+      #
+      # BOOL WINAPI AssignProcessToJobObject(
+      #   _In_  HANDLE hJob,
+      #   _In_  HANDLE hProcess
+      # );
+
+      attach_function :assign_process_to_job_object, :AssignProcessToJobObject, [:pointer, :pointer], :bool
+
+      #
+      # BOOL WINAPI SetInformationJobObject(
+      #   _In_  HANDLE hJob,
+      #   _In_  JOBOBJECTINFOCLASS JobObjectInfoClass,
+      #   _In_  LPVOID lpJobObjectInfo,
+      #   _In_  DWORD cbJobObjectInfoLength
+      # );
+      #
+
+      attach_function :set_information_job_object, :SetInformationJobObject, [:pointer, :int, :pointer, :ulong], :bool
+
+      #
       #
       # DWORD WINAPI WaitForSingleObject(
       #   __in  HANDLE hHandle,
@@ -243,7 +270,8 @@ module ChildProcess
         end
 
         def last_error_message
-          errnum = get_last_error
+          errnum = FFI.errno
+
           buf = FFI::MemoryPointer.new :char, 512
 
           size = format_message(
@@ -257,6 +285,18 @@ module ChildProcess
           else
             "#{str} (#{errnum})"
           end
+        end
+
+        def each_child_of(pid, &blk)
+          raise NotImplementedError
+
+          # http://stackoverflow.com/questions/1173342/terminate-a-process-tree-c-for-windows?rq=1
+
+          # for each process entry
+          #  if pe.th32ParentProcessID == pid
+          #    Handle.open(pe.pe.th32ProcessId, &blk)
+          #  end
+          #
         end
 
         def handle_for(fd_or_io)
@@ -342,6 +382,17 @@ module ChildProcess
 
         def check_error(bool)
           bool or raise Error, last_error_message
+        end
+
+        def alive?(pid)
+          handle = Lib.open_process(PROCESS_ALL_ACCESS, false, pid)
+          if handle.null?
+            false
+          else
+            ptr = FFI::MemoryPointer.new :ulong
+            Lib.check_error Lib.get_exit_code(handle, ptr)
+            ptr.read_ulong == PROCESS_STILL_ACTIVE
+          end
         end
 
         def no_hang?(flags)

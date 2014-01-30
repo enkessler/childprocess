@@ -20,5 +20,6 @@ pkg
 .rbx
 Gemfile.lock
 .ruby-version
+.bundle
 
 ## PROJECT::SPECIFIC

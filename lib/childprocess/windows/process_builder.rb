@@ -17,6 +17,7 @@ module ChildProcess
         @stdin       = nil
 
         @flags       = 0
+        @job_ptr     = nil
         @cmd_ptr     = nil
         @env_ptr     = nil
         @cwd_ptr     = nil

@@ -73,8 +73,7 @@ describe ChildProcess do
         process.wait
       end
 
-      file.rewind
-      child_env = eval(file.read)
+      child_env = eval rewind_and_read(file)
       child_env['INHERITED'].should == 'yes'
     end
   end
@@ -88,9 +87,8 @@ describe ChildProcess do
       ENV['CHILD_ONLY'].should be_nil
 
       process.wait
-      file.rewind
 
-      child_env = eval(file.read)
+      child_env = eval rewind_and_read(file)
       child_env['CHILD_ONLY'].should == '1'
     end
   end
@@ -104,8 +102,7 @@ describe ChildProcess do
         process.start
         process.wait
 
-        file.rewind
-        child_env = eval(file.read)
+        child_env = eval rewind_and_read(file)
 
         child_env['INHERITED'].should eq 'yes'
         child_env['CHILD_ONLY'].should eq 'yes'
@@ -121,9 +118,8 @@ describe ChildProcess do
       process.start
 
       process.wait
-      file.rewind
 
-      child_env = eval(file.read)
+      child_env = eval rewind_and_read(file)
       child_env.should_not have_key('CHILDPROCESS_UNSET')
     end
   end
@@ -136,8 +132,7 @@ describe ChildProcess do
       process = write_argv(file.path, *args).start
       process.wait
 
-      file.rewind
-      file.read.should == args.inspect
+      rewind_and_read(file).should == args.inspect
     end
   end
 
@@ -158,8 +153,7 @@ describe ChildProcess do
 
       process.wait
 
-      file.rewind
-      file.read.should == expected_dir
+      rewind_and_read(file).should == expected_dir
     end
   end
 
@@ -170,8 +164,7 @@ describe ChildProcess do
       process = write_argv(file.path, *args).start
       process.wait
 
-      file.rewind
-      file.read.should == args.inspect
+      rewind_and_read(file).should == args.inspect
     end
   end
 
@@ -203,11 +196,23 @@ describe ChildProcess do
         process.start
         process.wait
 
-        file.rewind
-        file.read.should == dir
+        rewind_and_read(file).should == dir
       end
 
       Dir.pwd.should == orig_pwd
     }
+  end
+
+  it 'kills the full process tree' do
+    Tempfile.open('kill-process-tree') do |file|
+      process = write_pid_in_sleepy_grand_child(file.path).start
+
+      pid = within(5) do
+        Integer(rewind_and_read(file)) rescue nil
+      end
+
+      process.stop
+      within(3) { alive?(pid).should be_false }
+    end
   end
 end

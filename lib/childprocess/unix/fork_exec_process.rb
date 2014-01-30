@@ -18,6 +18,8 @@ module ChildProcess
         end
 
         @pid = fork {
+          ::Process.setpgid 0, 0 # same process group as parent
+
           if @cwd
             Dir.chdir(@cwd)
           end

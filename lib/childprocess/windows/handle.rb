@@ -23,23 +23,25 @@ module ChildProcess
         end
       end
 
-      def initialize(handle, pid)
-        unless handle.kind_of?(FFI::Pointer)
-          raise TypeError, "invalid handle: #{handle.inspect}"
+      attr_reader :pointer
+
+      def initialize(pointer, pid)
+        unless pointer.kind_of?(FFI::Pointer)
+          raise TypeError, "invalid handle: #{pointer.inspect}"
         end
 
-        if handle.null?
-          raise ArgumentError, "handle is null: #{handle.inspect}"
+        if pointer.null?
+          raise ArgumentError, "handle is null: #{pointer.inspect}"
         end
 
-        @pid    = pid
-        @handle = handle
-        @closed = false
+        @pid     = pid
+        @pointer = pointer
+        @closed  = false
       end
 
       def exit_code
         code_pointer = FFI::MemoryPointer.new :ulong
-        ok = Lib.get_exit_code(@handle, code_pointer)
+        ok = Lib.get_exit_code(@pointer, code_pointer)
 
         if ok
           code_pointer.get_ulong(0)
@@ -58,14 +60,14 @@ module ChildProcess
         when WIN_SIGBREAK
           Lib.generate_console_ctrl_event(CTRL_BREAK_EVENT, @pid)
         when WIN_SIGKILL
-          ok = Lib.terminate_process(@handle, @pid)
+          ok = Lib.terminate_process(@pointer, @pid)
           Lib.check_error ok
         else
           thread_id     = FFI::MemoryPointer.new(:ulong)
           module_handle = Lib.get_module_handle("kernel32")
           proc_address  = Lib.get_proc_address(module_handle, "ExitProcess")
 
-          thread = Lib.create_remote_thread(@handle, 0, 0, proc_address, 0, 0, thread_id)
+          thread = Lib.create_remote_thread(@pointer, 0, 0, proc_address, 0, 0, thread_id)
           check_error thread
 
           Lib.wait_for_single_object(thread, 5)
@@ -76,12 +78,12 @@ module ChildProcess
       def close
         return if @closed
 
-        Lib.close_handle(@handle)
+        Lib.close_handle(@pointer)
         @closed = true
       end
 
       def wait(milliseconds = nil)
-        Lib.wait_for_single_object(@handle, milliseconds || INFINITE)
+        Lib.wait_for_single_object(@pointer, milliseconds || INFINITE)
       end
 
     end # Handle

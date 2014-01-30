@@ -5,9 +5,8 @@ shared_examples_for "a platform that provides the child's pid" do
     Tempfile.open("pid-spec") do |file|
       process = write_pid(file.path).start
       process.wait
-      file.rewind
 
-      process.pid.should == file.read.chomp.to_i
+      process.pid.should == rewind_and_read(file).chomp.to_i
     end
   end
 end

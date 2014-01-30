@@ -11,13 +11,13 @@ module ChildProcess
       def stop(timeout = 3)
         assert_started
 
-        # just kill right away on windows.
         log "sending KILL"
         @handle.send(WIN_SIGKILL)
 
         poll_for_exit(timeout)
       ensure
         @handle.close
+        @job.close
       end
 
       def wait
@@ -27,6 +27,7 @@ module ChildProcess
           @handle.wait
           @exit_code = @handle.exit_code
           @handle.close
+          @job.close
 
           @exit_code
         end
@@ -63,8 +64,11 @@ module ChildProcess
           builder.stderr      = @io.stderr
         end
 
+        @job = Job.new
         @pid = builder.start
         @handle = Handle.open @pid
+
+        @job << @handle
 
         if duplex?
           raise Error, "no stdin stream" unless builder.stdin
@@ -72,6 +76,39 @@ module ChildProcess
         end
 
         self
+      end
+
+      class Job
+        def initialize
+          @pointer = Lib.create_job_object(nil, nil)
+
+          if @pointer.nil? || @pointer.null?
+            raise Error, "unable to create job object"
+          end
+
+          basic = JobObjectBasicLimitInformation.new
+          basic[:LimitFlags] = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+
+          extended = JobObjectExtendedLimitInformation.new
+          extended[:BasicLimitInformation] = basic
+
+          ret = Lib.set_information_job_object(
+            @pointer,
+            JOB_OBJECT_EXTENDED_LIMIT_INFORMATION,
+            extended,
+            extended.size
+          )
+
+          Lib.check_error ret
+        end
+
+        def <<(handle)
+          Lib.check_error Lib.assign_process_to_job_object(@pointer, handle.pointer)
+        end
+
+        def close
+          Lib.close_handle @pointer
+        end
       end
 
     end # Process

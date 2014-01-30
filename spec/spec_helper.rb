@@ -60,6 +60,14 @@ module ChildProcessSpecHelper
     ruby_process tmp_script(code)
   end
 
+  def write_pid_in_sleepy_grand_child(path)
+    code = <<-RUBY
+      system "ruby", "-e", 'File.open(#{path.inspect}, "w") { |f| f << Process.pid }; sleep'
+    RUBY
+
+    ruby_process tmp_script(code)
+  end
+
   def exit_with(exit_code)
     ruby_process(tmp_script("exit(#{exit_code})"))
   end
@@ -97,6 +105,8 @@ module ChildProcessSpecHelper
     end
 
     raise last_error unless ok
+
+    ok
   end
 
   def cat
@@ -199,6 +209,19 @@ module ChildProcessSpecHelper
   def rewind_and_read(io)
     io.rewind
     io.read
+  end
+
+  def alive?(pid)
+    if ChildProcess.windows?
+      ChildProcess::Windows::Lib.alive?(pid)
+    else
+      begin
+        Process.getpgid pid
+        true
+      rescue Errno::ESRCH
+        false
+      end
+    end
   end
 
 end # ChildProcessSpecHelper

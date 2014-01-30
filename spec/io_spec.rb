@@ -20,11 +20,8 @@ describe ChildProcess do
       process.io.stdin.should be_nil
       process.wait
 
-      out.rewind
-      err.rewind
-
-      out.read.should eq "0\n"
-      err.read.should eq "1\n"
+      rewind_and_read(out).should eq "0\n"
+      rewind_and_read(err).should eq "1\n"
     ensure
       out.close
       err.close
@@ -47,8 +44,7 @@ describe ChildProcess do
       process.start
       process.wait
 
-      out.rewind
-      out.read.should == "0\n"
+      rewind_and_read(out).should == "0\n"
     ensure
       out.close
     end
@@ -66,8 +62,7 @@ describe ChildProcess do
         process.start
         process.poll_for_exit(exit_timeout)
 
-        out.rewind
-        out.read.should == "hello\n"
+        rewind_and_read(out).should == "hello\n"
       ensure
         out.close
       end
@@ -91,8 +86,7 @@ describe ChildProcess do
 
       process.poll_for_exit(exit_timeout)
 
-      out.rewind
-      out.read.should == "hello world\n"
+      rewind_and_read(out).should == "hello world\n"
     ensure
       out.close
     end
@@ -207,8 +201,7 @@ describe ChildProcess do
       process.start
       process.wait
 
-      out.rewind
-      out.read.size.should == 3000
+      rewind_and_read(out).size.should == 3000
     ensure
       out.close
     end
