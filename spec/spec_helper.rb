@@ -62,7 +62,7 @@ module ChildProcessSpecHelper
 
   def write_pid_in_sleepy_grand_child(path)
     code = <<-RUBY
-      system "ruby", "-e", 'File.open(#{path.inspect}, "w") { |f| f << Process.pid }; sleep'
+      system "ruby", "-e", 'File.open(#{path.inspect}, "w") { |f| f << Process.pid; f.flush }; sleep'
     RUBY
 
     ruby_process tmp_script(code)
@@ -90,23 +90,6 @@ module ChildProcessSpecHelper
     puts code if $DEBUG
 
     @tf.path
-  end
-
-  def within(seconds, &blk)
-    end_time   = Time.now + seconds
-    ok         = false
-    last_error = nil
-
-    until ok || Time.now >= end_time
-      begin
-        ok = yield
-      rescue RSpec::Expectations::ExpectationNotMetError => last_error
-      end
-    end
-
-    raise last_error unless ok
-
-    ok
   end
 
   def cat
@@ -180,12 +163,13 @@ module ChildProcessSpecHelper
   end
 
   def wait_until(timeout = 10, &blk)
-    end_time = Time.now + timeout
+    end_time       = Time.now + timeout
     last_exception = nil
 
     until Time.now >= end_time
       begin
-        return if yield
+        result = yield
+        return result if result
       rescue RSpec::Expectations::ExpectationNotMetError => ex
         last_exception = ex
       end

@@ -207,12 +207,12 @@ describe ChildProcess do
     Tempfile.open('kill-process-tree') do |file|
       process = write_pid_in_sleepy_grand_child(file.path).start
 
-      pid = within(5) do
+      pid = wait_until(5) do
         Integer(rewind_and_read(file)) rescue nil
       end
 
       process.stop
-      within(3) { alive?(pid).should be_false }
+      wait_until(3) { alive?(pid).should be_false }
     end
   end
 end
