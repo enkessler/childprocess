@@ -10,7 +10,5 @@ env:
   - CHILDPROCESS_POSIX_SPAWN=false
 matrix:
   allow_failures:
-    - rvm: jruby
-      env: CHILDPROCESS_POSIX_SPAWN=true
     - rvm: rbx
     - rvm: ruby-head
