@@ -53,7 +53,7 @@ describe ChildProcess do
   it "pumps all output" do
     process = echo
 
-    out = Tempfile.new("pump-#{i}")
+    out = Tempfile.new("pump")
 
     begin
       process.io.stdout = out
