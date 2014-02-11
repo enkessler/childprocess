@@ -12,3 +12,5 @@ matrix:
   allow_failures:
     - rvm: rbx
     - rvm: ruby-head
+    - rvm: 2.1.0
+      env: "CHILDPROCESS_POSIX_SPAWN=true"
