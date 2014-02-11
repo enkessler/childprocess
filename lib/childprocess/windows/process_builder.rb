@@ -28,7 +28,7 @@ module ChildProcess
         create_environment_pointer
         create_cwd_pointer
 
-        setup_detach
+        setup_flags
         setup_io
 
         pid = create_process
@@ -97,8 +97,9 @@ module ChildProcess
         @process_info ||= ProcessInfo.new
       end
 
-      def setup_detach
+      def setup_flags
         @flags |= DETACHED_PROCESS if @detach
+        @flags |= CREATE_BREAKAWAY_FROM_JOB
       end
 
       def setup_io
