@@ -104,16 +104,16 @@ module ChildProcessSpecHelper
   end
 
   def echo
-    if ChildProcess.os == :windows
+    # if ChildProcess.os == :windows
       ruby(<<-CODE)
             STDIN.sync  = true
             STDOUT.sync = true
 
             puts "hello"
           CODE
-    else
-      ChildProcess.build("echo", "hello")
-    end
+    # else
+    #   ChildProcess.build("echo", "hello")
+    # end
   end
 
   def ruby(code)

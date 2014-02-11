@@ -57,7 +57,7 @@ module ChildProcess
     end
 
     def posix_spawn?
-      enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
+      enabled = @posix_spawn || ENV['CHILDPROCESS_POSIX_SPAWN']
       return false unless enabled
 
       require 'ffi'
