@@ -51,21 +51,19 @@ describe ChildProcess do
   end
 
   it "pumps all output" do
-    10.times do |i|
-      process = echo
+    process = echo
 
-      out = Tempfile.new("pump-#{i}")
+    out = Tempfile.new("pump-#{i}")
 
-      begin
-        process.io.stdout = out
+    begin
+      process.io.stdout = out
 
-        process.start
-        process.wait
+      process.start
+      process.wait
 
-        rewind_and_read(out).should == "hello\n"
-      ensure
-        out.close
-      end
+      rewind_and_read(out).should == "hello\n"
+    ensure
+      out.close
     end
   end
 
