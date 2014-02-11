@@ -52,16 +52,15 @@ describe ChildProcess do
 
   it "pumps all output" do
     10.times do |i|
-      p pump_attempt: i
       process = echo
 
-      out = Tempfile.new("duplex")
+      out = Tempfile.new("pump-#{i}")
 
       begin
         process.io.stdout = out
 
         process.start
-        process.poll_for_exit(exit_timeout)
+        process.wait
 
         rewind_and_read(out).should == "hello\n"
       ensure
