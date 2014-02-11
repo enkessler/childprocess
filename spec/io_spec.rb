@@ -52,6 +52,7 @@ describe ChildProcess do
 
   it "pumps all output" do
     10.times do |i|
+      p pump_attempt: i
       process = echo
 
       out = Tempfile.new("duplex")
