@@ -136,7 +136,7 @@ module ChildProcess
       # );
       #
 
-      attach_function :wait_for_single_object, :WaitForSingleObject, [:pointer, :ulong], :wait_status
+      attach_function :wait_for_single_object, :WaitForSingleObject, [:pointer, :ulong], :wait_status, :blocking => true
 
       #
       # BOOL WINAPI GetExitCodeProcess(

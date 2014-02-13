@@ -215,4 +215,14 @@ describe ChildProcess do
       wait_until(3) { alive?(pid).should be_false }
     end
   end
+
+  it 'releases the GIL while waiting for the process' do
+    time = Time.now
+    threads = []
+
+    threads << Thread.new { proc = sleeping_ruby(1).start; proc.wait }
+    threads << Thread.new(time) { (Time.now - time).should < 0.5 }
+
+    threads.each { |t| t.join }
+  end
 end

@@ -19,8 +19,12 @@ module ChildProcessSpecHelper
     @process = ChildProcess.build(RUBY , *args)
   end
 
-  def sleeping_ruby
-    ruby_process("-e", "sleep")
+  def sleeping_ruby(seconds = nil)
+    if seconds
+      ruby_process("-e", "sleep #{seconds}")
+    else
+      ruby_process("-e", "sleep")
+    end
   end
 
   def invalid_process
