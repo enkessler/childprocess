@@ -159,6 +159,11 @@ module ChildProcess
           ptr.read_short
         end
 
+        def pgroup=(pid)
+          self.flags |= Platform::POSIX_SPAWN_SETPGROUP
+          Lib.check Lib.posix_spawnattr_setpgroup(@ptr, pid)
+        end
+
         def to_ptr
           @ptr
         end

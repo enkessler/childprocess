@@ -74,7 +74,7 @@ module ChildProcess
       end
 
       def _pid
-        -@pid
+        -@pid # negative pid == process group
       end
 
     end # Process
