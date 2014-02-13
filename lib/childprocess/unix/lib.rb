@@ -92,7 +92,7 @@ module ChildProcess
 
       def self.check(errno)
         if errno != 0
-          raise Error, Lib.strerror(errno)
+          raise Error, Lib.strerror(FFI.errno)
         end
       end
 

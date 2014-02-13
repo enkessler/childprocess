@@ -29,13 +29,13 @@ module ChildProcess
         return true if @exit_code
 
         assert_started
-        pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
+        pid, status = ::Process.waitpid2(_pid, ::Process::WNOHANG | ::Process::WUNTRACED)
         pid = nil if pid == 0 # may happen on jruby
 
         log(:pid => pid, :status => status)
 
         if pid
-          @exit_code = status.exitstatus || status.termsig
+          set_exit_code(status)
         end
 
         !!pid
@@ -47,8 +47,8 @@ module ChildProcess
         if exited?
           exit_code
         else
-          _, status = ::Process.waitpid2 @pid
-          @exit_code = status.exitstatus || status.termsig
+          _, status = ::Process.waitpid2 _pid
+          set_exit_code(status)
         end
       end
 
@@ -66,7 +66,15 @@ module ChildProcess
         assert_started
 
         log "sending #{sig}"
-        ::Process.kill sig, -@pid
+        ::Process.kill sig, _pid
+      end
+
+      def set_exit_code(status)
+        @exit_code = status.exitstatus || status.termsig
+      end
+
+      def _pid
+        -@pid
       end
 
     end # Process
