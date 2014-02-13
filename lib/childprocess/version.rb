@@ -1,3 +1,3 @@
 module ChildProcess
-  VERSION = "0.4.1.rc3"
+  VERSION = "0.4.1"
 end
