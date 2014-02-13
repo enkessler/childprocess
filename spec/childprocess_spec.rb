@@ -220,7 +220,7 @@ describe ChildProcess do
     time = Time.now
     threads = []
 
-    threads << Thread.new { proc = sleeping_ruby(1).start; proc.wait }
+    threads << Thread.new { sleeping_ruby(1).start.wait }
     threads << Thread.new(time) { (Time.now - time).should < 0.5 }
 
     threads.each { |t| t.join }
