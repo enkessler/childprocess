@@ -33,7 +33,7 @@ module ChildProcess
           actions.add_close fileno_for(writer)
         end
 
-        attrs.pgroup = 0
+        attrs.pgroup = 0 unless keep_pgid?
         attrs.flags |= Platform::POSIX_SPAWN_USEVFORK if defined? Platform::POSIX_SPAWN_USEVFORK
 
         # wrap in helper classes in order to avoid GC'ed pointers

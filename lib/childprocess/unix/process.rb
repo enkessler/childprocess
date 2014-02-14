@@ -52,6 +52,21 @@ module ChildProcess
         end
       end
 
+      #
+      # Set this to true to avoid resetting the parent group id in the child
+      #
+      # This is a temporary workaround for https://github.com/jarib/childprocess/issues/69
+      # and will probably be removed in the future.
+      #
+
+      def keep_pgid=(bool)
+        @keep_pgid = bool
+      end
+
+      def keep_pgid?
+        !!@keep_pgid
+      end
+
       private
 
       def send_term
@@ -74,7 +89,11 @@ module ChildProcess
       end
 
       def _pid
-        -@pid # negative pid == process group
+        if keep_pgid?
+          @pid
+        else
+          -@pid # negative pid == process group
+        end
       end
 
     end # Process

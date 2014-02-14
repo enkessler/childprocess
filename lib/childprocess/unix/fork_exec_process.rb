@@ -20,7 +20,7 @@ module ChildProcess
         @pid = fork {
           # Children of the forked process will inherit its process group
           # This is to make sure that all grandchildren dies when this Process instance is killed
-          ::Process.setpgid 0, 0
+          ::Process.setpgid 0, 0 unless keep_pgid?
 
           if @cwd
             Dir.chdir(@cwd)
