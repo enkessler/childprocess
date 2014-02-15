@@ -25,6 +25,15 @@ module ChildProcess
     attr_accessor :cwd
 
     #
+    #
+    # Set this to true to make the child process the leader of a new process group
+    #
+    # This can be used to make sure that all grandchildren are killed
+    # when the child process dies.
+    #
+    attr_accessor :leader
+
+    #
     # Create a new process with the given args.
     #
     # @api private
@@ -43,6 +52,7 @@ module ChildProcess
       @cwd         = nil
       @detach      = false
       @duplex      = false
+      @leader      = false
       @environment = {}
     end
 
@@ -159,6 +169,10 @@ module ChildProcess
 
     def duplex?
       @duplex
+    end
+
+    def leader?
+      @leader
     end
 
     def log(*args)

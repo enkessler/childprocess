@@ -205,7 +205,9 @@ describe ChildProcess do
 
   it 'kills the full process tree', :process_builder => false do
     Tempfile.open('kill-process-tree') do |file|
-      process = write_pid_in_sleepy_grand_child(file.path).start
+      process = write_pid_in_sleepy_grand_child(file.path)
+      process.leader = true
+      process.start
 
       pid = wait_until(30) do
         Integer(rewind_and_read(file)) rescue nil

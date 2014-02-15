@@ -124,6 +124,16 @@ ChildProcess.posix_spawn = true
 process = ChildProcess.build(*args)
 ```
 
+### Ensure entire process tree dies
+
+By default, the child process does not create a new process group. This means there's no guarantee that the entire process tree will die when the child process is killed. To solve this:
+
+```ruby
+process = ChildProcess.build(*args)
+process.new_process_group = true
+process.start
+```
+
 #### Detach from parent
 
 ```ruby

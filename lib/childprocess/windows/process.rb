@@ -16,8 +16,8 @@ module ChildProcess
 
         poll_for_exit(timeout)
       ensure
-        @handle.close
-        @job.close
+        close_handle
+        close_job_if_necessary
       end
 
       def wait
@@ -26,8 +26,9 @@ module ChildProcess
         else
           @handle.wait
           @exit_code = @handle.exit_code
-          @handle.close
-          @job.close
+
+          close_handle
+          close_job_if_necessary
 
           @exit_code
         end
@@ -64,11 +65,13 @@ module ChildProcess
           builder.stderr      = @io.stderr
         end
 
-        @job = Job.new
         @pid = builder.start
         @handle = Handle.open @pid
 
-        @job << @handle
+        if leader?
+          @job = Job.new
+          @job << @handle
+        end
 
         if duplex?
           raise Error, "no stdin stream" unless builder.stdin
@@ -77,6 +80,15 @@ module ChildProcess
 
         self
       end
+
+      def close_handle
+        @handle.close
+      end
+
+      def close_job_if_necessary
+        @job.close if leader?
+      end
+
 
       class Job
         def initialize
