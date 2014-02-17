@@ -11,6 +11,7 @@ require 'rspec'
 require 'tempfile'
 require 'socket'
 require 'stringio'
+require 'ostruct'
 
 module ChildProcessSpecHelper
   RUBY = defined?(Gem) ? Gem.ruby : 'ruby'
