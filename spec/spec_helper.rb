@@ -212,6 +212,26 @@ module ChildProcessSpecHelper
     end
   end
 
+  def capture_std
+    orig_out = STDOUT.clone
+    orig_err = STDERR.clone
+
+    out = Tempfile.new 'captured-stdout'
+    err = Tempfile.new 'captured-stderr'
+    out.sync = true
+    err.sync = true
+
+    STDOUT.reopen out
+    STDERR.reopen err
+
+    yield
+
+    OpenStruct.new stdout: rewind_and_read(out), stderr: rewind_and_read(err)
+  ensure
+    STDOUT.reopen orig_out
+    STDERR.reopen orig_err
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true

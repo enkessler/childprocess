@@ -204,4 +204,15 @@ describe ChildProcess do
       out.close
     end
   end
+
+  it 'should not inherit stdout and stderr by default' do
+    cap = capture_std do
+      process = echo
+      process.start
+      process.wait
+    end
+
+    expect(cap.stdout).to eq ''
+    expect(cap.stderr).to eq ''
+  end
 end
