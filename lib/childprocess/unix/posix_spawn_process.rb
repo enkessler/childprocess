@@ -13,18 +13,16 @@ module ChildProcess
         actions = Lib::FileActions.new
         attrs   = Lib::Attrs.new
 
-        if @io
-          if @io.stdout
-            actions.add_dup fileno_for(@io.stdout), fileno_for($stdout)
-          else
-            actions.add_open fileno_for($stdout), "/dev/null", File::WRONLY, 0644
-          end
+        if io.stdout
+          actions.add_dup fileno_for(io.stdout), fileno_for($stdout)
+        else
+          actions.add_open fileno_for($stdout), "/dev/null", File::WRONLY, 0644
+        end
 
-          if @io.stderr
-            actions.add_dup fileno_for(@io.stderr), fileno_for($stderr)
-          else
-            actions.add_open fileno_for($stderr), "/dev/null", File::WRONLY, 0644
-          end
+        if io.stderr
+          actions.add_dup fileno_for(io.stderr), fileno_for($stderr)
+        else
+          actions.add_open fileno_for($stderr), "/dev/null", File::WRONLY, 0644
         end
 
         if duplex?
