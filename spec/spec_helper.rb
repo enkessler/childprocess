@@ -11,6 +11,7 @@ require 'rspec'
 require 'tempfile'
 require 'socket'
 require 'stringio'
+require 'ostruct'
 
 module ChildProcessSpecHelper
   RUBY = defined?(Gem) ? Gem.ruby : 'ruby'
@@ -210,6 +211,26 @@ module ChildProcessSpecHelper
         false
       end
     end
+  end
+
+  def capture_std
+    orig_out = STDOUT.clone
+    orig_err = STDERR.clone
+
+    out = Tempfile.new 'captured-stdout'
+    err = Tempfile.new 'captured-stderr'
+    out.sync = true
+    err.sync = true
+
+    STDOUT.reopen out
+    STDERR.reopen err
+
+    yield
+
+    OpenStruct.new stdout: rewind_and_read(out), stderr: rewind_and_read(err)
+  ensure
+    STDOUT.reopen orig_out
+    STDERR.reopen orig_err
   end
 
 end # ChildProcessSpecHelper
