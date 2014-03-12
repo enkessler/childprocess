@@ -5,6 +5,11 @@ module ChildProcess
     attr_reader :exit_code
 
     #
+    # Set this to true if you want to hide the console window.
+    #
+    attr_accessor :hide_window
+
+    #
     # Set this to true if you do not care about when or if the process quits.
     #
     attr_accessor :detach
@@ -50,6 +55,7 @@ module ChildProcess
       @exit_code   = nil
       @io          = nil
       @cwd         = nil
+      @hide_window = false
       @detach      = false
       @duplex      = false
       @leader      = false
@@ -161,6 +167,10 @@ module ChildProcess
 
     def started?
       @started
+    end
+
+    def hide_window?
+      @hide_window
     end
 
     def detach?

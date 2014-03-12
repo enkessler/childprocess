@@ -55,6 +55,7 @@ module ChildProcess
 
       def launch_process
         builder = ProcessBuilder.new(@args)
+        builder.hide_window = hide_window?
         builder.detach      = detach?
         builder.duplex      = duplex?
         builder.environment = @environment unless @environment.empty?

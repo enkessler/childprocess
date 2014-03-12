@@ -18,6 +18,7 @@ module ChildProcess
     CTRL_BREAK_EVENT                      = 1
 
     CREATE_BREAKAWAY_FROM_JOB             = 0x01000000
+    CREATE_NO_WINDOW                      = 0x08000000
     DETACHED_PROCESS                      = 0x00000008
 
     STARTF_USESTDHANDLES                  = 0x00000100
