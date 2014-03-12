@@ -136,6 +136,10 @@ describe ChildProcess do
     end
   end
 
+  it "hides the console window" do
+    pending "how do we spec this?"
+  end
+
   it "lets a detached child live on" do
     pending "how do we spec this?"
   end
