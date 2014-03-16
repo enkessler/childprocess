@@ -130,7 +130,7 @@ By default, the child process does not create a new process group. This means th
 
 ```ruby
 process = ChildProcess.build(*args)
-process.new_process_group = true
+process.leader = true
 process.start
 ```
 
