@@ -17,7 +17,7 @@ module ChildProcess
           reader, writer = ::IO.pipe
         end
 
-        @pid = fork {
+        @pid = Kernel.fork {
           # Children of the forked process will inherit its process group
           # This is to make sure that all grandchildren dies when this Process instance is killed
           ::Process.setpgid 0, 0 if leader?
@@ -40,7 +40,7 @@ module ChildProcess
           executable, *args = @args
 
           begin
-            exec([executable, executable], *args)
+            Kernel.exec([executable, executable], *args)
           rescue SystemCallError => ex
             exec_w << ex.message
           end
