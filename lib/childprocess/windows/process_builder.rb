@@ -99,7 +99,6 @@ module ChildProcess
 
       def setup_flags
         @flags |= DETACHED_PROCESS if @detach
-        @flags |= CREATE_BREAKAWAY_FROM_JOB
       end
 
       def setup_io
