@@ -21,7 +21,8 @@ module ChildProcess
         stop_pumps
 
         true
-      rescue java.lang.IllegalThreadStateException
+      rescue java.lang.IllegalThreadStateException => ex
+        log(ex.class => ex.message)
         false
       ensure
         log(:exit_code => @exit_code)
