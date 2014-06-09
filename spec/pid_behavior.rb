@@ -6,7 +6,7 @@ shared_examples_for "a platform that provides the child's pid" do
       process = write_pid(file.path).start
       process.wait
 
-      process.pid.should == rewind_and_read(file).chomp.to_i
+      expect(process.pid).to eq rewind_and_read(file).chomp.to_i
     end
   end
 end

@@ -6,7 +6,7 @@ describe ChildProcess::AbstractIO do
   it "inherits the parent's IO streams" do
     io.inherit!
 
-    io.stdout.should eq STDOUT
-    io.stderr.should eq STDERR
+    expect(io.stdout).to eq STDOUT
+    expect(io.stderr).to eq STDERR
   end
 end

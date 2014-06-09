@@ -128,9 +128,9 @@ module ChildProcessSpecHelper
   def with_executable_at(path, &blk)
     if ChildProcess.os == :windows
       path << ".cmd"
-      content = "@echo foo"
+      content = "@echo foo; #{RUBY} -e 'sleep 5'"
     else
-      content = "#!/bin/sh\necho foo"
+      content = "#!/bin/sh\necho foo; sleep 5"
     end
 
     File.open(path, 'w', 0744) { |io| io << content }
@@ -238,6 +238,8 @@ end # ChildProcessSpecHelper
 Thread.abort_on_exception = true
 
 RSpec.configure do |c|
+  c.raise_errors_for_deprecations!
+  
   c.include(ChildProcessSpecHelper)
   c.after(:each) {
     defined?(@process) && @process.alive? && @process.stop

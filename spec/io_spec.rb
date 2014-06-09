@@ -17,11 +17,11 @@ describe ChildProcess do
       process.io.stderr = err
 
       process.start
-      process.io.stdin.should be_nil
+      expect(process.io.stdin).to be_nil
       process.wait
 
-      rewind_and_read(out).should eq "0\n"
-      rewind_and_read(err).should eq "1\n"
+      expect(rewind_and_read(out)).to eq "0\n"
+      expect(rewind_and_read(err)).to eq "1\n"
     ensure
       out.close
       err.close
@@ -44,7 +44,7 @@ describe ChildProcess do
       process.start
       process.wait
 
-      rewind_and_read(out).should == "0\n"
+      expect(rewind_and_read(out)).to eq "0\n"
     ensure
       out.close
     end
@@ -61,7 +61,7 @@ describe ChildProcess do
       process.start
       process.wait
 
-      rewind_and_read(out).should == "hello\n"
+      expect(rewind_and_read(out)).to eq "hello\n"
     ensure
       out.close
     end
@@ -84,7 +84,7 @@ describe ChildProcess do
 
       process.poll_for_exit(exit_timeout)
 
-      rewind_and_read(out).should == "hello world\n"
+      expect(rewind_and_read(out)).to eq "hello world\n"
     ensure
       out.close
     end
@@ -108,23 +108,23 @@ describe ChildProcess do
 
       stdin.puts "hello"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\n\z/m }
+      wait_until { expect(rewind_and_read(out_receiver)).to match(/\Ahello\r?\n\z/m) }
 
       stdin.putc "n"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nn\z/m }
+      wait_until { expect(rewind_and_read(out_receiver)).to match(/\Ahello\r?\nn\z/m) }
 
       stdin.print "e"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nne\z/m }
+      wait_until { expect(rewind_and_read(out_receiver)).to match(/\Ahello\r?\nne\z/m) }
 
       stdin.printf "w"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nnew\z/m }
+      wait_until { expect(rewind_and_read(out_receiver)).to match(/\Ahello\r?\nnew\z/m) }
 
       stdin.write "\nworld\n"
       stdin.flush
-      wait_until { rewind_and_read(out_receiver).should =~ /\Ahello\r?\nnew\r?\nworld\r?\n\z/m }
+      wait_until { expect(rewind_and_read(out_receiver)).to match(/\Ahello\r?\nnew\r?\nworld\r?\n\z/m) }
 
       stdin.close
       process.poll_for_exit(exit_timeout)
@@ -168,7 +168,7 @@ describe ChildProcess do
     out = stdout.read
     err = stderr.read
 
-    [out, err].should == %w[stdout stderr]
+    expect([out, err]).to eq %w[stdout stderr]
   end
 
   it "can set close-on-exec when IO is inherited" do
@@ -199,7 +199,7 @@ describe ChildProcess do
       process.start
       process.wait
 
-      rewind_and_read(out).size.should == 3000
+      expect(rewind_and_read(out).size).to eq 3000
     ensure
       out.close
     end

@@ -6,8 +6,8 @@ describe ChildProcess do
   it "returns self when started" do
     process = sleeping_ruby
 
-    process.start.should eq process
-    process.should be_alive
+    expect(process.start).to eq process
+    expect(process).to be_alive
   end
 
   # We can't detect failure to execve() when using posix_spawn() on Linux
@@ -30,35 +30,35 @@ describe ChildProcess do
     process = exit_with(1).start
     process.wait
 
-    process.should be_crashed
+    expect(process).to be_crashed
   end
 
   it "knows if the process didn't crash" do
     process = exit_with(0).start
     process.wait
 
-    process.should_not be_crashed
+    expect(process).to_not be_crashed
   end
 
   it "can wait for a process to finish" do
     process = exit_with(0).start
     return_value = process.wait
 
-    process.should_not be_alive
-    return_value.should == 0
+    expect(process).to_not be_alive
+    expect(return_value).to eq 0
   end
 
   it 'ignores #wait if process already finished' do
     process = exit_with(0).start
     sleep 0.01 until process.exited?
 
-    process.wait.should == 0
+    expect(process.wait).to eql 0
   end
 
   it "escalates if TERM is ignored" do
     process = ignored('TERM').start
     process.stop
-    process.should be_exited
+    expect(process).to be_exited
   end
 
   it "accepts a timeout argument to #stop" do
@@ -74,7 +74,7 @@ describe ChildProcess do
       end
 
       child_env = eval rewind_and_read(file)
-      child_env['INHERITED'].should == 'yes'
+      expect(child_env['INHERITED']).to eql 'yes'
     end
   end
 
@@ -84,12 +84,12 @@ describe ChildProcess do
       process.environment['CHILD_ONLY'] = '1'
       process.start
 
-      ENV['CHILD_ONLY'].should be_nil
+      expect(ENV['CHILD_ONLY']).to be_nil
 
       process.wait
 
       child_env = eval rewind_and_read(file)
-      child_env['CHILD_ONLY'].should == '1'
+      expect(child_env['CHILD_ONLY']).to eql '1'
     end
   end
 
@@ -104,8 +104,8 @@ describe ChildProcess do
 
         child_env = eval rewind_and_read(file)
 
-        child_env['INHERITED'].should eq 'yes'
-        child_env['CHILD_ONLY'].should eq 'yes'
+        expect(child_env['INHERITED']).to eq 'yes'
+        expect(child_env['CHILD_ONLY']).to eq 'yes'
       end
     end
   end
@@ -120,7 +120,7 @@ describe ChildProcess do
       process.wait
 
       child_env = eval rewind_and_read(file)
-      child_env.should_not have_key('CHILDPROCESS_UNSET')
+      expect(child_env).to_not have_key('CHILDPROCESS_UNSET')
     end
   end
 
@@ -132,7 +132,7 @@ describe ChildProcess do
       process = write_argv(file.path, *args).start
       process.wait
 
-      rewind_and_read(file).should == args.inspect
+      expect(rewind_and_read(file)).to eql args.inspect
     end
   end
 
@@ -154,7 +154,7 @@ describe ChildProcess do
 
       process.wait
 
-      rewind_and_read(file).should == expected_dir
+      expect(rewind_and_read(file)).to eq expected_dir
     end
   end
 
@@ -165,7 +165,7 @@ describe ChildProcess do
       process = write_argv(file.path, *args).start
       process.wait
 
-      rewind_and_read(file).should == args.inspect
+      expect(rewind_and_read(file)).to eq args.inspect
     end
   end
 
@@ -173,14 +173,14 @@ describe ChildProcess do
     path = File.expand_path('foo bar')
 
     with_executable_at(path) do |proc|
-      proc.start.should eq proc
-      proc.should be_alive
+      expect(proc.start).to eq proc
+      expect(proc).to be_alive
     end
   end
 
   it "times out when polling for exit" do
     process = sleeping_ruby.start
-    lambda { process.poll_for_exit(0.1) }.should raise_error(ChildProcess::TimeoutError)
+    expect { process.poll_for_exit(0.1) }.to raise_error(ChildProcess::TimeoutError)
   end
 
   it "can change working directory" do
@@ -197,10 +197,10 @@ describe ChildProcess do
         process.start
         process.wait
 
-        rewind_and_read(file).should == dir
+        expect(rewind_and_read(file)).to eq dir
       end
 
-      Dir.pwd.should == orig_pwd
+      expect(Dir.pwd).to eq orig_pwd
     }
   end
 
@@ -215,7 +215,7 @@ describe ChildProcess do
       end
 
       process.stop
-      wait_until(3) { alive?(pid).should == false }
+      wait_until(3) { expect(alive?(pid)).to eql(false) }
     end
   end
 
@@ -224,7 +224,7 @@ describe ChildProcess do
     threads = []
 
     threads << Thread.new { sleeping_ruby(1).start.wait }
-    threads << Thread.new(time) { (Time.now - time).should < 0.5 }
+    threads << Thread.new(time) { expect(Time.now - time).to be < 0.5 }
 
     threads.each { |t| t.join }
   end
