@@ -6,7 +6,7 @@ if ChildProcess.jruby? && !ChildProcess.windows?
     let(:io) { ChildProcess::JRuby::IO.new }
 
     it "raises an ArgumentError if given IO does not respond to :to_outputstream" do
-      lambda { io.stdout = nil }.should raise_error(ArgumentError)
+      expect { io.stdout = nil }.to raise_error(ArgumentError)
     end
   end
 
@@ -17,7 +17,7 @@ if ChildProcess.jruby? && !ChildProcess.windows?
       it "raises an error when trying to access the child's pid" do
         process = exit_with(0)
         process.start
-        lambda { process.pid }.should raise_error(NotImplementedError)
+        expect { process.pid }.to raise_error(NotImplementedError)
       end
     end
   end
