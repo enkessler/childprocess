@@ -238,8 +238,6 @@ end # ChildProcessSpecHelper
 Thread.abort_on_exception = true
 
 RSpec.configure do |c|
-  c.raise_errors_for_deprecations!
-  
   c.include(ChildProcessSpecHelper)
   c.after(:each) {
     defined?(@process) && @process.alive? && @process.stop
