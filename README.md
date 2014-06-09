@@ -144,7 +144,7 @@ process.start
 
 #### Invoking a shell
 
-As opposed to `Kernel#system`, `Kernel#exec` et al., ChildProcess will not automatically execute your command in a shell (like `/bin/sh` or `cmd.exe` for you) depending on the arguments.
+As opposed to `Kernel#system`, `Kernel#exec` et al., ChildProcess will not automatically execute your command in a shell (like `/bin/sh` or `cmd.exe`) depending on the arguments.
 This means that if you try to execute e.g. gem executables (like `bundle` or `gem`) or Windows executables (with `.com` or `.bat` extensions) you may see a `ChildProcess::LaunchError`.
 You can work around this by being explicit about what interpreter to invoke:
 
