@@ -128,9 +128,9 @@ module ChildProcessSpecHelper
   def with_executable_at(path, &blk)
     if ChildProcess.os == :windows
       path << ".cmd"
-      content = "@echo foo; #{RUBY} -e 'sleep 10'"
+      content = "#{RUBY} -e 'sleep 10' \n @echo foo"
     else
-      content = "#!/bin/sh\necho foo; sleep 10"
+      content = "#!/bin/sh\nsleep 10\necho foo"
     end
 
     File.open(path, 'w', 0744) { |io| io << content }
