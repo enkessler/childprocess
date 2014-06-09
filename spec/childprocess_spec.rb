@@ -7,7 +7,7 @@ describe ChildProcess do
     process = sleeping_ruby
 
     process.start.should eq process
-    process.should be_started
+    process.should be_alive
   end
 
   # We can't detect failure to execve() when using posix_spawn() on Linux
@@ -138,6 +138,7 @@ describe ChildProcess do
 
   it "lets a detached child live on" do
     pending "how do we spec this?"
+    fail
   end
 
   it "preserves Dir.pwd in the child" do
@@ -173,7 +174,7 @@ describe ChildProcess do
 
     with_executable_at(path) do |proc|
       proc.start.should eq proc
-      proc.should be_started
+      proc.should be_alive
     end
   end
 
@@ -214,7 +215,7 @@ describe ChildProcess do
       end
 
       process.stop
-      wait_until(3) { alive?(pid).should be_false }
+      wait_until(3) { alive?(pid).should == false }
     end
   end
 
