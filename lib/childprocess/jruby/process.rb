@@ -113,8 +113,45 @@ module ChildProcess
       end
 
       def set_env(env)
-        ENV.to_hash.merge(@environment).each do |k,v|
-          env.put(k.to_s, v.to_s) if v
+        merged_environment = {}
+
+        #
+        # ensure keys are strings so that Symbol keys from ENV or @environment are merged correctly
+        #
+
+        ENV.to_hash.each do |k, v|
+          merged_environment[k.to_s] = v
+        end
+
+        @environment.each do |k, v|
+          merged_environment[k.to_s] = v
+        end
+
+        #
+        # ProcessBuilder.environment() is pre-populated with System.getenv()
+        # (see http://docs.oracle.com/javase/7/docs/api/java/lang/ProcessBuilder.html), which is not updated by changes
+        # to `ENV` in JRuby, so any keys that are removed in JRuby by (1) setting the value to `nil` or (2) deleting the
+        # key need to be explicitly removed from `env`.
+        #
+
+        merged_environment.each do |k, v|
+          if v
+            env.put(k, v.to_s)
+          else
+            # remove keys from process builder environment that have been cleared in ruby by setting them to nil (1)
+            env.remove(k)
+          end
+        end
+
+        # Java Set and JRuby Set can't be subtracted from each other, so convert to Ruby Arrays
+        env_keys = env.key_set.to_a
+        merged_keys = merged_environment.keys
+
+        removed_keys = env_keys - merged_keys
+
+        removed_keys.each do |k|
+          # remove keys that were deleted from ENV (2)
+          env.remote(k)
         end
       end
 
