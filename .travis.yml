@@ -6,8 +6,8 @@ rvm:
   - 2.1.0
   - ruby-head
 env:
-  - CHILDPROCESS_POSIX_SPAWN=true
-  - CHILDPROCESS_POSIX_SPAWN=false
+  - CHILDPROCESS_POSIX_SPAWN=true CHILDPROCESS_UNSET=should-be-unset
+  - CHILDPROCESS_POSIX_SPAWN=false CHILDPROCESS_UNSET=should-be-unset
 matrix:
   allow_failures:
     - rvm: rbx

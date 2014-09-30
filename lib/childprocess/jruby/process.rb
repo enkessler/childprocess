@@ -114,7 +114,11 @@ module ChildProcess
 
       def set_env(env)
         ENV.to_hash.merge(@environment).each do |k,v|
-          env.put(k.to_s, v.to_s) if v
+          if v
+            env.put(k.to_s, v.to_s)
+          else
+            env.remove(k.to_s) if env.key?(k.to_s)
+          end
         end
       end
 
