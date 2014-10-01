@@ -113,17 +113,10 @@ module ChildProcess
       end
 
       def set_env(env)
-        merged_environment = {}
-
-        #
-        # ensure keys are strings so that Symbol keys from ENV or @environment are merged correctly
-        #
-
-        ENV.to_hash.each do |k, v|
-          merged_environment[k.to_s] = v
-        end
+        merged_environment = ENV.to_hash
 
         @environment.each do |k, v|
+          # ensure keys are strings so that Symbol keys or other Object keys from @environment are merged correctly
           merged_environment[k.to_s] = v
         end
 
