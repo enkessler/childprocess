@@ -39,6 +39,9 @@ module ChildProcess
         end
 
         !!pid
+      rescue Errno::ECHILD
+        # may be thrown for detached processes
+        true
       end
 
       def wait

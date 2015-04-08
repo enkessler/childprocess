@@ -241,4 +241,16 @@ describe ChildProcess do
 
     threads.each { |t| t.join }
   end
+
+  it 'can check if a detached child is alive' do
+    proc = ruby_process("-e", "sleep")
+    proc.detach = true
+
+    proc.start
+
+    expect(proc).to be_alive
+    proc.stop(0)
+
+    expect(proc).to be_exited
+  end
 end
