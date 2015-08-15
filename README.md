@@ -153,7 +153,7 @@ ChildProcess.build("cmd.exe", "/c", "bundle")
 ChildProcess.build("ruby", "-S", "bundle")
 ```
 
-#### Caveats
+## Caveats
 
 * With JRuby on Unix, modifying `ENV["PATH"]` before using childprocess could lead to 'Command not found' errors, since JRuby is unable to modify the environemnt used for PATH searches in `java.lang.ProcessBuilder`. This can be avoided by setting `ChildProcess.posix_spawn = true`.
 
