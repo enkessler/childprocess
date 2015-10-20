@@ -1,7 +1,17 @@
 require File.expand_path('../spec_helper', __FILE__)
 
 describe ChildProcess do
- it "can redirect stdout, stderr" do
+  it "can run even when $stdout is a StringIO" do
+    begin
+      stdout = $stdout
+      $stdout = StringIO.new
+      expect { sleeping_ruby.start }.to_not raise_error
+    ensure
+      $stdout = stdout
+    end
+  end
+
+  it "can redirect stdout, stderr" do
     process = ruby(<<-CODE)
       [STDOUT, STDERR].each_with_index do |io, idx|
         io.sync = true
