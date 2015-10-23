@@ -14,20 +14,20 @@ module ChildProcess
         attrs   = Lib::Attrs.new
 
         if io.stdout
-          actions.add_dup fileno_for(io.stdout), fileno_for($stdout)
+          actions.add_dup fileno_for(io.stdout), fileno_for(STDOUT)
         else
-          actions.add_open fileno_for($stdout), "/dev/null", File::WRONLY, 0644
+          actions.add_open fileno_for(STDOUT), "/dev/null", File::WRONLY, 0644
         end
 
         if io.stderr
-          actions.add_dup fileno_for(io.stderr), fileno_for($stderr)
+          actions.add_dup fileno_for(io.stderr), fileno_for(STDERR)
         else
-          actions.add_open fileno_for($stderr), "/dev/null", File::WRONLY, 0644
+          actions.add_open fileno_for(STDERR), "/dev/null", File::WRONLY, 0644
         end
 
         if duplex?
           reader, writer = ::IO.pipe
-          actions.add_dup fileno_for(reader), fileno_for($stdin)
+          actions.add_dup fileno_for(reader), fileno_for(STDIN)
           actions.add_close fileno_for(writer)
         end
 
