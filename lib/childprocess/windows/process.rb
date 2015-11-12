@@ -45,7 +45,8 @@ module ChildProcess
 
         if exited
           @exit_code = code
-          @handle.close
+          close_handle
+          close_job_if_necessary
         end
 
         exited
