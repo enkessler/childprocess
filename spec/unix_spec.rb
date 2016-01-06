@@ -18,6 +18,8 @@ if ChildProcess.unix? && !ChildProcess.jruby? && !ChildProcess.posix_spawn?
       expect { process.stop }.not_to raise_error
 
       allow(process).to receive(:alive?).and_return(false)
+
+      process.send(:send_signal, 'TERM')
     end
 
     it "handles ESRCH race condition where process dies between timeout and KILL" do
@@ -32,6 +34,8 @@ if ChildProcess.unix? && !ChildProcess.jruby? && !ChildProcess.posix_spawn?
       expect { process.stop }.not_to raise_error
 
       allow(process).to receive(:alive?).and_return(false)
+
+      process.send(:send_signal, 'TERM')
     end
   end
 
