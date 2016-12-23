@@ -150,8 +150,28 @@ describe ChildProcess do
   end
 
   it "lets a detached child live on" do
-    pending "how do we spec this?"
-    fail
+    p_pid = nil
+    c_pid = nil
+
+    Tempfile.open('grandparent_out') do |gp_file|
+      # Create a parent and detached child process that will spit out their PID. Make sure that the child process lasts longer than the parent.
+      p_process = ruby("require 'childprocess' ; c_process = ChildProcess.build('ruby', '-e', 'puts \\\"Child PID: \#{Process.pid}\\\" ; sleep 5') ; c_process.io.inherit! ; c_process.detach = true ;  c_process.start ; puts \"Child PID: \#{c_process.pid}\" ; puts \"Parent PID: \#{Process.pid}\"")
+      p_process.io.stdout = p_process.io.stderr = gp_file
+
+      # Let the parent process die
+      p_process.start
+      p_process.wait
+
+
+      # Gather parent and child PIDs
+      pids = rewind_and_read(gp_file).split("\n")
+      pids.collect! { |pid| pid[/\d+/].to_i }
+      c_pid, p_pid = pids
+    end
+
+    # Check that the parent process has dies but the child process is still alive
+    expect(alive?(p_pid)).to_not be true
+    expect(alive?(c_pid)).to be true
   end
 
   it "preserves Dir.pwd in the child" do
