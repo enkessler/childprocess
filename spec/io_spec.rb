@@ -148,7 +148,7 @@ describe ChildProcess do
   # this works on JRuby 1.6.5 on my Mac, but for some reason
   # hangs on Travis (running 1.6.5.1 + OpenJDK).
   #
-  # http://travis-ci.org/#!/jarib/childprocess/jobs/487331
+  # http://travis-ci.org/#!/enkessler/childprocess/jobs/487331
   #
 
   it "works with pipes", :process_builder => false do
