@@ -65,7 +65,7 @@ module ChildProcess
     end
 
     #
-    # @return [Fixnum] the pid of the process after it has started
+    # @return [Integer] the pid of the process after it has started
     #
 
     def pid
@@ -88,7 +88,7 @@ module ChildProcess
     #
     # Forcibly terminate the process, using increasingly harsher methods if possible.
     #
-    # @param [Fixnum] timeout (3) Seconds to wait before trying the next method.
+    # @param [Integer] timeout (3) Seconds to wait before trying the next method.
     #
 
     def stop(timeout = 3)
@@ -98,7 +98,7 @@ module ChildProcess
     #
     # Block until the process has been terminated.
     #
-    # @return [Fixnum] The exit status of the process
+    # @return [Integer] The exit status of the process
     #
 
     def wait
