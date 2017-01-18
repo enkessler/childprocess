@@ -50,7 +50,7 @@ module ChildProcess
       # Only supported in JRuby on a Unix operating system, thanks to limitations
       # in Java's classes
       #
-      # @return [Fixnum] the pid of the process after it has started
+      # @return [Integer] the pid of the process after it has started
       # @raise [NotImplementedError] when trying to access pid on non-Unix platform
       #
       def pid
