@@ -116,7 +116,12 @@ module ChildProcess
         host_cpu = RbConfig::CONFIG['host_cpu'].downcase
         case host_cpu
         when /i[3456]86/
-          "i386"
+          # Darwin always reports i686, even when running in 64bit mod
+          if os == :macosx && 0xfee1deadbeef.is_a?(Fixnum)
+            "x86_64"
+          else
+            "i386"
+          end
         when /amd64|x86_64/
           "x86_64"
         when /ppc|powerpc/
