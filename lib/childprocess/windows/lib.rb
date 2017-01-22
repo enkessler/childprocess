@@ -307,7 +307,7 @@ module ChildProcess
             else
               handle = get_osfhandle(fd_or_io.fileno)
             end
-          elsif fd_or_io.kind_of?(Fixnum)
+          elsif fd_or_io.kind_of?(Integer)
             handle = get_osfhandle(fd_or_io)
           elsif fd_or_io.respond_to?(:to_io)
             io = fd_or_io.to_io
