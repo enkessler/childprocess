@@ -6,10 +6,10 @@ external programs running in the background on any Ruby / OS combination.
 The code originated in the [selenium-webdriver](https://rubygems.org/gems/selenium-webdriver) gem, but should prove useful as
 a standalone library.
 
-[![Build Status](https://secure.travis-ci.org/jarib/childprocess.png)](http://travis-ci.org/jarib/childprocess)
+[![Build Status](https://secure.travis-ci.org/enkessler/childprocess.png)](http://travis-ci.org/enkessler/childprocess)
 [![Gem Version](https://badge.fury.io/rb/childprocess.png)](http://badge.fury.io/rb/childprocess)
-[![Code Climate](https://codeclimate.com/github/jarib/childprocess.png)](https://codeclimate.com/github/jarib/childprocess)
-[![Coverage Status](https://coveralls.io/repos/jarib/childprocess/badge.png?branch=master)](https://coveralls.io/r/jarib/childprocess?branch=master)
+[![Code Climate](https://codeclimate.com/github/enkessler/childprocess.png)](https://codeclimate.com/github/enkessler/childprocess)
+[![Coverage Status](https://coveralls.io/repos/enkessler/childprocess/badge.png?branch=master)](https://coveralls.io/r/enkessler/childprocess?branch=master)
 
 # Usage
 
