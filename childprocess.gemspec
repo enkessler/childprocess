@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Jari Bakken", "Eric Kessler"]
   s.email       = ["morrow748@gmail.com"]
   s.homepage    = "http://github.com/enkessler/childprocess"
-  s.summary     = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
+  s.summary     = %q{A simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
   s.description = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
 
   s.rubyforge_project = "childprocess"
@@ -19,11 +19,12 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- spec/*`.split("\n")
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "rspec", "~> 3.0.0"
-  s.add_development_dependency "yard", ">= 0"
-  s.add_development_dependency "rake", "~> 0.9.2"
-  s.add_development_dependency 'coveralls'
   s.add_runtime_dependency "ffi", "~> 1.0", ">= 1.0.11"
+
+  s.add_development_dependency "rspec", "~> 3.0"
+  s.add_development_dependency "yard", "~> 0.0"
+  s.add_runtime_dependency 'rake', '< 12.0'
+  s.add_development_dependency 'coveralls', '< 1.0'
 end
 
 
