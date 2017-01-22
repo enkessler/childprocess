@@ -116,8 +116,14 @@ module ChildProcess
         host_cpu = RbConfig::CONFIG['host_cpu'].downcase
         case host_cpu
         when /i[3456]86/
-          # Darwin always reports i686, even when running in 64bit mod
-          if os == :macosx && 0xfee1deadbeef.is_a?(Fixnum)
+
+          # Ruby 2.4 unifies Bignum and Fixnum into Integer. Also, I've heard that Darwin no
+          # longer has this issue, so on newer Ruby/Darwin combos this check shouldn't be
+          # needed anyway. Leaving it here for older combinations, however.
+
+          # Check for Ruby older version of Ruby
+          if (RUBY_VERSION =~ /^[123]\./) && (os == :macosx) && (0xfee1deadbeef.is_a?(Fixnum))
+            # Darwin always reports i686, even when running in 64bit mod
             "x86_64"
           else
             "i386"
