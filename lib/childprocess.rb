@@ -122,7 +122,7 @@ module ChildProcess
           # needed anyway. Leaving it here for older combinations, however.
 
           # Check for Ruby older version of Ruby
-          if (RUBY_VERSION =~ /^[123]\./) && (os == :macosx) && (0xfee1deadbeef.is_a?(Fixnum))
+          if (RUBY_VERSION < '2.4') && (os == :macosx) && (0xfee1deadbeef.is_a?(Fixnum))
             # Darwin always reports i686, even when running in 64bit mod
             "x86_64"
           else
