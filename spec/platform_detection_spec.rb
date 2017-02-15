@@ -6,7 +6,7 @@ describe ChildProcess do
   describe ".arch" do
     subject { described_class.arch }
 
-    shared_examples 'expected_arch_for_host_cpu' do |host_cpu:, expected_arch:|
+    shared_examples 'expected_arch_for_host_cpu' do |host_cpu, expected_arch|
       context "when host_cpu is '#{host_cpu}'" do
         before :each do
           allow(RbConfig::CONFIG).
@@ -39,8 +39,8 @@ describe ChildProcess do
         { host_cpu: 'ppc',     expected_arch: 'powerpc' },
         { host_cpu: 'powerpc', expected_arch: 'powerpc' },
         { host_cpu: 'unknown', expected_arch: 'unknown' },
-      ].each do |**args|
-        include_context 'expected_arch_for_host_cpu', **args
+      ].each do |args|
+        include_context 'expected_arch_for_host_cpu', args.values
       end
     end
 
@@ -51,7 +51,7 @@ describe ChildProcess do
       end
 
       context "when host_cpu is 'i686' " do
-        shared_examples 'expected_arch_on_macosx' do |ruby:, is_64:, expected_arch:|
+        shared_examples 'expected_arch_on_macosx' do |ruby, is_64, expected_arch|
           context "when RUBY_VERSION is '#{ruby}'" do
             before :each do
               stub_const("RUBY_VERSION", ruby)
@@ -64,9 +64,7 @@ describe ChildProcess do
                   and_return(is_64)
               end
 
-              include_context 'expected_arch_for_host_cpu',
-                              host_cpu: 'i686',
-                              expected_arch: expected_arch
+              include_context 'expected_arch_for_host_cpu', 'i686', expected_arch
             end
           end
         end
@@ -84,8 +82,8 @@ describe ChildProcess do
           { ruby: '2.4.0', is_64: false, expected_arch: 'i386'   },
           { ruby: '2.5.0', is_64: false, expected_arch: 'i386'   },
           { ruby: '3.0.0', is_64: false, expected_arch: 'i386'   },
-        ].each do |**args|
-          include_context 'expected_arch_on_macosx', **args
+        ].each do |args|
+          include_context 'expected_arch_on_macosx', args.values
         end
       end
 
@@ -95,8 +93,8 @@ describe ChildProcess do
         { host_cpu: 'ppc',     expected_arch: 'powerpc' },
         { host_cpu: 'powerpc', expected_arch: 'powerpc' },
         { host_cpu: 'unknown', expected_arch: 'unknown' },
-      ].each do |**args|
-        include_context 'expected_arch_for_host_cpu', **args
+      ].each do |args|
+        include_context 'expected_arch_for_host_cpu', args.values
       end
     end
   end
