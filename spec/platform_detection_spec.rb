@@ -6,6 +6,10 @@ describe ChildProcess do
   describe ".arch" do
     subject { described_class.arch }
 
+    before(:each) { described_class.instance_variable_set(:@arch, nil) }
+
+    after(:each) { described_class.instance_variable_set(:@arch, nil) }
+
     shared_examples 'expected_arch_for_host_cpu' do |host_cpu, expected_arch|
       context "when host_cpu is '#{host_cpu}'" do
         before :each do
@@ -13,10 +17,6 @@ describe ChildProcess do
             to receive(:[]).
             with('host_cpu').
             and_return(expected_arch)
-        end
-
-        after :each do
-          described_class.instance_variable_set(:@arch, nil)
         end
 
         it { is_expected.to eq expected_arch }
