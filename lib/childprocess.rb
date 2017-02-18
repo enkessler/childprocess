@@ -116,8 +116,8 @@ module ChildProcess
         host_cpu = RbConfig::CONFIG['host_cpu'].downcase
         case host_cpu
         when /i[3456]86/
-          if os == :macosx && RUBY_VERSION < '2.4' && is_64_bit?
-            # Older rubies on Darwin sometimes reported i686 even in 64-bit mode
+          if workaround_older_macosx_misreported_cpu?
+            # Workaround case: older 64-bit Darwin Rubies misreported as i686
             "x86_64"
           else
             "i386"
@@ -168,6 +168,18 @@ module ChildProcess
       end
     end
 
+    # Workaround: detect the situation that an older Darwin Ruby is actually
+    # 64-bit, but is misreporting cpu as i686, which would imply 32-bit.
+    #
+    # @return [Boolean] `true` if:
+    #   (a) on Mac OS X
+    #   (b) on an older Ruby version
+    #   (c) actually running in 64-bit mode
+    def workaround_older_macosx_misreported_cpu?
+      os == :macosx && RUBY_VERSION < '2.4' && is_64_bit?
+    end
+
+    # @return [Boolean] `true` if this Ruby represents `1` in 64 bits (8 bytes).
     def is_64_bit?
       1.size == 8
     end
