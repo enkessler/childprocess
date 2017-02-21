@@ -51,39 +51,23 @@ describe ChildProcess do
       end
 
       context "when host_cpu is 'i686' " do
-        shared_examples 'expected_arch_on_macosx' do |ruby, is_64, expected_arch|
-          context "when RUBY_VERSION is '#{ruby}'" do
+        shared_examples 'expected_arch_on_macosx_i686' do |is_64, expected_arch|
+          context "when Ruby is #{is_64 ? 64 : 32}-bit" do
             before :each do
-              stub_const("RUBY_VERSION", ruby)
+              allow(described_class).
+                to receive(:is_64_bit?).
+                and_return(is_64)
             end
 
-            context "when Ruby is #{is_64 ? 64 : 32}-bit" do
-              before :each do
-                allow(described_class).
-                  to receive(:is_64_bit?).
-                  and_return(is_64)
-              end
-
-              include_context 'expected_arch_for_host_cpu', 'i686', expected_arch
-            end
+            include_context 'expected_arch_for_host_cpu', 'i686', expected_arch
           end
         end
 
         [
-          # Prior to Ruby 2.4: check platform word size a different way
-          { ruby: '1.8.7', is_64: true,  expected_arch: 'x86_64' },
-          { ruby: '1.8.7', is_64: false, expected_arch: 'i386'   },
-          { ruby: '1.9.3', is_64: true,  expected_arch: 'x86_64' },
-          { ruby: '1.9.3', is_64: false, expected_arch: 'i386'   },
-          { ruby: '2.3.3', is_64: true,  expected_arch: 'x86_64' },
-          { ruby: '2.3.3', is_64: false, expected_arch: 'i386'   },
-
-          # Ruby 2.4 and later: trust what host_cpu tells us
-          { ruby: '2.4.0', is_64: false, expected_arch: 'i386'   },
-          { ruby: '2.5.0', is_64: false, expected_arch: 'i386'   },
-          { ruby: '3.0.0', is_64: false, expected_arch: 'i386'   },
+          { is_64: true,  expected_arch: 'x86_64' },
+          { is_64: false, expected_arch: 'i386'   }
         ].each do |args|
-          include_context 'expected_arch_on_macosx', args.values
+          include_context 'expected_arch_on_macosx_i686', args.values
         end
       end
 

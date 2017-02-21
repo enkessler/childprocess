@@ -173,10 +173,9 @@ module ChildProcess
     #
     # @return [Boolean] `true` if:
     #   (a) on Mac OS X
-    #   (b) on an older Ruby version
-    #   (c) actually running in 64-bit mode
+    #   (b) actually running in 64-bit mode
     def workaround_older_macosx_misreported_cpu?
-      os == :macosx && RUBY_VERSION < '2.4' && is_64_bit?
+      os == :macosx && is_64_bit?
     end
 
     # @return [Boolean] `true` if this Ruby represents `1` in 64 bits (8 bytes).
