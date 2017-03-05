@@ -1,7 +1,7 @@
 module ChildProcess
   module Windows
     class ProcessBuilder
-      attr_accessor :detach, :duplex, :environment, :stdout, :stderr, :cwd
+      attr_accessor :leader, :detach, :duplex, :environment, :stdout, :stderr, :cwd
       attr_reader :stdin
 
       def initialize(args)
@@ -99,6 +99,7 @@ module ChildProcess
 
       def setup_flags
         @flags |= DETACHED_PROCESS if @detach
+        @flags |= CREATE_BREAKAWAY_FROM_JOB if @leader
       end
 
       def setup_io

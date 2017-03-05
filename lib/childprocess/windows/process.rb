@@ -56,6 +56,7 @@ module ChildProcess
 
       def launch_process
         builder = ProcessBuilder.new(@args)
+        builder.leader      = leader?
         builder.detach      = detach?
         builder.duplex      = duplex?
         builder.environment = @environment unless @environment.empty?
@@ -100,7 +101,7 @@ module ChildProcess
           end
 
           basic = JobObjectBasicLimitInformation.new
-          basic[:LimitFlags] = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+          basic[:LimitFlags] = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_BREAKAWAY_OK
 
           extended = JobObjectExtendedLimitInformation.new
           extended[:BasicLimitInformation] = basic
