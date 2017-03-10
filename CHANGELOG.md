@@ -1,3 +1,8 @@
+### Version 0.6.3.beta.1 / 2017-03-10
+
+* Bug fix: Fixed child process creation problems on Windows 7 when a child was declared as a leader.
+
+
 ### Version 0.6.2 / 2017-02-25
 
 * Bug fix: Fixed a potentially broken edge case that could occur on older 32-bit OSX systems.
