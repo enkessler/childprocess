@@ -1,3 +1,8 @@
+### Version 0.6.3 / 2017-03-24
+
+See beta release notes.
+
+
 ### Version 0.6.3.beta.1 / 2017-03-10
 
 * Bug fix: Fixed child process creation problems on Windows 7 when a child was declared as a leader.
