@@ -288,4 +288,28 @@ describe ChildProcess do
 
     expect(proc).to be_exited
   end
+
+  context "logger" do
+    def poll_for_exit_with_logger(logger)
+      orig_logger = ChildProcess.logger.clone
+      ChildProcess.logger = logger if logger
+      ChildProcess.logger.level = Logger::DEBUG
+      process = exit_with(0).start
+      process.wait
+      process.poll_for_exit(0.1)
+      ChildProcess.logger = orig_logger
+    end
+
+    it "logs to stderr by default" do
+      cap = capture_std { poll_for_exit_with_logger(nil) }
+      expect(cap.stdout).to be_empty
+      expect(cap.stderr).to_not be_empty
+    end
+
+    it "logs to configured logger" do
+      cap = capture_std { poll_for_exit_with_logger(Logger.new($stdout)) }
+      expect(cap.stdout).to_not be_empty
+      expect(cap.stderr).to be_empty
+    end
+  end
 end

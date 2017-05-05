@@ -3,12 +3,15 @@ require 'childprocess/errors'
 require 'childprocess/abstract_process'
 require 'childprocess/abstract_io'
 require "fcntl"
+require 'logger'
 
 module ChildProcess
 
   @posix_spawn = false
 
   class << self
+    attr_writer :logger
+
     def new(*args)
       case os
       when :macosx, :linux, :solaris, :bsd, :cygwin, :aix
@@ -26,6 +29,13 @@ module ChildProcess
       end
     end
     alias_method :build, :new
+
+    def logger
+      return @logger if defined? @logger
+      @logger = Logger.new($stderr)
+      @logger.level = $DEBUG ? Logger::DEBUG : Logger::INFO
+      @logger
+    end
 
     def platform
       if RUBY_PLATFORM == "java"
@@ -164,7 +174,7 @@ module ChildProcess
 
       unless @warnings[msg]
         @warnings[msg] = true
-        $stderr.puts msg
+        logger.warn msg
       end
     end
 

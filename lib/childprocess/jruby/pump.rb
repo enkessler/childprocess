@@ -44,7 +44,8 @@ module ChildProcess
 
         @output.flush
       rescue java.io.IOException => ex
-        $stderr.puts ex.message, ex.backtrace if $DEBUG
+        ChildProcess.logger.debug ex.message
+        ChildProcess.logger.debug ex.backtrace
       end
 
     end # Pump
