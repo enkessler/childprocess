@@ -176,7 +176,7 @@ module ChildProcess
     end
 
     def log(*args)
-      $stderr.puts "#{self.inspect} : #{args.inspect}" if $DEBUG
+      ChildProcess.logger.debug "#{self.inspect} : #{args.inspect}"
     end
 
     def assert_started
