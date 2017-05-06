@@ -156,6 +156,8 @@ ChildProcess.build("ruby", "-S", "bundle")
 
 #### Log to file
 
+Errors and debugging information are logged to `$stderr` by default but a custom logger can be used instead. 
+
 ```ruby
 logger = Logger.new('logfile.log')
 logger.level = Logger::DEBUG
