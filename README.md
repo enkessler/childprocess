@@ -154,6 +154,16 @@ ChildProcess.build("cmd.exe", "/c", "bundle")
 ChildProcess.build("ruby", "-S", "bundle")
 ```
 
+#### Log to file
+
+Errors and debugging information are logged to `$stderr` by default but a custom logger can be used instead. 
+
+```ruby
+logger = Logger.new('logfile.log')
+logger.level = Logger::DEBUG
+ChildProcess.logger = logger
+```
+
 ## Caveats
 
 * With JRuby on Unix, modifying `ENV["PATH"]` before using childprocess could lead to 'Command not found' errors, since JRuby is unable to modify the environemnt used for PATH searches in `java.lang.ProcessBuilder`. This can be avoided by setting `ChildProcess.posix_spawn = true`.
