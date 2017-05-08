@@ -233,6 +233,14 @@ module ChildProcessSpecHelper
     STDERR.reopen orig_err
   end
 
+  def generate_log_messages
+    ChildProcess.logger.level = Logger::DEBUG
+
+    process = exit_with(0).start
+    process.wait
+    process.poll_for_exit(0.1)
+  end
+
 end # ChildProcessSpecHelper
 
 Thread.abort_on_exception = true

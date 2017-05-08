@@ -1,3 +1,8 @@
+### Version 0.7.0 / 2017-05-07
+
+* Debugging information now uses a Logger, which can be configured.
+
+
 ### Version 0.6.3 / 2017-03-24
 
 See beta release notes.

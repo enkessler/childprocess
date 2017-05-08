@@ -288,4 +288,80 @@ describe ChildProcess do
 
     expect(proc).to be_exited
   end
+
+
+  it 'has a logger' do
+    expect(ChildProcess).to respond_to(:logger)
+  end
+
+  it 'can change its logger' do
+    expect(ChildProcess).to respond_to(:logger=)
+
+    original_logger = ChildProcess.logger
+    begin
+      ChildProcess.logger = :some_other_logger
+      expect(ChildProcess.logger).to eq(:some_other_logger)
+    ensure
+      ChildProcess.logger = original_logger
+    end
+  end
+
+
+  describe 'logger' do
+
+    before(:each) do
+      ChildProcess.logger = logger
+    end
+
+    after(:all) do
+      ChildProcess.logger = nil
+    end
+
+
+    context 'with the default logger' do
+
+      let(:logger) { nil }
+
+
+      it 'logs at INFO level by default' do
+        expect(ChildProcess.logger.level).to eq(Logger::INFO)
+      end
+
+      it 'logs at DEBUG level by default if $DEBUG is on' do
+        original_debug = $DEBUG
+
+        begin
+          $DEBUG = true
+
+          expect(ChildProcess.logger.level).to eq(Logger::DEBUG)
+        ensure
+          $DEBUG = original_debug
+        end
+      end
+
+      it "logs to stderr by default" do
+        cap = capture_std { generate_log_messages }
+
+        expect(cap.stdout).to be_empty
+        expect(cap.stderr).to_not be_empty
+      end
+
+    end
+
+    context 'with a custom logger' do
+
+      let(:logger) { Logger.new($stdout) }
+
+
+      it "logs to configured logger" do
+        cap = capture_std { generate_log_messages }
+
+        expect(cap.stdout).to_not be_empty
+        expect(cap.stderr).to be_empty
+      end
+
+    end
+
+  end
+
 end
