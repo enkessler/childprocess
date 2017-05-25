@@ -7,15 +7,25 @@ module ChildProcess
         @io ||= Unix::IO.new
       end
 
-      def stop(timeout = 3)
-        assert_started
-        send_term
-
-        begin
-          return poll_for_exit(timeout)
-        rescue TimeoutError
-          # try next
+      def return_unless_timeout
+        lambda do |timeout|
+          begin
+            return poll_for_exit timeout
+          rescue TimeoutError
+          end
         end
+      end
+
+      def stop(timeout = 3, signal=nil)
+        assert_started
+
+        unless signal.nil?
+          send_signal signal
+          return_unless_timeout.call(timeout)
+        end
+
+        send_term
+        return_unless_timeout.call(timeout)
 
         send_kill
         wait
