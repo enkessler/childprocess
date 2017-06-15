@@ -31,7 +31,7 @@ module ChildProcess
     alias_method :build, :new
 
     def logger
-      return @logger if @logger
+      return @logger if defined?(@logger) and @logger
 
       @logger = Logger.new($stderr)
       @logger.level = $DEBUG ? Logger::DEBUG : Logger::INFO
