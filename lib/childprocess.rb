@@ -31,12 +31,9 @@ module ChildProcess
     alias_method :build, :new
 
     def logger
-      return @logger if @logger
-
-      @logger = Logger.new($stderr)
-      @logger.level = $DEBUG ? Logger::DEBUG : Logger::INFO
-
-      @logger
+      @logger ||= Logger.new($stderr).tap do |logger|
+                    logger.level = $DEBUG ? Logger::DEBUG : Logger::INFO
+                  end
     end
 
     def platform
