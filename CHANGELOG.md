@@ -1,3 +1,8 @@
+### Version 0.7.1 / 2017-06-26
+
+* Fixed a noisy uninitialized variable warning
+
+
 ### Version 0.7.0 / 2017-05-07
 
 * Debugging information now uses a Logger, which can be configured.

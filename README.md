@@ -6,11 +6,11 @@ external programs running in the background on any Ruby / OS combination.
 The code originated in the [selenium-webdriver](https://rubygems.org/gems/selenium-webdriver) gem, but should prove useful as
 a standalone library.
 
-[![Build Status](https://secure.travis-ci.org/enkessler/childprocess.png)](http://travis-ci.org/enkessler/childprocess)
+[![Build Status](https://secure.travis-ci.org/enkessler/childprocess.svg)](http://travis-ci.org/enkessler/childprocess)
 [![Build status](https://ci.appveyor.com/api/projects/status/fn2snbcd7kku5myk/branch/dev?svg=true)](https://ci.appveyor.com/project/enkessler/childprocess/branch/dev)
-[![Gem Version](https://badge.fury.io/rb/childprocess.png)](http://badge.fury.io/rb/childprocess)
-[![Code Climate](https://codeclimate.com/github/enkessler/childprocess.png)](https://codeclimate.com/github/enkessler/childprocess)
-[![Coverage Status](https://coveralls.io/repos/enkessler/childprocess/badge.png?branch=master)](https://coveralls.io/r/enkessler/childprocess?branch=master)
+[![Gem Version](https://badge.fury.io/rb/childprocess.svg)](http://badge.fury.io/rb/childprocess)
+[![Code Climate](https://codeclimate.com/github/enkessler/childprocess.svg)](https://codeclimate.com/github/enkessler/childprocess)
+[![Coverage Status](https://coveralls.io/repos/enkessler/childprocess/badge.svg?branch=master)](https://coveralls.io/r/enkessler/childprocess?branch=master)
 
 # Usage
 
@@ -178,11 +178,14 @@ How the process is launched and killed depends on the platform:
 
 # Note on Patches/Pull Requests
 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+1. Fork it
+2. Create your feature branch (off of the development branch)
+   `git checkout -b my-new-feature dev`
+3. Commit your changes
+   `git commit -am 'Add some feature'`
+4. Push to the branch
+   `git push origin my-new-feature`
+5. Create new Pull Request
 
 # Copyright
 
