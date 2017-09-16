@@ -25,7 +25,6 @@ module ChildProcess
     attr_accessor :cwd
 
     #
-    #
     # Set this to true to make the child process the leader of a new process group
     #
     # This can be used to make sure that all grandchildren are killed
@@ -116,6 +115,16 @@ module ChildProcess
     end
 
     #
+    # Has the process started?
+    #
+    # @return [Boolean]
+    #
+
+    def started?
+      @started
+    end
+
+    #
     # Is this process running?
     #
     # @return [Boolean]
@@ -157,10 +166,6 @@ module ChildProcess
 
     def launch_process
       raise SubclassResponsibility, "launch_process"
-    end
-
-    def started?
-      @started
     end
 
     def detach?
