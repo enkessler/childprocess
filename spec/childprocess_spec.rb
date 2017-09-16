@@ -352,7 +352,6 @@ describe ChildProcess do
 
       let(:logger) { Logger.new($stdout) }
 
-
       it "logs to configured logger" do
         cap = capture_std { generate_log_messages }
 
@@ -360,6 +359,31 @@ describe ChildProcess do
         expect(cap.stderr).to be_empty
       end
 
+    end
+
+  end
+
+  describe '#started?' do
+    subject { process.started? }
+
+    context 'when not started' do
+      let(:process) { sleeping_ruby(1) }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when started' do
+      let(:process) { sleeping_ruby(1).start }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when finished' do
+      before(:each) { process.wait }
+
+      let(:process) { sleeping_ruby(0).start }
+
+      it { is_expected.to be true }
     end
 
   end
