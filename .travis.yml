@@ -4,7 +4,7 @@ os:
 
 rvm:
   - 1.9.3
-  - jruby
+  - jruby-9.1.9.0
   - rbx-3
   - 2.0.0
   - 2.1
@@ -24,7 +24,6 @@ before_install:
 
 env:
   global:
-    - JRUBY_OPTS='' # Workaround https://github.com/travis-ci/travis-ci/issues/6471
   matrix:
     - CHILDPROCESS_POSIX_SPAWN=true CHILDPROCESS_UNSET=should-be-unset
     - CHILDPROCESS_POSIX_SPAWN=false CHILDPROCESS_UNSET=should-be-unset
