@@ -1,3 +1,8 @@
+### Version 0.8.0 / 2017-09-23
+
+* Added a method for determining whether or nto a process had been started.
+
+
 ### Version 0.7.1 / 2017-06-26
 
 * Fixed a noisy uninitialized variable warning
