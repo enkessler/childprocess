@@ -37,6 +37,14 @@ if ChildProcess.unix? && !ChildProcess.jruby? && !ChildProcess.posix_spawn?
 
       process.send(:send_signal, 'TERM')
     end
+
+    it "overwrites error message on missing interpreter" do
+      script_path = tmp_script('#!/unlikely/to/exist')
+      File.chmod(0777, script_path)
+      process = ChildProcess.build(script_path)
+
+      expect { process.start }.to raise_error(ChildProcess::LaunchError, /executing command .+? failed/)
+    end
   end
 
   describe ChildProcess::Unix::IO do

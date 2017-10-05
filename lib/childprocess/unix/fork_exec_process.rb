@@ -55,7 +55,12 @@ module ChildProcess
 
         # if we don't eventually get EOF, exec() failed
         unless exec_r.eof?
-          raise LaunchError, exec_r.read || "executing command with #{@args.inspect} failed"
+          message = exec_r.read
+          if message.start_with?('No such file or directory') && File.exist?(@args[0])
+            message = nil
+          end
+
+          raise LaunchError, message || "executing command with #{@args.inspect} failed"
         end
 
         ::Process.detach(@pid) if detach?
