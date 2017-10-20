@@ -39,9 +39,14 @@ module ChildProcess
 
       private
 
+      def to_wide_string(str)
+        newstr = str + "\0".encode(str.encoding)
+        newstr.encode!('UTF-16LE')
+      end
+      
       def create_command_pointer
-        string = @args.map { |arg| quote_if_necessary(arg.to_s) }.join ' '
-        @cmd_ptr = FFI::MemoryPointer.from_string string
+        string = @args.map { |arg| quote_if_necessary(arg.to_s) }.join(' ')
+        @cmd_ptr = to_wide_string(string)
       end
 
       def create_environment_pointer
@@ -59,15 +64,12 @@ module ChildProcess
           strings << "#{key}=#{val}\0"
         end
 
-        strings << "\0" # terminate the env block
-        env_str = strings.join
-
-        @env_ptr = FFI::MemoryPointer.new(:long, env_str.bytesize)
-        @env_ptr.put_bytes 0, env_str, 0, env_str.bytesize
+        env_str = to_wide_string(strings.join)
+        @env_ptr = FFI::MemoryPointer.from_string(env_str)
       end
 
       def create_cwd_pointer
-        @cwd_ptr = FFI::MemoryPointer.from_string(@cwd || Dir.pwd)
+        @cwd_ptr = FFI::MemoryPointer.from_string(to_wide_string(@cwd || Dir.pwd))
       end
 
       def create_process
@@ -98,6 +100,7 @@ module ChildProcess
       end
 
       def setup_flags
+        @flags |= CREATE_UNICODE_ENVIRONMENT
         @flags |= DETACHED_PROCESS if @detach
         @flags |= CREATE_BREAKAWAY_FROM_JOB if @leader
       end
