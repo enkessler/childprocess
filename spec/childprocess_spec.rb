@@ -107,6 +107,19 @@ describe ChildProcess do
       expect(child_env['CHILD_ONLY']).to eql '1'
     end
   end
+  
+  it 'allows unicode characters in the environment' do
+    Tempfile.open("env-spec") do |file|
+      process = write_env(file.path)
+      process.environment['FOO'] = 'baör'
+      process.start
+      process.wait
+      
+      child_env = eval rewind_and_read(file)
+      
+      expect(child_env['FOO'].force_encoding('UTF-8')).to eql 'baör'
+    end
+  end
 
   it "inherits the parent's env vars also when some are overridden" do
     Tempfile.open("env-spec") do |file|
