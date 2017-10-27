@@ -14,7 +14,7 @@ unless defined?(JRUBY_VERSION)
   SimpleCov.start
 end
 
-require 'childprocess'
+require 'childprocesscore'
 require 'rspec'
 require 'tempfile'
 require 'socket'

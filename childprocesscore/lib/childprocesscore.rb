@@ -1,4 +1,4 @@
-require 'childprocess/version'
+require 'childprocess/core_version'
 require 'childprocess/errors'
 require 'childprocess/abstract_process'
 require 'childprocess/abstract_io'

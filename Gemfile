@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
-# Specify your gem's dependencies in child_process.gemspec
-gemspec
+gemspec path: 'childprocesscore'
+gemspec path: 'childprocess'
 
 
 if RUBY_VERSION =~ /^1\./
