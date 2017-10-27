@@ -3,7 +3,15 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 unless defined?(JRUBY_VERSION)
   require 'coveralls'
-  Coveralls.wear!
+  require 'simplecov'
+  require 'codecov'
+
+  SimpleCov.formatters = [
+    SimpleCov::Formatter::HTMLFormatter,
+    Coveralls::SimpleCov::Formatter,
+    SimpleCov::Formatter::Codecov,
+  ]
+  SimpleCov.start
 end
 
 require 'childprocess'
