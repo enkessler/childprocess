@@ -4,7 +4,6 @@ os:
 
 rvm:
   - 1.9.3
-  - jruby-9.1.9.0
   - rbx-3
   - 2.0.0
   - 2.1
@@ -12,8 +11,6 @@ rvm:
   - 2.3.5
   - 2.4.0
   - ruby-head
-
-sudo: true # Necessary to fix JRuby
 
 cache: bundler
 
@@ -29,6 +26,21 @@ env:
     - CHILDPROCESS_POSIX_SPAWN=false CHILDPROCESS_UNSET=should-be-unset
 
 matrix:
+  include:
+    - rvm: jruby-9.1.9.0
+      sudo: true
+      env: CHILDPROCESS_POSIX_SPAWN=true CHILDPROCESS_UNSET=should-be-unset
+    - rvm: jruby-9.1.9.0
+      sudo: true
+      env: CHILDPROCESS_POSIX_SPAWN=false CHILDPROCESS_UNSET=should-be-unset
+    - rvm: jruby-9.1.9.0
+      sudo: true
+      env: CHILDPROCESS_POSIX_SPAWN=true CHILDPROCESS_UNSET=should-be-unset
+      os: osx
+    - rvm: jruby-9.1.9.0
+      sudo: true
+      env: CHILDPROCESS_POSIX_SPAWN=false CHILDPROCESS_UNSET=should-be-unset
+      os: osx
   allow_failures:
     - rvm: rbx-3
     - rvm: jruby-9.1.9.0
