@@ -109,6 +109,10 @@ describe ChildProcess do
   end
   
   it 'allows unicode characters in the environment' do
+    # This test does not work on Windows for Ruby < 2.3 because ENV values will not be properly decoded
+    # This was fixed in Ruby 2.3 here: https://github.com/ruby/ruby/commit/5e3467c4414df815b3b00d2b0372026b069e7f7d
+    # TODO: Write an alternate test that does not rely on the Ruby ENV hash
+    skip 'Test does not work on Windows for Ruby < 2.3' if Gem.win_platform? && RUBY_VERSION =~ /^1\.|^2\.[0-2]/
     Tempfile.open("env-spec") do |file|
       process = write_env(file.path)
       process.environment['FOO'] = 'baör'
