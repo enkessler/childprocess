@@ -38,3 +38,6 @@ matrix:
     # Travis does not provide 1.9.3 on OSX
   - rvm: 1.9.3
     os: osx
+    # Travis does not provide 2.0.0 on it latest version of OSX
+  - rvm: 2.0.0
+    os: osx
