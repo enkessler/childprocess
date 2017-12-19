@@ -1,4 +1,4 @@
-require 'childprocess/version'
+require 'childprocess/core_version'
 require 'childprocess/errors'
 require 'childprocess/abstract_process'
 require 'childprocess/abstract_io'
@@ -73,28 +73,19 @@ module ChildProcess
       enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
       return false unless enabled
 
-      require 'ffi'
       begin
+        require 'ffi'
         require "childprocess/unix/platform/#{ChildProcess.platform_name}"
+        require "childprocess/unix/lib"
+        require 'childprocess/unix/posix_spawn_process'
       rescue LoadError
         raise ChildProcess::MissingPlatformError
       end
-
-      require "childprocess/unix/lib"
-      require 'childprocess/unix/posix_spawn_process'
 
       true
     rescue ChildProcess::MissingPlatformError => ex
       warn_once ex.message
       false
-    end
-
-    #
-    # Set this to true to enable experimental use of posix_spawn.
-    #
-
-    def posix_spawn=(bool)
-      @posix_spawn = bool
     end
 
     def os

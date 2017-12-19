@@ -1,0 +1,8 @@
+require 'rubygems'
+require 'rake'
+require 'tmpdir'
+
+require 'bundler'
+Bundler::GemHelper.install_tasks name: 'childprocess'
+
+Dir["../task/*.{rb,rake}"].each(&method(:load))

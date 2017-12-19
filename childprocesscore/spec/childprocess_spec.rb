@@ -8,7 +8,7 @@ describe ChildProcess do
 
   here = File.dirname(__FILE__)
 
-  let(:gemspec) { eval(File.read "#{here}/../childprocess.gemspec") }
+  let(:gemspec) { eval(File.read "#{here}/../childprocesscore.gemspec") }
 
   it 'validates cleanly' do
     mock_ui = Gem::MockGemUi.new
@@ -170,7 +170,7 @@ describe ChildProcess do
 
     Tempfile.open('grandparent_out') do |gp_file|
       # Create a parent and detached child process that will spit out their PID. Make sure that the child process lasts longer than the parent.
-      p_process = ruby("require 'childprocess' ; c_process = ChildProcess.build('ruby', '-e', 'puts \\\"Child PID: \#{Process.pid}\\\" ; sleep 5') ; c_process.io.inherit! ; c_process.detach = true ;  c_process.start ; puts \"Child PID: \#{c_process.pid}\" ; puts \"Parent PID: \#{Process.pid}\"")
+      p_process = ruby("require 'childprocesscore' ; c_process = ChildProcess.build('ruby', '-e', 'puts \\\"Child PID: \#{Process.pid}\\\" ; sleep 5') ; c_process.io.inherit! ; c_process.detach = true ;  c_process.start ; puts \"Child PID: \#{c_process.pid}\" ; puts \"Parent PID: \#{Process.pid}\"")
       p_process.io.stdout = p_process.io.stderr = gp_file
 
       # Let the parent process die
