@@ -73,7 +73,12 @@ module ChildProcess
       enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
       return false unless enabled
 
-      require 'ffi'
+      begin
+        require 'ffi'
+      rescue LoadError
+        raise ChildProcess::MissingFFIError
+      end
+
       begin
         require "childprocess/unix/platform/#{ChildProcess.platform_name}"
       rescue LoadError

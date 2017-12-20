@@ -129,6 +129,8 @@ ChildProcess.posix_spawn = true
 process = ChildProcess.build(*args)
 ```
 
+To be able to use this, please make sure that you have the `ffi` gem installed.
+
 ### Ensure entire process tree dies
 
 By default, the child process does not create a new process group. This means there's no guarantee that the entire process tree will die when the child process is killed. To solve this:
