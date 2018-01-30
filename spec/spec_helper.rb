@@ -20,6 +20,10 @@ module ChildProcessSpecHelper
     @process = ChildProcess.build(RUBY , *args)
   end
 
+  def windows_process(*args)
+    @process = ChildProcess.build("powershell", *args)
+  end
+
   def sleeping_ruby(seconds = nil)
     if seconds
       ruby_process("-e", "sleep #{seconds}")
@@ -42,11 +46,16 @@ module ChildProcessSpecHelper
   end
 
   def write_env(path)
-    code = <<-RUBY
-      File.open(#{path.inspect}, "w") { |f| f << ENV.inspect }
-    RUBY
-
-    ruby_process tmp_script(code)
+    if ChildProcess.os == :windows
+      ps_env_file_path = File.expand_path(File.dirname(__FILE__))
+      args = ['-File', "#{ps_env_file_path}/get_env.ps1", path]
+      windows_process(*args)
+    else
+      code = <<-RUBY
+        File.open(#{path.inspect}, "w") { |f| f << ENV.inspect }
+      RUBY
+      ruby_process tmp_script(code)
+    end
   end
 
   def write_argv(path, *args)
@@ -102,7 +111,7 @@ module ChildProcessSpecHelper
       ruby(<<-CODE)
             STDIN.sync = STDOUT.sync = true
             IO.copy_stream(STDIN, STDOUT)
-          CODE
+      CODE
     else
       ChildProcess.build("cat")
     end
@@ -115,7 +124,7 @@ module ChildProcessSpecHelper
             STDOUT.sync = true
 
             puts "hello"
-          CODE
+      CODE
     else
       ChildProcess.build("echo", "hello")
     end
