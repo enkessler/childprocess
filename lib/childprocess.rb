@@ -113,7 +113,7 @@ module ChildProcess
           :cygwin
         when /solaris|sunos/
           :solaris
-        when /bsd/
+        when /bsd|dragonfly/
           :bsd
         when /aix/
           :aix
