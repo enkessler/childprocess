@@ -1,6 +1,6 @@
 ### Version 0.8.0 / 2017-09-23
 
-* Added a method for determining whether or nto a process had been started.
+* Added a method for determining whether or not a process had been started.
 
 
 ### Version 0.7.1 / 2017-06-26
@@ -30,7 +30,7 @@ See beta release notes.
 
 ### Version 0.6.1 / 2017-01-22
 
-* Bug fix: Fixed a dependency that was accidentally declared as a runtime 
+* Bug fix: Fixed a dependency that was accidentally declared as a runtime
   dependency instead of a development dependency.
 
 
