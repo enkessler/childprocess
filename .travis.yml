@@ -9,8 +9,9 @@ rvm:
   - 2.0.0
   - 2.1
   - 2.2
-  - 2.3.5
-  - 2.4.0
+  - 2.3
+  - 2.4
+  - 2.5
   - ruby-head
 
 sudo: true # Necessary to fix JRuby
@@ -34,3 +35,10 @@ matrix:
     - rvm: jruby-9.1.9.0
     - rvm: ruby-head
     - env: "CHILDPROCESS_POSIX_SPAWN=true"
+  exclude:
+    # Travis does not provide 1.9.3 on OSX
+  - rvm: 1.9.3
+    os: osx
+    # Travis does not provide 2.0.0 on it latest version of OSX
+  - rvm: 2.0.0
+    os: osx

@@ -289,6 +289,37 @@ describe ChildProcess do
     expect(proc).to be_exited
   end
 
+  describe 'OS detection' do
+
+    before(:all) do
+      # Save off original OS so that it can be restored later
+      @original_host_os = RbConfig::CONFIG['host_os']
+    end
+
+    after(:each) do
+      # Restore things to the real OS instead of the fake test OS
+      RbConfig::CONFIG['host_os'] = @original_host_os
+      ChildProcess.instance_variable_set(:@os, nil)
+    end
+
+
+    # TODO: add tests for other OSs
+    context 'on a BSD system' do
+
+      let(:bsd_patterns) { ['bsd', 'dragonfly'] }
+
+      it 'correctly identifies BSD systems' do
+        bsd_patterns.each do |pattern|
+          RbConfig::CONFIG['host_os'] = pattern
+          ChildProcess.instance_variable_set(:@os, nil)
+
+          expect(ChildProcess.os).to eq(:bsd)
+        end
+      end
+
+    end
+
+  end
 
   it 'has a logger' do
     expect(ChildProcess).to respond_to(:logger)
