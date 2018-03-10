@@ -1,3 +1,8 @@
+### Version 0.9.0 / 2018-03-10
+
+* Added support for DragonFly BSD.
+
+
 ### Version 0.8.0 / 2017-09-23
 
 * Added a method for determining whether or not a process had been started.
