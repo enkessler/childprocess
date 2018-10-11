@@ -185,8 +185,8 @@ describe ChildProcess do
     end
 
     # Check that the parent process has dies but the child process is still alive
-    expect(alive?(p_pid)).to_not be true
-    expect(alive?(c_pid)).to be true
+    expect(alive?(p_pid)).not_to be_truthy
+    expect(alive?(c_pid)).to be_truthy
   end
 
   it "preserves Dir.pwd in the child" do
