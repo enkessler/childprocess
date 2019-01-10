@@ -14,7 +14,7 @@ rvm:
   - 2.5
   - ruby-head
 
-sudo: true # Necessary to fix JRuby
+sudo: false
 
 cache: bundler
 
