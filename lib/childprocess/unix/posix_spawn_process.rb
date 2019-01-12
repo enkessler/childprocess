@@ -111,11 +111,11 @@ module ChildProcess
           @ptrs = env.map do |key, val|
             next if val.nil?
 
-            if key =~ /=|\0/ || val.include?("\0")
-              raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.inspect}"
+            if key =~ /=|\0/ || val.to_s.include?("\0")
+              raise InvalidEnvironmentVariable, "#{key.inspect} => #{val.to_s.inspect}"
             end
 
-            FFI::MemoryPointer.from_string("#{key}=#{val}")
+            FFI::MemoryPointer.from_string("#{key}=#{val.to_s}")
           end.compact
 
           @ptrs << FFI::Pointer.new(0)
