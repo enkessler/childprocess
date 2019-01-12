@@ -83,11 +83,13 @@ describe ChildProcess do
 
   it "lets child process inherit the environment of the current process" do
     Tempfile.open("env-spec") do |file|
+      file.close
       with_env('INHERITED' => 'yes') do
         process = write_env(file.path).start
         process.wait
       end
 
+      file.open
       child_env = eval rewind_and_read(file)
       expect(child_env['INHERITED']).to eql 'yes'
     end
@@ -95,6 +97,7 @@ describe ChildProcess do
 
   it "can override env vars only for the current process" do
     Tempfile.open("env-spec") do |file|
+      file.close
       process = write_env(file.path)
       process.environment['CHILD_ONLY'] = '1'
       process.start
@@ -103,13 +106,30 @@ describe ChildProcess do
 
       process.wait
 
+      file.open
       child_env = eval rewind_and_read(file)
       expect(child_env['CHILD_ONLY']).to eql '1'
     end
   end
 
+  it 'allows unicode characters in the environment' do
+    Tempfile.open("env-spec") do |file|
+      file.close
+      process = write_env(file.path)
+      process.environment['FOö'] = 'baör'
+      process.start
+      process.wait
+
+      file.open
+      child_env = eval rewind_and_read(file)
+
+      expect(child_env['FOö']).to eql 'baör'
+    end
+  end
+
   it "inherits the parent's env vars also when some are overridden" do
     Tempfile.open("env-spec") do |file|
+      file.close
       with_env('INHERITED' => 'yes', 'CHILD_ONLY' => 'no') do
         process = write_env(file.path)
         process.environment['CHILD_ONLY'] = 'yes'
@@ -117,6 +137,7 @@ describe ChildProcess do
         process.start
         process.wait
 
+        file.open
         child_env = eval rewind_and_read(file)
 
         expect(child_env['INHERITED']).to eq 'yes'
@@ -127,6 +148,7 @@ describe ChildProcess do
 
   it "can unset env vars" do
     Tempfile.open("env-spec") do |file|
+      file.close
       ENV['CHILDPROCESS_UNSET'] = '1'
       process = write_env(file.path)
       process.environment['CHILDPROCESS_UNSET'] = nil
@@ -134,6 +156,7 @@ describe ChildProcess do
 
       process.wait
 
+      file.open
       child_env = eval rewind_and_read(file)
       expect(child_env).to_not have_key('CHILDPROCESS_UNSET')
     end
@@ -141,12 +164,14 @@ describe ChildProcess do
 
   it 'does not see env vars unset in parent' do
     Tempfile.open('env-spec') do |file|
+      file.close
       ENV['CHILDPROCESS_UNSET'] = nil
       process = write_env(file.path)
       process.start
 
       process.wait
 
+      file.open
       child_env = eval rewind_and_read(file)
       expect(child_env).to_not have_key('CHILDPROCESS_UNSET')
     end

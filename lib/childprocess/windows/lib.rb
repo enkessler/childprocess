@@ -55,9 +55,9 @@ module ChildProcess
       # );
       #
 
-      attach_function :create_process, :CreateProcessA, [
+      attach_function :create_process, :CreateProcessW, [
         :pointer,
-        :pointer,
+        :buffer_inout,
         :pointer,
         :pointer,
         :bool,
