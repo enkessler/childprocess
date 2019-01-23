@@ -173,6 +173,8 @@ ChildProcess.logger = logger
 ## Caveats
 
 * With JRuby on Unix, modifying `ENV["PATH"]` before using childprocess could lead to 'Command not found' errors, since JRuby is unable to modify the environment used for PATH searches in `java.lang.ProcessBuilder`. This can be avoided by setting `ChildProcess.posix_spawn = true`.
+* With JRuby on Java >= 9, the JVM may need to be configured to allow JRuby to access neccessary implementations; this can be done by adding `--add-opens java.base/java.io=org.jruby.dist` and `--add-opens java.base/sun.nio.ch=org.jruby.dist` to the `JAVA_OPTS` environment variable that is used by JRuby when launching the JVM.
+
 
 # Implementation
 

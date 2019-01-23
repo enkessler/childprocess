@@ -46,24 +46,49 @@ module ChildProcess
         end
       end
 
-      #
-      # Only supported in JRuby on a Unix operating system, thanks to limitations
-      # in Java's classes
-      #
-      # @return [Integer] the pid of the process after it has started
-      # @raise [NotImplementedError] when trying to access pid on non-Unix platform
-      #
-      def pid
-        if @process.getClass.getName != "java.lang.UNIXProcess"
-          raise NotImplementedError, "pid is only supported by JRuby child processes on Unix"
+      # Implementation of ChildProcess::JRuby::Process#pid depends heavily on
+      # what Java SDK is being used; here, we look it up once at load, then
+      # define the method once to avoid runtime overhead.
+      normalised_java_version_major = java.lang.System.get_property("java.version")
+                                                      .slice(/^(1\.)?([0-9]+)/, 2)
+                                                      .to_i
+      if normalised_java_version_major >= 9
+
+        # On modern Javas, we can simply delegate through to `Process#pid`,
+        # which was introduced in Java 9.
+        #
+        # @return [Integer] the pid of the process after it has started
+        # @raise [NotImplementedError] when trying to access pid on platform for
+        #                              which it is unsupported in Java
+        def pid
+          @process.pid
+        rescue java.lang.UnsupportedOperationException => e
+          raise NotImplementedError, "pid is not supported on this platform: #{e.message}"
         end
 
-        # About the best way we can do this is with a nasty reflection-based impl
-        # Thanks to Martijn Courteaux
-        # http://stackoverflow.com/questions/2950338/how-can-i-kill-a-linux-process-in-java-with-sigkill-process-destroy-does-sigter/2951193#2951193
-        field = @process.getClass.getDeclaredField("pid")
-        field.accessible = true
-        field.get(@process)
+      else
+
+        # On Legacy Javas, fall back to reflection.
+        #
+        # Only supported in JRuby on a Unix operating system, thanks to limitations
+        # in Java's classes
+        #
+        # @return [Integer] the pid of the process after it has started
+        # @raise [NotImplementedError] when trying to access pid on non-Unix platform
+        #
+        def pid
+          if @process.getClass.getName != "java.lang.UNIXProcess"
+            raise NotImplementedError, "pid is only supported by JRuby child processes on Unix"
+          end
+
+          # About the best way we can do this is with a nasty reflection-based impl
+          # Thanks to Martijn Courteaux
+          # http://stackoverflow.com/questions/2950338/how-can-i-kill-a-linux-process-in-java-with-sigkill-process-destroy-does-sigter/2951193#2951193
+          field = @process.getClass.getDeclaredField("pid")
+          field.accessible = true
+          field.get(@process)
+        end
+
       end
 
       private

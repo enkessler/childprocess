@@ -24,6 +24,9 @@ before_install:
   - ruby -e "system('gem update --system') if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.3')"
   - gem install bundler --version '~> 1.17'
 
+before_script:
+  - 'export JAVA_OPTS="${JAVA_OPTS_FOR_SPECS}"'
+
 env:
   global:
   matrix:
@@ -36,6 +39,10 @@ matrix:
     - rvm: jruby-9.1.9.0
     - rvm: ruby-head
     - env: "CHILDPROCESS_POSIX_SPAWN=true"
+  include:
+  - rvm: jruby-9.2.5.0
+    jdk: openjdk11
+    env: "JAVA_OPTS_FOR_SPECS='--add-opens java.base/java.io=org.jruby.dist --add-opens java.base/sun.nio.ch=org.jruby.dist'"
   exclude:
     # Travis does not provide 1.9.3 on OSX
   - rvm: 1.9.3
