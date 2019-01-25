@@ -1,3 +1,10 @@
+### master (unreleased)
+
+* [#134](https://github.com/enkessler/childprocess/pull/134): Add support for non-ASCII characters on Windows
+* [#132](https://github.com/enkessler/childprocess/pull/132): Install `ffi` gem requirement on Windows only
+* [#128](https://github.com/enkessler/childprocess/issues/128): Convert environment variable values to strings when `posix_spawn` enabled
+* [#141](https://github.com/enkessler/childprocess/pull/141): Support JRuby on Java >= 9
+
 ### Version 0.9.0 / 2018-03-10
 
 * Added support for DragonFly BSD.
