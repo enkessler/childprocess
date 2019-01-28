@@ -1,4 +1,4 @@
-### master (unreleased)
+### Version 1.0.0 / 2019-01-28
 
 * [#134](https://github.com/enkessler/childprocess/pull/134): Add support for non-ASCII characters on Windows
 * [#132](https://github.com/enkessler/childprocess/pull/132): Install `ffi` gem requirement on Windows only
