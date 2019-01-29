@@ -12,7 +12,7 @@ inst = Gem::DependencyInstaller.new
 
 begin
   if Gem.win_platform?
-    inst.install 'ffi',  "~> 1.0", ">= 1.0.11"
+    inst.install 'ffi', Gem::Requirement.new('~> 1.0', '>= 1.0.11')
   end
 rescue # rubocop:disable Lint/RescueWithoutErrorClass
   exit(1)
