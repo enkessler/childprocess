@@ -8,15 +8,37 @@ describe ChildProcess do
 
   here = File.dirname(__FILE__)
 
-  let(:gemspec) { eval(File.read "#{here}/../childprocess.gemspec") }
+  describe 'the gem' do
 
-  it 'validates cleanly' do
-    mock_ui = Gem::MockGemUi.new
-    Gem::DefaultUserInteraction.use_ui(mock_ui) { gemspec.validate }
+    let(:gemspec) { eval(File.read "#{here}/../childprocess.gemspec") }
 
-    expect(mock_ui.error).to_not match(/warn/i)
+    it 'validates cleanly' do
+      mock_ui = Gem::MockGemUi.new
+      Gem::DefaultUserInteraction.use_ui(mock_ui) { gemspec.validate }
+
+      expect(mock_ui.error).to_not match(/warn/i)
+    end
+
+    it 'successfully installs' do
+      test_version      = '0.0.0.test'
+      test_version_file = "module ChildProcess
+                             VERSION = '#{test_version}'
+                           end"
+
+      begin
+        File.write("#{here}/../lib/childprocess/version.rb", test_version_file)
+
+        system 'gem build childprocess.gemspec'
+        success = system "gem install childprocess-#{test_version}.gem"
+
+        expect(success).to be true
+      ensure
+        `git checkout lib/childprocess/version.rb`
+        system "gem uninstall childprocess -v #{test_version}"
+      end
+    end
+
   end
-
 
   it "returns self when started" do
     process = sleeping_ruby
