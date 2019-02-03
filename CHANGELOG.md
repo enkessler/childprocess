@@ -1,3 +1,7 @@
+### dev / unreleased
+
+* Drop support for Ruby 2.0, 2.1, and 2.2
+
 ### Version 1.0.1 / 2019-02-03
 
 * [#143](https://github.com/enkessler/childprocess/pull/144): Fix installs by adding `rake` gem as runtime dependency

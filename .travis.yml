@@ -5,9 +5,6 @@ os:
 rvm:
   - jruby-9.1.9.0
   - rbx-3
-  - 2.0.0
-  - 2.1
-  - 2.2
   - 2.3
   - 2.4
   - 2.5
@@ -42,10 +39,3 @@ matrix:
   - rvm: jruby-9.2.5.0
     jdk: openjdk11
     env: "JAVA_OPTS_FOR_SPECS='--add-opens java.base/java.io=org.jruby.dist --add-opens java.base/sun.nio.ch=org.jruby.dist'"
-  exclude:
-    # Travis does not provide 1.9.3 on OSX
-  - rvm: 1.9.3
-    os: osx
-    # Travis does not provide 2.0.0 on it latest version of OSX
-  - rvm: 2.0.0
-    os: osx
