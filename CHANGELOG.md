@@ -1,3 +1,8 @@
+### master / unreleased
+
+* [#143](https://github.com/enkessler/childprocess/pull/144): Fix installs by adding `rake` gem as runtime dependency
+* [#147](https://github.com/enkessler/childprocess/pull/147): Relax `rake` gem constraint from `< 12` to `< 13`
+
 ### Version 1.0.0 / 2019-01-28
 
 * [#134](https://github.com/enkessler/childprocess/pull/134): Add support for non-ASCII characters on Windows
