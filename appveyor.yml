@@ -4,12 +4,6 @@ environment:
   matrix:
     - CHILDPROCESS_POSIX_SPAWN: true
       CHILDPROCESS_UNSET: should-be-unset
-      RUBY_VERSION: 193-x64
-    - CHILDPROCESS_POSIX_SPAWN: false
-      CHILDPROCESS_UNSET: should-be-unset
-      RUBY_VERSION: 193-x64
-    - CHILDPROCESS_POSIX_SPAWN: true
-      CHILDPROCESS_UNSET: should-be-unset
       RUBY_VERSION: 200-x64
     - CHILDPROCESS_POSIX_SPAWN: false
       CHILDPROCESS_UNSET: should-be-unset
