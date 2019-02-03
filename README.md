@@ -194,6 +194,19 @@ How the process is launched and killed depends on the platform:
    `git push origin my-new-feature`
 5. Create new Pull Request
 
+# Publishing a New Release
+
+When publishing a new gem release:
+
+1. Ensure [latest build is green on the `dev` branch](https://travis-ci.org/enkessler/childprocess/branches)
+2. Ensure [CHANGELOG](CHANGELOG.md) is updated
+3. Ensure [version is bumped](lib/childprocess/version.rb) following [Semantic Versioning](https://semver.org/)
+4. Merge the `dev` branch into `master`: `git checkout master && git merge dev`
+5. Ensure [latest build is green on the `master` branch](https://travis-ci.org/enkessler/childprocess/branches)
+6. Build gem from the green `master` branch: `git checkout master && gem build childprocess.gemspec`
+7. Push gem to RubyGems: `gem push childprocess-<VERSION>.gem`
+8. Tag commit with version, annotated with release notes: `git tag -a <VERSION>`
+
 # Copyright
 
 Copyright (c) 2010-2015 Jari Bakken. See LICENSE for details.
