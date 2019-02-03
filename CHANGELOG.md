@@ -1,4 +1,4 @@
-### master / unreleased
+### Version 1.0.1 / 2019-02-03
 
 * [#143](https://github.com/enkessler/childprocess/pull/144): Fix installs by adding `rake` gem as runtime dependency
 * [#147](https://github.com/enkessler/childprocess/pull/147): Relax `rake` gem constraint from `< 12` to `< 13`
