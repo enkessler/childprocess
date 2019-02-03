@@ -12,9 +12,9 @@ a standalone library.
 [![Code Climate](https://codeclimate.com/github/enkessler/childprocess.svg)](https://codeclimate.com/github/enkessler/childprocess)
 [![Coverage Status](https://coveralls.io/repos/enkessler/childprocess/badge.svg?branch=master)](https://coveralls.io/r/enkessler/childprocess?branch=master)
 
-***
-**This project currently needs a new maintainer. If anyone is interested, please contact me, [enkessler](https://github.com/enkessler).**
-***
+# Requirements
+
+* Ruby 2.3+, JRuby 9+
 
 # Usage
 
