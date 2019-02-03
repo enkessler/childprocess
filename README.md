@@ -209,4 +209,4 @@ When publishing a new gem release:
 
 # Copyright
 
-Copyright (c) 2010-2015 Jari Bakken. See LICENSE for details.
+Copyright (c) 2010-2015 Jari Bakken. See [LICENSE](LICENSE) for details.
