@@ -29,8 +29,16 @@ module ChildProcess
           exec_r.close
           set_env
 
-          STDOUT.reopen(stdout || "/dev/null")
-          STDERR.reopen(stderr || "/dev/null")
+          if stdout
+            STDOUT.reopen(stdout)
+          else
+            STDOUT.reopen("/dev/null", "a+")
+          end
+          if stderr
+            STDERR.reopen(stderr)
+          else
+            STDERR.reopen("/dev/null", "a+")
+          end
 
           if duplex?
             STDIN.reopen(reader)

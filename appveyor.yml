@@ -20,6 +20,12 @@ environment:
     - CHILDPROCESS_POSIX_SPAWN: false
       CHILDPROCESS_UNSET: should-be-unset
       RUBY_VERSION: 25-x64
+    - CHILDPROCESS_POSIX_SPAWN: true
+      CHILDPROCESS_UNSET: should-be-unset
+      RUBY_VERSION: 26-x64
+    - CHILDPROCESS_POSIX_SPAWN: false
+      CHILDPROCESS_UNSET: should-be-unset
+      RUBY_VERSION: 26-x64
 
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
