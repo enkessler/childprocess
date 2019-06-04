@@ -50,7 +50,8 @@ module ChildProcess
         if exited?
           exit_code
         else
-          _, status = ::Process.waitpid2 _pid
+          _, status = ::Process.waitpid2(@pid)
+
           set_exit_code(status)
         end
       end
