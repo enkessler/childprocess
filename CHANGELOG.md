@@ -1,6 +1,8 @@
 ### dev / unreleased
 
-* Drop support for Ruby 2.0, 2.1, and 2.2
+* [#148](https://github.com/enkessler/childprocess/pull/148): Drop support for Ruby 2.0, 2.1, and 2.2
+* [#149](https://github.com/enkessler/childprocess/pull/149): Fix Unix fork reopen to be compatible with Ruby 2.6
+* [#152](https://github.com/enkessler/childprocess/pull/152)/[#154](https://github.com/enkessler/childprocess/pull/154): Fix hangs and permission errors introduced in Ruby 2.6 for leader processes of process groups
 
 ### Version 1.0.1 / 2019-02-03
 
