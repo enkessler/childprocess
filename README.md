@@ -1,5 +1,7 @@
 # childprocess
 
+Test
+
 This gem aims at being a simple and reliable solution for controlling
 external programs running in the background on any Ruby / OS combination.
 
