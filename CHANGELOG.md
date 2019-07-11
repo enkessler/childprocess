@@ -1,4 +1,4 @@
-### dev / unreleased
+### Version 2.0.0 / 2019-07-11
 
 * [#148](https://github.com/enkessler/childprocess/pull/148): Drop support for Ruby 2.0, 2.1, and 2.2
 * [#149](https://github.com/enkessler/childprocess/pull/149): Fix Unix fork reopen to be compatible with Ruby 2.6
