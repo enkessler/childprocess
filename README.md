@@ -70,14 +70,18 @@ r, w = IO.pipe
 proc = ChildProcess.build("echo", "foo")
 proc.io.stdout = proc.io.stderr = w
 proc.start
-w.close
 
-begin
-  loop { print r.readpartial(8192) }
-rescue EOFError
-end
+Thread.new {
+  begin
+    loop do
+      print r.readpartial(8192)
+    end
+  rescue EOFError
+  end
+}
 
 proc.wait
+w.close
 ```
 
 Note that if you just want to get the output of a command, the backtick method on Kernel may be a better fit.
