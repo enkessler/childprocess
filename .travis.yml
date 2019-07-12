@@ -3,7 +3,6 @@ os:
   - osx
 
 rvm:
-  - jruby-9.1.9.0
   - rbx-3
   - 2.3
   - 2.4
@@ -33,7 +32,6 @@ env:
 matrix:
   allow_failures:
     - rvm: rbx-3
-    - rvm: jruby-9.1.9.0
     - rvm: ruby-head
     - env: "CHILDPROCESS_POSIX_SPAWN=true"
   include:
