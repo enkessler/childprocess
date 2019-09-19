@@ -23,9 +23,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", "~> 3.0"
   s.add_development_dependency "yard", "~> 0.0"
   s.add_development_dependency 'coveralls', '< 1.0'
-
-  s.add_runtime_dependency 'rake', '< 13.0'
-
-  # Install FFI gem if we're running on Windows
-  s.extensions = 'ext/mkrf_conf.rb'
 end
