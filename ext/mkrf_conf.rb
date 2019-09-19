@@ -9,10 +9,14 @@ rescue NoMethodError # rubocop:disable Lint/HandleExceptions
 end
 
 inst = Gem::DependencyInstaller.new
+ffi_requirement = Gem::Requirement.new('~> 1.0', '>= 1.0.11')
+no_required_ffi = Gem::Specification.none? do |s|
+  s.name == 'ffi' && ffi_requirement.satisfied_by?(s.version)
+end
 
 begin
-  if Gem.win_platform?
-    inst.install 'ffi', Gem::Requirement.new('~> 1.0', '>= 1.0.11')
+  if Gem.win_platform? && no_required_ffi
+    inst.install 'ffi', ffi_requirement
   end
 rescue # rubocop:disable Lint/RescueWithoutErrorClass
   exit(1)
