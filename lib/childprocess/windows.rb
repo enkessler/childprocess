@@ -1,5 +1,10 @@
-require "ffi"
 require "rbconfig"
+
+begin
+  require 'ffi'
+rescue LoadError
+  raise ChildProcess::MissingFFIError
+end
 
 module ChildProcess
   module Windows
