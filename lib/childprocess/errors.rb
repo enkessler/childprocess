@@ -16,8 +16,8 @@ module ChildProcess
 
   class MissingFFIError < Error
     def initialize
-      message = "FFI is a required pre-requisite for posix_spawn, falling back to default implementation. " +
-                "Please add it to your deployment to unlock this functionality. " +
+      message = "FFI is a required pre-requisite for Windows or posix_spawn support in the ChildProcess gem. " +
+                "Ensure the `ffi` gem is installed. " +
                 "If you believe this is an error, please file a bug at http://github.com/enkessler/childprocess/issues"
 
       super(message)
