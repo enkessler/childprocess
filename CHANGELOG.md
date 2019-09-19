@@ -1,3 +1,9 @@
+### dev (unreleased)
+
+* Remove extension to conditionally install `ffi` gem on Windows platforms
+* Remove runtime dependency on `rake` gem
+* Remove unused `rubyforge_project` from gemspec
+
 ### Version 2.0.0 / 2019-07-11
 
 * [#148](https://github.com/enkessler/childprocess/pull/148): Drop support for Ruby 2.0, 2.1, and 2.2
