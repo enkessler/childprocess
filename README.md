@@ -16,6 +16,8 @@ a standalone library.
 
 * Ruby 2.3+, JRuby 9+
 
+Windows users **must** ensure the `ffi` gem (`>= 1.0.11`) is installed in order to use ChildProcess.
+
 # Usage
 
 The object returned from `ChildProcess.build` will implement `ChildProcess::AbstractProcess`.
