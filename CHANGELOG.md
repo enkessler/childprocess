@@ -1,8 +1,8 @@
-### dev (unreleased)
+### Version 3.0.0 / 2019-09-20
 
-* Remove extension to conditionally install `ffi` gem on Windows platforms
-* Remove runtime dependency on `rake` gem
-* Remove unused `rubyforge_project` from gemspec
+* [#156](https://github.com/enkessler/childprocess/pull/156)Remove unused `rubyforge_project` from gemspec
+* [#160](https://github.com/enkessler/childprocess/pull/160): Remove extension to conditionally install `ffi` gem on Windows platforms
+* [#160](https://github.com/enkessler/childprocess/pull/160): Remove runtime dependency on `rake` gem
 
 ### Version 2.0.0 / 2019-07-11
 
