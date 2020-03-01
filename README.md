@@ -69,21 +69,33 @@ end
 ```ruby
 r, w = IO.pipe
 
-proc = ChildProcess.build("echo", "foo")
-proc.io.stdout = proc.io.stderr = w
-proc.start
+begin
+  process = ChildProcess.build("sh" , "-c",
+                               "for i in {1..3}; do echo $i; sleep 1; done")
+  process.io.stdout = w
+  process.start # This results in a fork, inheriting the write end of the pipe.
 
-Thread.new {
-  begin
-    loop do
-      print r.readpartial(8192)
+  # Close parent's copy of the write end of the pipe so when the (forked) child
+  # process closes its write end of the pipe the parent receives EOF when
+  # attempting to read from it. If the parent leaves its write end open, it
+  # will not detect EOF.
+  w.close
+
+  thread = Thread.new do
+    begin
+      loop do
+        print r.readpartial(16384)
+      end
+    rescue EOFError
+      # Child has closed the write end of the pipe
     end
-  rescue EOFError
   end
-}
 
-proc.wait
-w.close
+  process.wait
+  thread.join
+ensure
+  r.close
+end
 ```
 
 Note that if you just want to get the output of a command, the backtick method on Kernel may be a better fit.
