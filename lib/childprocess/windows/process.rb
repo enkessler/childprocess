@@ -71,7 +71,7 @@ module ChildProcess
         @handle = Handle.open @pid
 
         if leader?
-          @job = Job.new
+          @job = Job.new(detach?)
           @job << @handle
         end
 
@@ -93,7 +93,7 @@ module ChildProcess
 
 
       class Job
-        def initialize
+        def initialize(detach)
           @pointer = Lib.create_job_object(nil, nil)
 
           if @pointer.nil? || @pointer.null?
@@ -101,7 +101,7 @@ module ChildProcess
           end
 
           basic = JobObjectBasicLimitInformation.new
-          basic[:LimitFlags] = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_BREAKAWAY_OK
+          basic[:LimitFlags] = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE if !detach
 
           extended = JobObjectExtendedLimitInformation.new
           extended[:BasicLimitInformation] = basic
