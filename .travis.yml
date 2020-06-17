@@ -4,7 +4,6 @@ os:
 
 rvm:
   - rbx-3
-  - 2.3
   - 2.4
   - 2.5
   - 2.6
@@ -16,8 +15,7 @@ cache: bundler
 
 before_install:
   - "echo 'gem: --no-document' > ~/.gemrc"
-  # RubyGems update is supported for Ruby 2.3 and later
-  - ruby -e "system('gem update --system') if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.3')"
+  - gem update --system
   - gem install bundler --version '~> 1.17'
 
 before_script:
