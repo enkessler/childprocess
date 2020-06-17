@@ -1,3 +1,7 @@
+### master (unreleased)
+
+* [#167](https://github.com/enkessler/childprocess/pull/167): Fix detach behavior on Windows
+
 ### Version 3.0.0 / 2019-09-20
 
 * [#156](https://github.com/enkessler/childprocess/pull/156): Remove unused `rubyforge_project` from gemspec
