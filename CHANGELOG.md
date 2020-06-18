@@ -1,6 +1,7 @@
 ### Version 4.0.0 / 2020-06-18
 
 * [#167](https://github.com/enkessler/childprocess/pull/167): Fix detach behavior on Windows
+* [#168](https://github.com/enkessler/childprocess/pull/168): Drop support for Ruby 2.3
 
 ### Version 3.0.0 / 2019-09-20
 
