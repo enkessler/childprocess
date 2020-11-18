@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.4.0'
 
+  s.add_runtime_dependency "ffi", "~> 1.0", ">= 1.0.11" if Gem.win_platform?
+
   s.add_development_dependency "rspec", "~> 3.0"
   s.add_development_dependency "yard", "~> 0.0"
   s.add_development_dependency 'coveralls', '< 1.0'
