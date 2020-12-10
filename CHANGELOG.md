@@ -1,3 +1,7 @@
+### Version 5.0.0 / TODO
+
+* [#175](https://github.com/enkessler/childprocess/pull/175): Replace all backends by `Process.spawn` for portability, reliability and simplicity.
+
 ### Version 4.1.0 / 2021-06-08
 
 * [#170](https://github.com/enkessler/childprocess/pull/170): Update gem homepage to use `https://`

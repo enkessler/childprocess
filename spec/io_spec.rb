@@ -151,7 +151,7 @@ describe ChildProcess do
   # http://travis-ci.org/#!/enkessler/childprocess/jobs/487331
   #
 
-  it "works with pipes", :process_builder => false do
+  it "works with pipes" do
     process = ruby(<<-CODE)
       STDOUT.print "stdout"
       STDERR.print "stderr"

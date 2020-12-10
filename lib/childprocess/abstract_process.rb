@@ -28,7 +28,9 @@ module ChildProcess
     # Set this to true to make the child process the leader of a new process group
     #
     # This can be used to make sure that all grandchildren are killed
-    # when the child process dies.
+    # when the child process dies on non-Windows.
+    #
+    # Note that grandchildren are not killed on Windows even when the process is the leader of a new process group.
     #
     attr_accessor :leader
 

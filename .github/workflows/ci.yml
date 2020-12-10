@@ -6,9 +6,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu, macos, windows ]
-        ruby: [ 2.6, jruby, truffleruby ]
+        ruby: [ '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', jruby, truffleruby ]
         exclude:
-          - { os: windows, ruby: truffleruby }
+        - { os: windows, ruby: truffleruby }
+        # fails to load rspec: RuntimeError: CRITICAL: RUBYGEMS_ACTIVATION_MONITOR.owned?: before false -> after true
+        - { os: windows, ruby: jruby }
     runs-on: ${{ matrix.os }}-latest
     env:
       CHILDPROCESS_UNSET: should-be-unset
