@@ -32,6 +32,6 @@ matrix:
     - rvm: ruby-head
     - env: "CHILDPROCESS_POSIX_SPAWN=true"
   include:
-  - rvm: jruby-9.2.5.0
+  - rvm: jruby
     jdk: openjdk11
     env: "JAVA_OPTS_FOR_SPECS='--add-opens java.base/java.io=org.jruby.dist --add-opens java.base/sun.nio.ch=org.jruby.dist'"
