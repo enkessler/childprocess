@@ -1,6 +1,8 @@
 name: CI
-
 on: [push, pull_request]
+
+env:
+  CHILDPROCESS_UNSET: should-be-unset
 
 jobs:
 
@@ -10,7 +12,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         ruby-version: ['2.4', '2.5', '2.6', '2.7', '3.0']
+        posix_spawn: [true, false]
+
     runs-on: ${{ matrix.os }}
+    env:
+      CHILDPROCESS_POSIX_SPAWN: ${{ matrix.posix_spawn }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
