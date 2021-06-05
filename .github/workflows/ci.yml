@@ -33,7 +33,7 @@ jobs:
           github-token: ${{ secrets.github_token }}
           path-to-lcov: "./coverage/lcov/lcov.info"
           parallel: true
-          flag-name: run-${{ matrix.os }}-${{ matrix.ruby-version }}
+          flag-name: run-${{ matrix.os }}-${{ matrix.ruby-version }}-${{ matrix.posix_spawn }}
 
   test_finish:
     needs: test
