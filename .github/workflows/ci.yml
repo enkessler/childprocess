@@ -15,8 +15,8 @@ jobs:
         posix_spawn: [true, false]
         exclude:
           # The action used seems to not fully support JRuby on Windows
-          os: windows-latest
-          ruby-version: jruby-9.2
+          - os: windows-latest
+            ruby-version: jruby-9.2
 
     runs-on: ${{ matrix.os }}
     env:
