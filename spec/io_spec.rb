@@ -138,7 +138,7 @@ describe ChildProcess do
 
       stdin.close
       process.poll_for_exit(exit_timeout)
-    ensure
+     ensure
       out_receiver.close
       out.close
     end

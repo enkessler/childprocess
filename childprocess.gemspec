@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Jari Bakken", "Eric Kessler", "Shane da Silva"]
   s.email       = ["morrow748@gmail.com", "shane@dasilva.io"]
-  s.homepage    = "https://github.com/enkessler/childprocess"
+  s.homepage    = "http://github.com/enkessler/childprocess"
   s.summary     = %q{A simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
   s.description = %q{This gem aims at being a simple and reliable solution for controlling external programs running in the background on any Ruby / OS combination.}
 
