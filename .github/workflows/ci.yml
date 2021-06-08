@@ -1,5 +1,10 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'  # Monthly
 
 env:
   CHILDPROCESS_UNSET: should-be-unset
