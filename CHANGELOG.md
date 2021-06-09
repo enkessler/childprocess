@@ -1,3 +1,8 @@
+### Version 4.1.0 / 2021-06-08
+
+* [#170](https://github.com/enkessler/childprocess/pull/170): Update gem homepage to use `https://`
+* [#177](https://github.com/enkessler/childprocess/pull/177): Add ARM64-macos support
+
 ### Version 4.0.0 / 2020-06-18
 
 * [#167](https://github.com/enkessler/childprocess/pull/167): Fix detach behavior on Windows
