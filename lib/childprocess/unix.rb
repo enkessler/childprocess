@@ -3,7 +3,5 @@ module ChildProcess
   end
 end
 
-require "childprocess/unix/io"
-require "childprocess/unix/process"
-require "childprocess/unix/fork_exec_process"
-# PosixSpawnProcess + ffi is required on demand.
+require_relative "unix/io"
+require_relative "unix/process"

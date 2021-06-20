@@ -210,16 +210,9 @@ module ChildProcessSpecHelper
   end
 
   def alive?(pid)
-    if ChildProcess.windows?
-      ChildProcess::Windows::Lib.alive?(pid)
-    else
-      begin
-        Process.getpgid pid
-        true
-      rescue Errno::ESRCH
-        false
-      end
-    end
+    !!Process.kill(0, pid)
+  rescue Errno::ESRCH
+    false
   end
 
   def capture_std
@@ -259,10 +252,6 @@ RSpec.configure do |c|
   c.after(:each) {
     defined?(@process) && @process.alive? && @process.stop
   }
-
-  if ChildProcess.jruby? && ChildProcess.new("true").instance_of?(ChildProcess::JRuby::Process)
-    c.filter_run_excluding :process_builder => false
-  end
 
   if ChildProcess.linux? && ChildProcess.posix_spawn?
     c.filter_run_excluding :posix_spawn_on_linux => false

@@ -1,7 +1,7 @@
 require File.expand_path('../spec_helper', __FILE__)
 require "pid_behavior"
 
-if ChildProcess.unix? && !ChildProcess.jruby? && !ChildProcess.posix_spawn?
+if ChildProcess.unix?
 
   describe ChildProcess::Unix::Process do
     it_behaves_like "a platform that provides the child's pid"

@@ -2,6 +2,7 @@ require 'childprocess/version'
 require 'childprocess/errors'
 require 'childprocess/abstract_process'
 require 'childprocess/abstract_io'
+require 'childprocess/process_spawn_process'
 require "fcntl"
 require 'logger'
 
@@ -15,13 +16,7 @@ module ChildProcess
     def new(*args)
       case os
       when :macosx, :linux, :solaris, :bsd, :cygwin, :aix
-        if posix_spawn?
-          Unix::PosixSpawnProcess.new(args)
-        elsif jruby?
-          JRuby::Process.new(args)
-        else
-          Unix::ForkExecProcess.new(args)
-        end
+        Unix::Process.new(args)
       when :windows
         Windows::Process.new(args)
       else
@@ -40,13 +35,7 @@ module ChildProcess
     end
 
     def platform
-      if RUBY_PLATFORM == "java"
-        :jruby
-      elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ironruby"
-        :ironruby
-      else
-        os
-      end
+      os
     end
 
     def platform_name
@@ -62,7 +51,7 @@ module ChildProcess
     end
 
     def jruby?
-      platform == :jruby
+      RUBY_ENGINE == 'jruby'
     end
 
     def windows?
@@ -70,27 +59,6 @@ module ChildProcess
     end
 
     def posix_spawn?
-      enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
-      return false unless enabled
-
-      begin
-        require 'ffi'
-      rescue LoadError
-        raise ChildProcess::MissingFFIError
-      end
-
-      begin
-        require "childprocess/unix/platform/#{ChildProcess.platform_name}"
-      rescue LoadError
-        raise ChildProcess::MissingPlatformError
-      end
-
-      require "childprocess/unix/lib"
-      require 'childprocess/unix/posix_spawn_process'
-
-      true
-    rescue ChildProcess::MissingPlatformError => ex
-      warn_once ex.message
       false
     end
 
@@ -103,6 +71,8 @@ module ChildProcess
     end
 
     def os
+      return :windows if ENV['FAKE_WINDOWS'] == 'true'
+
       @os ||= (
         require "rbconfig"
         host_os = RbConfig::CONFIG['host_os'].downcase
@@ -158,17 +128,6 @@ module ChildProcess
     def close_on_exec(file)
       if file.respond_to?(:close_on_exec=)
         file.close_on_exec = true
-      elsif file.respond_to?(:fcntl) && defined?(Fcntl::FD_CLOEXEC)
-        file.fcntl Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
-
-        if jruby? && posix_spawn?
-          # on JRuby, the fcntl call above apparently isn't enough when
-          # we're launching the process through posix_spawn.
-          fileno = JRuby.posix_fileno_for(file)
-          Unix::Lib.fcntl fileno, Fcntl::F_SETFD, Fcntl::FD_CLOEXEC
-        end
-      elsif windows?
-        Windows::Lib.dont_inherit file
       else
         raise Error, "not sure how to set close-on-exec for #{file.inspect} on #{platform_name.inspect}"
       end
@@ -203,8 +162,8 @@ module ChildProcess
   end # class << self
 end # ChildProcess
 
-require 'jruby' if ChildProcess.jruby?
-
-require 'childprocess/unix'    if ChildProcess.unix?
-require 'childprocess/windows' if ChildProcess.windows?
-require 'childprocess/jruby'   if ChildProcess.jruby?
+if ChildProcess.windows?
+  require 'childprocess/windows'
+else
+  require 'childprocess/unix'
+end
