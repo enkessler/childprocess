@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+#  schedule:
+#    - cron: '0 0 1 * *'  # Monthly
+
+env:
+  CHILDPROCESS_UNSET: should-be-unset
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        ruby: ['2.4', '2.5', '2.6', '2.7', '3.0', '3.1', head, jruby]
+        posix_spawn: [true, false]
+        include:
+          - { os: windows-latest, ruby: mswin, posix_spawn: true  }
+          - { os: windows-latest, ruby: mswin, posix_spawn: false }
+        exclude:
+          # The action used seems to not fully support JRuby on Windows
+          - { os: windows-latest , ruby: jruby }
+
+    runs-on: ${{ matrix.os }}
+    env:
+      CHILDPROCESS_POSIX_SPAWN: ${{ matrix.posix_spawn }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Run Tests
+        run: bundle exec rake spec
+
+      - name: Push code coverage to Coveralls
+        if: false
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          path-to-lcov: "./coverage/lcov/lcov.info"
+          parallel: true
+          flag-name: run-${{ matrix.os }}-${{ matrix.ruby }}-${{ matrix.posix_spawn }}
+
+  test_finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        if: false
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
