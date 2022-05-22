@@ -26,3 +26,4 @@ Gemfile.lock
 .bundle
 
 ## PROJECT::SPECIFIC
+vendor/bundle
