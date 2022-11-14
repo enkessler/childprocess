@@ -15,10 +15,10 @@ module ChildProcess
     def new(*args)
       case os
       when :macosx, :linux, :solaris, :bsd, :cygwin, :aix
-        if posix_spawn?
-          Unix::PosixSpawnProcess.new(*args)
-        elsif jruby?
-          JRuby::Process.new(*args)
+        if jruby? && !posix_spawn_chosen_explicitly?
+          JRuby::Process.new(args)
+        elsif posix_spawn?
+          Unix::PosixSpawnProcess.new(args)
         else
           Unix::ForkExecProcess.new(*args)
         end
@@ -69,8 +69,12 @@ module ChildProcess
       os == :windows
     end
 
+    def posix_spawn_chosen_explicitly?
+      @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
+    end
+
     def posix_spawn?
-      enabled = @posix_spawn || %w[1 true].include?(ENV['CHILDPROCESS_POSIX_SPAWN'])
+      enabled = posix_spawn_chosen_explicitly? || !Process.respond_to?(:fork)
       return false unless enabled
 
       begin
