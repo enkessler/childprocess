@@ -16,14 +16,14 @@ module ChildProcess
       case os
       when :macosx, :linux, :solaris, :bsd, :cygwin, :aix
         if posix_spawn?
-          Unix::PosixSpawnProcess.new(args)
+          Unix::PosixSpawnProcess.new(*args)
         elsif jruby?
-          JRuby::Process.new(args)
+          JRuby::Process.new(*args)
         else
-          Unix::ForkExecProcess.new(args)
+          Unix::ForkExecProcess.new(*args)
         end
       when :windows
-        Windows::Process.new(args)
+        Windows::Process.new(*args)
       else
         raise Error, "unsupported platform #{platform_name.inspect}"
       end
