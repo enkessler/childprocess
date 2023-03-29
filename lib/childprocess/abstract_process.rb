@@ -39,7 +39,7 @@ module ChildProcess
     # @see ChildProcess.build
     #
 
-    def initialize(args)
+    def initialize(*args)
       unless args.all? { |e| e.kind_of?(String) }
         raise ArgumentError, "all arguments must be String: #{args.inspect}"
       end
