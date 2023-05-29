@@ -15,7 +15,7 @@ module ChildProcess
         host_part = RbConfig::CONFIG['host_os'].split("_")[1]
         manifest  = File.join(RbConfig::CONFIG['bindir'], 'ruby.exe.manifest')
 
-        if host_part && host_part.to_i > 80 && File.exists?(manifest)
+        if host_part && host_part.to_i > 80 && File.exist?(manifest)
           "msvcr#{host_part}"
         else
           "msvcrt"
