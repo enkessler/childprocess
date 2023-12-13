@@ -12,7 +12,7 @@ module ChildProcess
       extend FFI::Library
 
       def self.msvcrt_name
-        RbConfig::CONFIG['RUBY_SO_NAME'][/msvc\w+/]  || 'ucrtbase'
+        RbConfig::CONFIG['RUBY_SO_NAME'][/msvc\w+/] || 'ucrtbase'
       end
 
       ffi_lib "kernel32", msvcrt_name
