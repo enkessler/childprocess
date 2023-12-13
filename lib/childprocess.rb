@@ -20,10 +20,10 @@ module ChildProcess
         elsif posix_spawn?
           Unix::PosixSpawnProcess.new(args)
         else
-          Unix::ForkExecProcess.new(args)
+          Unix::ForkExecProcess.new(*args)
         end
       when :windows
-        Windows::Process.new(args)
+        Windows::Process.new(*args)
       else
         raise Error, "unsupported platform #{platform_name.inspect}"
       end
