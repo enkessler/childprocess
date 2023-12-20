@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require File.expand_path('../spec_helper', __FILE__)
-require 'rubygems/mock_gem_ui'
 
 
 describe ChildProcess do
@@ -11,12 +10,17 @@ describe ChildProcess do
   let(:gemspec) { eval(File.read "#{here}/../childprocess.gemspec") }
 
   it 'validates cleanly' do
-    mock_ui = Gem::MockGemUi.new
-    Gem::DefaultUserInteraction.use_ui(mock_ui) { gemspec.validate }
+    if Gem::VERSION >= "3.5.0"
+      expect { gemspec.validate }.not_to output(/warn/i).to_stderr
+    else
+      require 'rubygems/mock_gem_ui'
 
-    expect(mock_ui.error).to_not match(/warn/i)
+      mock_ui = Gem::MockGemUi.new
+      Gem::DefaultUserInteraction.use_ui(mock_ui) { gemspec.validate }
+
+      expect(mock_ui.error).to_not match(/warn/i)
+    end
   end
-
 
   it "returns self when started" do
     process = sleeping_ruby
