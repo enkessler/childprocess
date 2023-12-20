@@ -205,16 +205,9 @@ module ChildProcessSpecHelper
   end
 
   def alive?(pid)
-    if ChildProcess.windows?
-      ChildProcess::Windows::Lib.alive?(pid)
-    else
-      begin
-        Process.getpgid pid
-        true
-      rescue Errno::ESRCH
-        false
-      end
-    end
+    !!Process.kill(0, pid)
+  rescue Errno::ESRCH
+    false
   end
 
   def capture_std
