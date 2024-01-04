@@ -112,19 +112,15 @@ module ChildProcess
       assert_started
 
       log "sending #{sig}"
-      ::Process.kill sig, _pid
-    end
-
-    def _pid
       if leader?
         if ChildProcess.unix?
-          -@pid # negative pid == process group
+          ::Process.kill sig, -@pid # negative pid == process group
         else
-          ChildProcess.logger.warn "ChildProcess#stop on leader of a new process group does not kill subprocess on Windows"
-          @pid
+          output = `taskkill /F /T /PID #{@pid}`
+          log output
         end
       else
-        @pid
+        ::Process.kill sig, @pid
       end
     end
   end

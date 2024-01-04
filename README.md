@@ -146,8 +146,6 @@ process.leader = true
 process.start
 ```
 
-Note this does not work on Windows.
-
 #### Detach from parent
 
 ```ruby

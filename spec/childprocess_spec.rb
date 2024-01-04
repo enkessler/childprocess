@@ -299,52 +299,20 @@ describe ChildProcess do
     }
   end
 
-  if ChildProcess.unix?
-    it 'kills the full process tree on unix' do
-      Tempfile.open('kill-process-tree') do |file|
-        process = write_pid_in_sleepy_grand_child(file.path)
-        process.leader = true
-        process.start
+  it 'kills the full process tree' do
+    Tempfile.open('kill-process-tree') do |file|
+      process = write_pid_in_sleepy_grand_child(file.path)
+      process.leader = true
+      process.start
 
-        pid = wait_until(30) do
-          Integer(rewind_and_read(file)) rescue nil
-        end
-
-        process.stop
-        expect(alive?(process.pid)).to eql(false)
-
-        wait_until(3) { expect(alive?(pid)).to eql(false) }
+      pid = wait_until(30) do
+        Integer(rewind_and_read(file)) rescue nil
       end
-    end
-  elsif ChildProcess.windows?
-    it 'does not kill the full process tree on windows' do
-      Tempfile.open('no-kill-process-tree') do |file|
-        process = write_pid_in_sleepy_grand_child(file.path)
-        process.leader = true
-        process.start
 
-        pid = wait_until(30) do
-          Integer(rewind_and_read(file)) rescue nil
-        end
+      process.stop
+      expect(process).to be_exited
 
-        log = StringIO.new
-        original_logger = ChildProcess.logger
-        begin
-          ChildProcess.logger = Logger.new(log)
-          ChildProcess.logger.level = Logger::WARN
-          process.stop
-        ensure
-          ChildProcess.logger = original_logger
-        end
-        expect(log.string).to include("ChildProcess#stop on leader of a new process group does not kill subprocess on Windows")
-
-        expect(alive?(process.pid)).to eql(false)
-
-        # The grand child is not killed on Windows:
-        expect(alive?(pid)).to eql(true)
-        Process.kill(:SIGKILL, pid)
-        wait_until(3) { expect(alive?(pid)).to eql(false) }
-      end
+      wait_until(3) { expect(alive?(pid)).to eql(false) }
     end
   end
 
