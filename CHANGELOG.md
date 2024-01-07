@@ -1,6 +1,7 @@
-### Version 5.0.0 / TODO
+### Version 5.0.0 / 2024-01-06
 
 * [#175](https://github.com/enkessler/childprocess/pull/175): Replace all backends by `Process.spawn` for portability, reliability and simplicity.
+* [#185](https://github.com/enkessler/childprocess/pull/185): Add support for Ruby 3.x
 
 ### Version 4.1.0 / 2021-06-08
 
