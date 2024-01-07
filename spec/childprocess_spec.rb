@@ -29,14 +29,7 @@ describe ChildProcess do
     expect(process).to be_alive
   end
 
-  # We can't detect failure to execve() when using posix_spawn() on Linux
-  # without waiting for the child to exit with code 127.
-  #
-  # See e.g. http://repo.or.cz/w/glibc.git/blob/669704fd:/sysdeps/posix/spawni.c#l34
-  #
-  # We could work around this by doing the PATH search ourselves, but not sure
-  # it's worth it.
-  it "raises ChildProcess::LaunchError if the process can't be started", :posix_spawn_on_linux => false do
+  it "raises ChildProcess::LaunchError if the process can't be started" do
     expect { invalid_process.start }.to raise_error(ChildProcess::LaunchError)
   end
 
@@ -99,7 +92,7 @@ describe ChildProcess do
     end
   end
 
-  it "can override env vars only for the current process" do
+  it "can override env vars only for the child process" do
     Tempfile.open("env-spec") do |file|
       file.close
       process = write_env(file.path)
@@ -129,6 +122,31 @@ describe ChildProcess do
 
       expect(child_env['FOö']).to eql 'baör'
     end
+  end
+
+  it "can set env vars using Symbol keys and values" do
+    Tempfile.open("env-spec") do |file|
+      process = ruby('puts ENV["SYMBOL_KEY"]')
+      process.environment[:SYMBOL_KEY] = :VALUE
+      process.io.stdout = file
+      process.start
+      process.wait
+      expect(rewind_and_read(file)).to eq "VALUE\n"
+    end
+  end
+
+  it "raises ChildProcess::InvalidEnvironmentVariable for invalid env vars" do
+    process = ruby(':OK')
+    process.environment["a\0b"] = '1'
+    expect { process.start }.to raise_error(ChildProcess::InvalidEnvironmentVariable)
+
+    process = ruby(':OK')
+    process.environment["A=1"] = '2'
+    expect { process.start }.to raise_error(ChildProcess::InvalidEnvironmentVariable)
+
+    process = ruby(':OK')
+    process.environment['A'] = "a\0b"
+    expect { process.start }.to raise_error(ChildProcess::InvalidEnvironmentVariable)
   end
 
   it "inherits the parent's env vars also when some are overridden" do
@@ -281,7 +299,7 @@ describe ChildProcess do
     }
   end
 
-  it 'kills the full process tree', :process_builder => false do
+  it 'kills the full process tree' do
     Tempfile.open('kill-process-tree') do |file|
       process = write_pid_in_sleepy_grand_child(file.path)
       process.leader = true
@@ -292,6 +310,8 @@ describe ChildProcess do
       end
 
       process.stop
+      expect(process).to be_exited
+
       wait_until(3) { expect(alive?(pid)).to eql(false) }
     end
   end

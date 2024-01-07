@@ -16,8 +16,6 @@ a standalone library.
 
 * Ruby 2.4+, JRuby 9+
 
-Windows users **must** ensure the `ffi` gem (`>= 1.0.11`) is installed in order to use ChildProcess.
-
 # Usage
 
 The object returned from `ChildProcess.build` will implement `ChildProcess::AbstractProcess`.
@@ -73,9 +71,9 @@ begin
   process = ChildProcess.build("sh" , "-c",
                                "for i in {1..3}; do echo $i; sleep 1; done")
   process.io.stdout = w
-  process.start # This results in a fork, inheriting the write end of the pipe.
+  process.start # This results in a subprocess inheriting the write end of the pipe.
 
-  # Close parent's copy of the write end of the pipe so when the (forked) child
+  # Close parent's copy of the write end of the pipe so when the child
   # process closes its write end of the pipe the parent receives EOF when
   # attempting to read from it. If the parent leaves its write end open, it
   # will not detect EOF.
@@ -138,17 +136,6 @@ search.io.stdin.close
 search.wait
 ```
 
-#### Prefer posix_spawn on *nix
-
-If the parent process is using a lot of memory, `fork+exec` can be very expensive. The `posix_spawn()` API removes this overhead.
-
-```ruby
-ChildProcess.posix_spawn = true
-process = ChildProcess.build(*args)
-```
-
-To be able to use this, please make sure that you have the `ffi` gem installed.
-
 ### Ensure entire process tree dies
 
 By default, the child process does not create a new process group. This means there's no guarantee that the entire process tree will die when the child process is killed. To solve this:
@@ -195,11 +182,7 @@ ChildProcess.logger = logger
 
 # Implementation
 
-How the process is launched and killed depends on the platform:
-
-* Unix     : `fork + exec` (or `posix_spawn` if enabled)
-* Windows  : `CreateProcess()` and friends
-* JRuby    : `java.lang.{Process,ProcessBuilder}`
+ChildProcess 5+ uses `Process.spawn` from the Ruby core library for maximum portability.
 
 # Note on Patches/Pull Requests
 
