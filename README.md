@@ -7,7 +7,7 @@ The code originated in the [selenium-webdriver](https://rubygems.org/gems/seleni
 a standalone library.
 
 [![CI](https://github.com/enkessler/childprocess/actions/workflows/ci.yml/badge.svg)](https://github.com/enkessler/childprocess/actions/workflows/ci.yml)
-[![Gem Version](https://badge.fury.io/rb/childprocess.svg)](http://badge.fury.io/rb/childprocess)
+![Gem Version](https://img.shields.io/gem/v/childprocess)
 [![Code Climate](https://codeclimate.com/github/enkessler/childprocess.svg)](https://codeclimate.com/github/enkessler/childprocess)
 [![Coverage Status](https://coveralls.io/repos/enkessler/childprocess/badge.svg?branch=master)](https://coveralls.io/r/enkessler/childprocess?branch=master)
 
