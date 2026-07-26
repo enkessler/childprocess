@@ -1,27 +1,44 @@
+# frozen_string_literal: true
+
 module ChildProcess
+  # Represents a single child process and its lifecycle: starting it,
+  # inspecting whether it's alive, and stopping it.
+  #
+  # This class is never instantiated directly -- use {ChildProcess.build}
+  # to get a platform-appropriate instance (currently always a subclass of
+  # {ProcessSpawnProcess}). Methods that are the subclass's responsibility
+  # to implement raise {SubclassResponsibility} here.
   class AbstractProcess
+    # Seconds to sleep between polls in {#poll_for_exit}.
     POLL_INTERVAL = 0.1
 
+    # @return [Integer, nil] the exit code once the process has exited, `nil` until then
     attr_reader :exit_code
 
     #
     # Set this to true if you do not care about when or if the process quits.
     #
+    # @return [Boolean]
     attr_accessor :detach
 
     #
     # Set this to true if you want to write to the process' stdin (process.io.stdin)
     #
+    # @return [Boolean]
     attr_accessor :duplex
 
     #
-    # Modify the child's environment variables
+    # Modify the child's environment variables. Keys and values are
+    # converted to Strings; a `nil` value unsets that variable for the
+    # child (rather than passing through the parent's value).
     #
+    # @return [Hash]
     attr_reader :environment
 
     #
     # Set the child's current working directory.
     #
+    # @return [String, nil]
     attr_accessor :cwd
 
     #
@@ -30,6 +47,7 @@ module ChildProcess
     # This can be used to make sure that all grandchildren are killed
     # when the child process dies.
     #
+    # @return [Boolean]
     attr_accessor :leader
 
     #
@@ -39,10 +57,12 @@ module ChildProcess
     # @see ChildProcess.build
     #
 
+    # @param args [Array<String>] the command and its arguments, e.g.
+    #   `("ruby", "-e", "puts 1")`. The command is never run through a
+    #   shell (see {ChildProcess.build}).
+    # @raise [ArgumentError] if any argument is not a String
     def initialize(*args)
-      unless args.all? { |e| e.kind_of?(String) }
-        raise ArgumentError, "all arguments must be String: #{args.inspect}"
-      end
+      raise ArgumentError, "all arguments must be String: #{args.inspect}" unless args.all?(String)
 
       @args        = args
       @started     = false
@@ -58,9 +78,10 @@ module ChildProcess
     #
     # Returns a ChildProcess::AbstractIO subclass to configure the child's IO streams.
     #
+    # @return [AbstractIO]
 
     def io
-      raise SubclassResponsibility, "io"
+      raise SubclassResponsibility, 'io'
     end
 
     #
@@ -68,7 +89,7 @@ module ChildProcess
     #
 
     def pid
-      raise SubclassResponsibility, "pid"
+      raise SubclassResponsibility, 'pid'
     end
 
     #
@@ -90,8 +111,8 @@ module ChildProcess
     # @param [Integer] timeout (3) Seconds to wait before trying the next method.
     #
 
-    def stop(timeout = 3)
-      raise SubclassResponsibility, "stop"
+    def stop(timeout = 3) # rubocop:disable Lint/UnusedMethodArgument -- documents the subclass contract
+      raise SubclassResponsibility, 'stop'
     end
 
     #
@@ -101,7 +122,7 @@ module ChildProcess
     #
 
     def wait
-      raise SubclassResponsibility, "wait"
+      raise SubclassResponsibility, 'wait'
     end
 
     #
@@ -111,7 +132,7 @@ module ChildProcess
     #
 
     def exited?
-      raise SubclassResponsibility, "exited?"
+      raise SubclassResponsibility, 'exited?'
     end
 
     #
@@ -148,6 +169,9 @@ module ChildProcess
     # Wait for the process to exit, raising a ChildProcess::TimeoutError if
     # the timeout expires.
     #
+    # @param timeout [Numeric] seconds to wait before giving up
+    # @raise [TimeoutError] if the process is still alive after `timeout` seconds
+    # @return [void]
 
     def poll_for_exit(timeout)
       log "polling #{timeout} seconds for exit"
@@ -157,15 +181,15 @@ module ChildProcess
         sleep POLL_INTERVAL
       end
 
-      unless ok
-        raise TimeoutError, "process still alive after #{timeout} seconds"
-      end
+      return if ok
+
+      raise TimeoutError, "process still alive after #{timeout} seconds"
     end
 
     private
 
     def launch_process
-      raise SubclassResponsibility, "launch_process"
+      raise SubclassResponsibility, 'launch_process'
     end
 
     def detach?
@@ -181,12 +205,11 @@ module ChildProcess
     end
 
     def log(*args)
-      ChildProcess.logger.debug "#{self.inspect} : #{args.inspect}"
+      ChildProcess.logger.debug "#{inspect} : #{args.inspect}"
     end
 
     def assert_started
-      raise Error, "process not started" unless started?
+      raise Error, 'process not started' unless started?
     end
-
-  end # AbstractProcess
-end # ChildProcess
+  end
+end

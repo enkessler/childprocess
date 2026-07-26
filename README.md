@@ -9,11 +9,16 @@ a standalone library.
 [![CI](https://github.com/enkessler/childprocess/actions/workflows/ci.yml/badge.svg)](https://github.com/enkessler/childprocess/actions/workflows/ci.yml)
 ![Gem Version](https://img.shields.io/gem/v/childprocess)
 [![Code Climate](https://codeclimate.com/github/enkessler/childprocess.svg)](https://codeclimate.com/github/enkessler/childprocess)
-[![Coverage Status](https://coveralls.io/repos/enkessler/childprocess/badge.svg?branch=master)](https://coveralls.io/r/enkessler/childprocess?branch=master)
+
+Test coverage is measured locally with [SimpleCov](https://github.com/simplecov-ruby/simplecov)
+(`bundle exec rake spec` prints the summary; the full report is written to `coverage/`) -- the
+suite maintains 100% line coverage.
 
 # Requirements
 
-* Ruby 2.4+, JRuby 9+
+* Ruby 3.2+, JRuby 9+, TruffleRuby
+* Tested against Ruby 3.2, 3.3, 3.4, 4.0 and `head` in CI (see
+  [.github/workflows/ci.yml](.github/workflows/ci.yml))
 
 # Usage
 
@@ -183,11 +188,21 @@ ChildProcess.logger = logger
 
 ChildProcess 5+ uses `Process.spawn` from the Ruby core library for maximum portability.
 
+# Development
+
+```
+bundle install
+bundle exec rake spec      # run the test suite (100% line coverage enforced via SimpleCov)
+bundle exec rubocop        # lint
+bundle exec yard doc       # generate API docs into doc/
+bundle exec bundler-audit check --update   # dependency security audit
+```
+
 # Note on Patches/Pull Requests
 
 1. Fork it
-2. Create your feature branch (off of the development branch)
-   `git checkout -b my-new-feature dev`
+2. Create your feature branch (off of `master`)
+   `git checkout -b my-new-feature`
 3. Commit your changes
    `git commit -am 'Add some feature'`
 4. Push to the branch
@@ -198,14 +213,12 @@ ChildProcess 5+ uses `Process.spawn` from the Ruby core library for maximum port
 
 When publishing a new gem release:
 
-1. Ensure [latest build is green on the `dev` branch](https://travis-ci.org/enkessler/childprocess/branches)
+1. Ensure the [latest build is green on `master`](https://github.com/enkessler/childprocess/actions/workflows/ci.yml)
 2. Ensure [CHANGELOG](CHANGELOG.md) is updated
 3. Ensure [version is bumped](lib/childprocess/version.rb) following [Semantic Versioning](https://semver.org/)
-4. Merge the `dev` branch into `master`: `git checkout master && git merge dev`
-5. Ensure [latest build is green on the `master` branch](https://travis-ci.org/enkessler/childprocess/branches)
-6. Build gem from the green `master` branch: `git checkout master && gem build childprocess.gemspec`
-7. Push gem to RubyGems: `gem push childprocess-<VERSION>.gem`
-8. Tag commit with version, annotated with release notes: `git tag -a <VERSION>`
+4. Build the gem: `gem build childprocess.gemspec`
+5. Push gem to RubyGems: `gem push childprocess-<VERSION>.gem`
+6. Tag commit with version, annotated with release notes: `git tag -a <VERSION>`
 
 # Copyright
 

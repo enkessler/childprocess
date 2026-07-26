@@ -1,0 +1,109 @@
+plugins:
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  SuggestExtensions: false
+  Exclude:
+    - 'pkg/**/*'
+    - 'vendor/**/*'
+
+# This is a small, stable library with a deliberately plain style;
+# these formatting cops fight the existing (consistent) house style
+# more than they help, so they're tuned down rather than left default.
+Layout/LineLength:
+  Max: 120
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/MethodLength:
+  Max: 30
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+# ChildProcess is the library's single namespace module and legitimately
+# holds all of the platform-detection API; splitting it up would hurt more
+# than a slightly relaxed line budget.
+Metrics/ModuleLength:
+  Max: 200
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+# Standard Bundler::GemHelper Rakefile boilerplate.
+Style/MixinUsage:
+  Exclude:
+    - 'Rakefile'
+
+# `set_exit_code` etc. are private helpers, not public accessors -- the
+# `set_`/`has_`/`is_` prefixes they use are clearer here than the cops'
+# preferred alternatives (e.g. `to_io?` would be actively confusing next
+# to the real `Kernel#to_io`).
+Naming/AccessorMethodName:
+  Enabled: false
+
+Naming/PredicatePrefix:
+  Enabled: false
+
+# The project's gem/module name is "childprocess" (no underscore)
+# throughout -- file names already match that convention, not the cop's
+# ActiveSupport-style `child_process` inflection of the `ChildProcess`
+# constant.
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+# `before(:all)`/`after(:all)` are used once, deliberately, to save and
+# restore process-global RbConfig state around the OS-detection specs --
+# not to share database/records state across examples.
+RSpec/BeforeAfterAll:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Exclude:
+    - 'spec/childprocess_spec.rb'
+
+# These specs `eval` the `Hash#inspect`/`Array#inspect` output that a
+# child process (spawned by the very same spec, from a tempfile the spec
+# itself wrote) reports its ENV/ARGV as -- not attacker-controlled input.
+Security/Eval:
+  Exclude:
+    - 'spec/childprocess_spec.rb'
+
+# Dev dependencies are declared in the gemspec (not the Gemfile) so that
+# `gem build`/`rake` consumers of a checked-out clone get a consistent,
+# pinned toolchain without needing a separate Gemfile entry per tool.
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 35
+
+RSpec/MultipleExpectations:
+  Max: 10
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/childprocess_spec.rb'
+    - 'spec/io_spec.rb'
+    - 'spec/pid_behavior.rb'
