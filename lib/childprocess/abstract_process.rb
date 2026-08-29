@@ -152,8 +152,8 @@ module ChildProcess
     def poll_for_exit(timeout)
       log "polling #{timeout} seconds for exit"
 
-      end_time = Time.now + timeout
-      until (ok = exited?) || Time.now > end_time
+      end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) + timeout
+      until (ok = exited?) || Process.clock_gettime(Process::CLOCK_MONOTONIC) > end_time
         sleep POLL_INTERVAL
       end
 
