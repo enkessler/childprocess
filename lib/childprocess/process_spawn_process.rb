@@ -8,7 +8,7 @@ module ChildProcess
       return true if @exit_code
 
       assert_started
-      pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG | ::Process::WUNTRACED)
+      pid, status = ::Process.waitpid2(@pid, ::Process::WNOHANG)
       pid = nil if pid == 0 # may happen on jruby
 
       log(:pid => pid, :status => status)
