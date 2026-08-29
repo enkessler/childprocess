@@ -54,6 +54,7 @@ module ChildProcess
       options[:out] = io.stdout ? io.stdout.fileno : File::NULL
       options[:err] = io.stderr ? io.stderr.fileno : File::NULL
 
+      reader = writer = nil
       if duplex?
         reader, writer = ::IO.pipe
         options[:in] = reader.fileno
@@ -86,6 +87,11 @@ module ChildProcess
         @pid = ::Process.spawn(environment, *args, options)
       rescue SystemCallError => e
         raise LaunchError, e.message
+      ensure
+        unless @pid
+          reader&.close
+          writer&.close
+        end
       end
 
       if duplex?
