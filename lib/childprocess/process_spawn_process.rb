@@ -51,8 +51,8 @@ module ChildProcess
 
       options = {}
 
-      options[:out] = io.stdout ? io.stdout.fileno : File::NULL
-      options[:err] = io.stderr ? io.stderr.fileno : File::NULL
+      options[:out] = io.stdout ? fileno_for(io.stdout) : File::NULL
+      options[:err] = io.stderr ? fileno_for(io.stderr) : File::NULL
 
       if duplex?
         reader, writer = ::IO.pipe
@@ -98,6 +98,10 @@ module ChildProcess
 
     def set_exit_code(status)
       @exit_code = status.exitstatus || status.termsig
+    end
+
+    def fileno_for(io)
+      io.respond_to?(:fileno) ? io.fileno : io.to_io.fileno
     end
 
     def send_term
