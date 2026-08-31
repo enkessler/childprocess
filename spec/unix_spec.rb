@@ -6,6 +6,21 @@ if ChildProcess.unix?
   describe ChildProcess::Unix::Process do
     it_behaves_like "a platform that provides the child's pid"
 
+    it "does not treat a stopped child as exited" do
+      process = sleeping_ruby.start
+      Process.kill("STOP", process.pid)
+
+      wait_until do
+        IO.popen(["ps", "-o", "state=", "-p", process.pid.to_s], &:read).strip.start_with?("T")
+      end
+      expect(process).not_to be_exited
+
+      Process.kill("CONT", process.pid)
+      process.stop
+    ensure
+      Process.kill("CONT", process.pid) if process&.alive?
+    end
+
     it "handles ECHILD race condition where process dies between timeout and KILL" do
       process = sleeping_ruby
 
