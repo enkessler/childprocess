@@ -60,6 +60,23 @@ describe ChildProcess do
     end
   end
 
+  it "can redirect stdout through a to_io wrapper" do
+    process = echo
+    out = Tempfile.new("to-io-wrapper-spec")
+    wrapper = Object.new
+    wrapper.define_singleton_method(:to_io) { out.to_io }
+
+    begin
+      process.io.stdout = wrapper
+      process.start
+      process.wait
+
+      expect(rewind_and_read(out)).to eq "hello\n"
+    ensure
+      out.close
+    end
+  end
+
   it "pumps all output" do
     process = echo
 
