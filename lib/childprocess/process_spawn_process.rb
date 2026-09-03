@@ -43,8 +43,11 @@ module ChildProcess
         key = key.to_s
         value = value.nil? ? nil : value.to_s
 
-        if key.include?("\0") || key.include?("=") || value.to_s.include?("\0")
-          raise InvalidEnvironmentVariable, "#{key.inspect} => #{value.to_s.inspect}"
+        if key.include?("\0") || key.include?("=")
+          raise InvalidEnvironmentVariable, "invalid environment variable name: #{key.inspect}"
+        end
+        if value.to_s.include?("\0")
+          raise InvalidEnvironmentVariable, "invalid value for environment variable #{key.inspect}"
         end
         environment[key] = value
       end

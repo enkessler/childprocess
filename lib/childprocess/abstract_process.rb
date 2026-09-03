@@ -181,7 +181,7 @@ module ChildProcess
     end
 
     def log(*args)
-      ChildProcess.logger.debug "#{self.inspect} : #{args.inspect}"
+      ChildProcess.logger.debug "#{self.class}(pid=#{@pid.inspect}) : #{args.inspect}"
     end
 
     def assert_started
