@@ -1,12 +1,26 @@
+# frozen_string_literal: true
+
+require 'English'
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 unless defined?(JRUBY_VERSION)
-  require 'coveralls'
-  Coveralls.wear!
+  require 'simplecov'
+  SimpleCov.start do
+    skip '/spec/'
+  end
 end
 
 require 'childprocess'
+
+# Both platform implementations are loaded regardless of the OS actually
+# running the specs, so that specs can reference `ChildProcess::Unix::*` and
+# `ChildProcess::Windows::*` directly (e.g. to assert which one
+# `ChildProcess.build` picks for a given platform). Only the implementation
+# matching the real OS is exercised at runtime.
+require 'childprocess/unix'
+require 'childprocess/windows'
+
 require 'rspec'
 require 'tempfile'
 require 'socket'
@@ -16,24 +30,24 @@ module ChildProcessSpecHelper
   RUBY = defined?(Gem) ? Gem.ruby : 'ruby'
   CapturedOutput = Struct.new(:stdout, :stderr)
 
-  def ruby_process(*args)
-    @process = ChildProcess.build(RUBY , *args)
+  def ruby_process(*)
+    @process = ChildProcess.build(RUBY, *)
   end
 
-  def windows_process(*args)
-    @process = ChildProcess.build("powershell", *args)
+  def windows_process(*)
+    @process = ChildProcess.build('powershell', *)
   end
 
   def sleeping_ruby(seconds = nil)
     if seconds
-      ruby_process("-e", "sleep #{seconds}")
+      ruby_process('-e', "sleep #{seconds}")
     else
-      ruby_process("-e", "sleep")
+      ruby_process('-e', 'sleep')
     end
   end
 
   def invalid_process
-    @process = ChildProcess.build("unlikelytoexist")
+    @process = ChildProcess.build('unlikelytoexist')
   end
 
   def ignored(signal)
@@ -47,7 +61,7 @@ module ChildProcessSpecHelper
 
   def write_env(path)
     if ChildProcess.os == :windows
-      ps_env_file_path = File.expand_path(File.dirname(__FILE__))
+      ps_env_file_path = __dir__
       args = ['-File', "#{ps_env_file_path}/get_env.ps1", path]
       windows_process(*args)
     else
@@ -58,12 +72,12 @@ module ChildProcessSpecHelper
     end
   end
 
-  def write_argv(path, *args)
+  def write_argv(path, *)
     code = <<-RUBY
       File.open(#{path.inspect}, "w") { |f| f << ARGV.inspect }
     RUBY
 
-    ruby_process(tmp_script(code), *args)
+    ruby_process(tmp_script(code), *)
   end
 
   def write_pid(path)
@@ -87,7 +101,7 @@ module ChildProcessSpecHelper
   end
 
   def with_env(hash)
-    hash.each { |k,v| ENV[k] = v }
+    hash.each { |k, v| ENV[k] = v }
     begin
       yield
     ensure
@@ -97,11 +111,11 @@ module ChildProcessSpecHelper
 
   def tmp_script(code)
     # use an ivar to avoid GC
-    @tf = Tempfile.new("childprocess-temp")
+    @tf = Tempfile.new('childprocess-temp')
     @tf << code
     @tf.close
 
-    puts code if $DEBUG
+    puts code if $DEBUG # rubocop:disable RSpec/Output -- opt-in debug helper, not accidental debug output
 
     @tf.path
   end
@@ -113,7 +127,7 @@ module ChildProcessSpecHelper
             IO.copy_stream(STDIN, STDOUT)
       CODE
     else
-      ChildProcess.build("cat")
+      ChildProcess.build('cat')
     end
   end
 
@@ -126,7 +140,7 @@ module ChildProcessSpecHelper
             puts "hello"
       CODE
     else
-      ChildProcess.build("echo", "hello")
+      ChildProcess.build('echo', 'hello')
     end
   end
 
@@ -134,15 +148,15 @@ module ChildProcessSpecHelper
     ruby_process(tmp_script(code))
   end
 
-  def with_executable_at(path, &blk)
+  def with_executable_at(path, &)
     if ChildProcess.os == :windows
-      path << ".cmd"
+      path << '.cmd'
       content = "#{RUBY} -e 'sleep 10' \n @echo foo"
     else
       content = "#!/bin/sh\nsleep 10\necho foo"
     end
 
-    File.open(path, 'w', 0744) { |io| io << content }
+    File.open(path, 'w', 0o744) { |io| io << content }
     proc = ChildProcess.build(path)
 
     begin
@@ -165,8 +179,8 @@ module ChildProcessSpecHelper
     port
   end
 
-  def with_tmpdir(&blk)
-    name = "#{Time.now.strftime("%Y%m%d")}-#{$$}-#{rand(0x100000000).to_s(36)}"
+  def with_tmpdir(&)
+    name = "#{Time.now.strftime('%Y%m%d')}-#{$PROCESS_ID}-#{rand(0x100000000).to_s(36)}"
     FileUtils.mkdir_p(name)
 
     begin
@@ -176,7 +190,7 @@ module ChildProcessSpecHelper
     end
   end
 
-  def wait_until(timeout = 10, &blk)
+  def wait_until(timeout = 10, &)
     end_time       = Time.now + timeout
     last_exception = nil
 
@@ -184,8 +198,8 @@ module ChildProcessSpecHelper
       begin
         result = yield
         return result if result
-      rescue RSpec::Expectations::ExpectationNotMetError => ex
-        last_exception = ex
+      rescue RSpec::Expectations::ExpectationNotMetError => e
+        last_exception = e
       end
 
       sleep 0.01
@@ -200,7 +214,7 @@ module ChildProcessSpecHelper
   def can_bind?(host, port)
     TCPServer.new(host, port).close
     true
-  rescue
+  rescue StandardError
     false
   end
 
@@ -216,23 +230,23 @@ module ChildProcessSpecHelper
   end
 
   def capture_std
-    orig_out = STDOUT.clone
-    orig_err = STDERR.clone
+    orig_out = $stdout.clone
+    orig_err = $stderr.clone
 
     out = Tempfile.new 'captured-stdout'
     err = Tempfile.new 'captured-stderr'
     out.sync = true
     err.sync = true
 
-    STDOUT.reopen out
-    STDERR.reopen err
+    $stdout.reopen out
+    $stderr.reopen err
 
     yield
 
     CapturedOutput.new rewind_and_read(out), rewind_and_read(err)
   ensure
-    STDOUT.reopen orig_out
-    STDERR.reopen orig_err
+    $stdout.reopen orig_out
+    $stderr.reopen orig_err
   end
 
   def generate_log_messages
@@ -242,14 +256,13 @@ module ChildProcessSpecHelper
     process.wait
     process.poll_for_exit(0.1)
   end
-
-end # ChildProcessSpecHelper
+end
 
 Thread.abort_on_exception = true
 
 RSpec.configure do |c|
   c.include(ChildProcessSpecHelper)
-  c.after(:each) {
+  c.after do
     defined?(@process) && @process.alive? && @process.stop
-  }
+  end
 end

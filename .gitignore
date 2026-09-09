@@ -19,10 +19,11 @@ tmtags
 ## PROJECT::GENERAL
 coverage
 rdoc
+doc
+.yardoc
 pkg
 .rbx
 Gemfile.lock
-.ruby-version
 .bundle
 
 ## PROJECT::SPECIFIC

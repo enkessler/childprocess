@@ -1,12 +1,14 @@
-require File.expand_path('../spec_helper', __FILE__)
-require "pid_behavior"
+# frozen_string_literal: true
+
+require File.expand_path('spec_helper', __dir__)
+require 'pid_behavior'
 
 if ChildProcess.unix?
 
   describe ChildProcess::Unix::Process do
     it_behaves_like "a platform that provides the child's pid"
 
-    it "handles ECHILD race condition where process dies between timeout and KILL" do
+    it 'handles ECHILD race condition where process dies between timeout and KILL' do
       process = sleeping_ruby
 
       allow(Process).to receive(:spawn).and_return('fakepid')
@@ -20,7 +22,7 @@ if ChildProcess.unix?
       allow(process).to receive(:alive?).and_return(false)
     end
 
-    it "handles ESRCH race condition where process dies between timeout and KILL" do
+    it 'handles ESRCH race condition where process dies between timeout and KILL' do
       process = sleeping_ruby
 
       allow(Process).to receive(:spawn).and_return('fakepid')
@@ -36,15 +38,15 @@ if ChildProcess.unix?
   end
 
   describe ChildProcess::Unix::IO do
-    let(:io) { ChildProcess::Unix::IO.new }
+    let(:io) { described_class.new }
 
-    it "raises an ArgumentError if given IO does not respond to :to_io" do
+    it 'raises an ArgumentError if given IO does not respond to :to_io' do
       expect { io.stdout = nil }.to raise_error(ArgumentError, /to respond to :to_io/)
     end
 
-    it "raises a TypeError if #to_io does not return an IO" do
+    it 'raises a TypeError if #to_io does not return an IO' do
       fake_io = Object.new
-      def fake_io.to_io() StringIO.new end
+      def fake_io.to_io = StringIO.new
 
       expect { io.stdout = fake_io }.to raise_error(TypeError, /expected IO, got/)
     end
