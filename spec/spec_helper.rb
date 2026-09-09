@@ -7,7 +7,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 unless defined?(JRUBY_VERSION)
   require 'simplecov'
   SimpleCov.start do
-    add_filter '/spec/'
+    skip '/spec/'
   end
 end
 

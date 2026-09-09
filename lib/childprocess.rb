@@ -49,7 +49,7 @@ module ChildProcess
     # @raise [Error] if the current platform isn't supported
     # @return [AbstractProcess]
 
-    # rubocop:disable Style/ArgumentsForwarding -- named for the sake of the @param doc above
+    # rubocop:disable-next Style/ArgumentsForwarding -- named for the sake of the @param doc above
     def new(*args)
       case os
       when :macosx, :linux, :solaris, :bsd, :cygwin, :aix
@@ -60,7 +60,6 @@ module ChildProcess
         raise Error, "unsupported platform #{platform_name.inspect}"
       end
     end
-    # rubocop:enable Style/ArgumentsForwarding
     alias build new
 
     #
@@ -231,7 +230,7 @@ module ChildProcess
   end
 end
 
-# :nocov:
+# simplecov:disable
 # Exactly one of these two branches can ever execute for a given OS/process,
 # so this platform dispatch can never show 100% branch coverage from a
 # single test run (regardless of which OS runs the suite).
@@ -240,4 +239,4 @@ if ChildProcess.windows?
 else
   require 'childprocess/unix'
 end
-# :nocov:
+# simplecov:enable

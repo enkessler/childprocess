@@ -215,9 +215,8 @@ describe ChildProcess do
     Tempfile.open('grandparent_out') do |gp_file|
       # Create a parent and detached child process that will spit out their
       # PID. Make sure that the child process lasts longer than the parent.
-      # rubocop:disable Layout/LineLength
+      # rubocop:disable-next Layout/LineLength
       p_process = ruby("$: << 'lib'; require 'childprocess' ; c_process = ChildProcess.build('ruby', '-e', 'puts \\\"Child PID: \#{Process.pid}\\\" ; sleep 5') ; c_process.io.inherit! ; c_process.detach = true ;  c_process.start ; puts \"Child PID: \#{c_process.pid}\" ; puts \"Parent PID: \#{Process.pid}\"")
-      # rubocop:enable Layout/LineLength
       p_process.io.stdout = p_process.io.stderr = gp_file
 
       # Let the parent process die
